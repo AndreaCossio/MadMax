@@ -1,4 +1,4 @@
-package it.polito.mad.madmax.lab01
+package it.polito.mad.madmax.madmax
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("it.polito.mad.madmax.lab01", appContext.packageName)
+        assertEquals("it.polito.mad.madmax.madmax", appContext.packageName)
     }
 }

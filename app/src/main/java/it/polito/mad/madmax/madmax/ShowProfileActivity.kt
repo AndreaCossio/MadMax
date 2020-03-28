@@ -1,4 +1,4 @@
-package it.polito.mad.madmax.lab01
+package it.polito.mad.madmax.madmax
 
 import android.os.Bundle
 import android.view.Menu
