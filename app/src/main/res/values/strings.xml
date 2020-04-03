@@ -1,8 +1,17 @@
 <resources>
-    <string name="app_name">Lab01</string>
+    <string name="app_name">Madmax</string>
     <string name="edit_profile">Edit Profile</string>
-    <string name="fullName">Dario Piazza</string>
-    <string name="nickname">piazzadario</string>
-    <string name="email">s276010@studenti.polito.it</string>
-    <string name="location">Turin (TO), Piedmont, Italy</string>
+
+    <!-- Default values -->
+    <string name="name_default">Name Surname</string>
+    <string name="nickname_default">nickname</string>
+    <string name="email_default">name.surname@example.com</string>
+    <string name="location_default">Location</string>
+
+    <!-- Labels -->
+    <string name="name_label">Name</string>
+    <string name="nickname_label">Nickname</string>
+    <string name="email_label">Email</string>
+    <string name="location_label">Location</string>
+
 </resources>
