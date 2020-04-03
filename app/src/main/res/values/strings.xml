@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Lab01</string>
     <string name="edit_profile">Edit Profile</string>
+    <string name="fullName">Dario Piazza</string>
+    <string name="nickname">piazzadario</string>
+    <string name="email">s276010@studenti.polito.it</string>
+    <string name="location">Turin (TO), Piedmont, Italy</string>
 </resources>
