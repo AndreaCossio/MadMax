@@ -10,7 +10,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.android.synthetic.main.activity_edit_profile.*
-import kotlinx.android.synthetic.main.activity_main.profile_image
+
 
 class EditProfileActivity : AppCompatActivity() {
     private val REQUEST_IMAGE_CAPTURE = 1
