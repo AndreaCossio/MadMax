@@ -9,17 +9,32 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+<<<<<<< Updated upstream
         <activity android:name="it.polito.mad.madmax.madmax.EditProfileActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+=======
+        <activity android:name=".MainActivity"/>
+        <activity android:name=".EditProfileActivity" />
+        <activity android:name=".ShowProfileActivity">
+>>>>>>> Stashed changes
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<<<<<<< Updated upstream
         <activity android:name="it.polito.mad.madmax.madmax.ShowProfileActivity">
 
         </activity>
     </application>
+=======
+>>>>>>> Stashed changes
 
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+    </application>
+    <uses-feature android:name="android.hardware.camera"
+        android:required="true" />
 </manifest>
