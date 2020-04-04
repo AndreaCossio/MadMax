@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 
 class ShowProfileActivity : AppCompatActivity() {
 
+    private val INTENT_REQUEST_CODE = 1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_show_profile)
@@ -26,7 +28,7 @@ class ShowProfileActivity : AppCompatActivity() {
         intent.putExtra("it.polito.mad.madmax.madmax.nickname", findViewById<TextView>(R.id.nickname_tiet).toString())
         intent.putExtra("it.polito.mad.madmax.madmax.email", findViewById<TextView>(R.id.email_tiet).toString())
         intent.putExtra("it.polito.mad.madmax.madmax.location", findViewById<TextView>(R.id.location_tiet).toString())
-        startActivityForResult(intent, 1)
+        startActivityForResult(intent, INTENT_REQUEST_CODE)
         return true
     }
 }

@@ -1,19 +1,23 @@
 package it.polito.mad.madmax.madmax
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.android.synthetic.main.activity_edit_profile.*
 
-
 class EditProfileActivity : AppCompatActivity() {
+
     private val REQUEST_IMAGE_CAPTURE = 1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
@@ -59,6 +63,17 @@ class EditProfileActivity : AppCompatActivity() {
             profile_image.visibility= View.VISIBLE
             profile_edit_iv.visibility= View.INVISIBLE
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        intent = Intent(applicationContext, ShowProfileActivity::class.java)
+        intent.putExtra("it.polito.mad.madmax.madmax.name", findViewById<TextInputEditText>(R.id.name_tiet).text.toString())
+        intent.putExtra("it.polito.mad.madmax.madmax.nickname", findViewById<TextInputEditText>(R.id.nickname_tiet).text.toString())
+        intent.putExtra("it.polito.mad.madmax.madmax.email", findViewById<TextInputEditText>(R.id.email_tiet).text.toString())
+        intent.putExtra("it.polito.mad.madmax.madmax.location", findViewById<TextInputEditText>(R.id.location_tiet).text.toString())
+        setResult(Activity.RESULT_OK, intent)
+        finish()
+        return true
     }
 
 }
