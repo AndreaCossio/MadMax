@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">MadMax</string>
+
+    <!-- Menu -->
     <string name="edit_profile">Edit Profile</string>
+    <string name="save_profile">Save</string>
 
     <!-- Default values -->
     <string name="name_default">Name Surname</string>
