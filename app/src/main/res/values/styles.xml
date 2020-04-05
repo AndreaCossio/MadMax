@@ -9,7 +9,7 @@
         <item name="colorButtonNormal">@color/colorSecondaryDark</item>
         <item name="colorSecondaryVariant">@color/colorSecondaryDark</item>
         <item name="android:textColorPrimary">@color/colorTextOnPrimary</item>
-        <item name="android:textColorSecondary">@color/colorTextOnPrimary</item>
+        <item name="android:textColorSecondary">@color/colorTextOnSecondary</item>
         <item name="colorError">#F44336</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorSurface">#FFFFFF</item>

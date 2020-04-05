@@ -64,7 +64,8 @@
                     android:id="@+id/name_tiet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPersonName" />
+                    android:inputType="textPersonName"
+                    android:textColor="@color/colorTextOnSecondary"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -73,13 +74,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="@string/nickname_label">
+                android:hint="@string/nickname_label"
+                >
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/nickname_tiet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:textColor="@color/colorTextOnSecondary"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -94,7 +97,8 @@
                     android:id="@+id/email_tiet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress" />
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/colorTextOnSecondary"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -109,7 +113,8 @@
                     android:id="@+id/location_tiet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPostalAddress" />
+                    android:inputType="textPostalAddress"
+                    android:textColor="@color/colorTextOnSecondary"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 

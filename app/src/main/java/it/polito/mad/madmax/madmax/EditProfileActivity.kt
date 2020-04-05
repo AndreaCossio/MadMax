@@ -9,19 +9,23 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.android.synthetic.main.activity_edit_profile.*
 
 class EditProfileActivity : AppCompatActivity() {
 
+    private var imageBitmap= MutableLiveData<Bitmap>();
     private val REQUEST_IMAGE_CAPTURE = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
         profile_edit_iv.setOnClickListener{dispatchTakePictureIntent()}
+        profile_image.setOnClickListener{dispatchTakePictureIntent()}
+        imageBitmap.observe(this, Observer{ profile_image.setImageBitmap(it)})
         //TODO get data from intent
     }
 
@@ -33,18 +37,25 @@ class EditProfileActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString("name", findViewById<TextInputEditText>(R.id.name_tiet).text.toString())
-        outState.putString("nickname", findViewById<TextInputEditText>(R.id.nickname_tiet).text.toString())
-        outState.putString("email", findViewById<TextInputEditText>(R.id.email_tiet).text.toString())
-        outState.putString("location", findViewById<TextInputEditText>(R.id.location_tiet).text.toString())
+        outState.putString("name", name_tiet.text.toString())
+        outState.putString("nickname", nickname_tiet.text.toString())
+        outState.putString("email", email_tiet.text.toString())
+        outState.putString("location", location_tiet.text.toString())
+        outState.putParcelable("bitmap", imageBitmap.value)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        findViewById<TextInputEditText>(R.id.name_tiet).setText(savedInstanceState.getString("name"))
-        findViewById<TextInputEditText>(R.id.nickname_tiet).setText(savedInstanceState.getString("nickname"))
-        findViewById<TextInputEditText>(R.id.email_tiet).setText(savedInstanceState.getString("email"))
-        findViewById<TextInputEditText>(R.id.location_tiet).setText(savedInstanceState.getString("location"))
+        name_tiet.setText(savedInstanceState.getString("name"))
+        nickname_tiet.setText(savedInstanceState.getString("nickname"))
+        email_tiet.setText(savedInstanceState.getString("email"))
+        location_tiet.setText(savedInstanceState.getString("location"))
+        imageBitmap.value= savedInstanceState.getParcelable("bitmap")
+        if(imageBitmap.value!=null)
+        {
+            profile_image.visibility= View.VISIBLE
+            profile_edit_iv.visibility= View.INVISIBLE
+        }
     }
 
     private fun dispatchTakePictureIntent() {
@@ -58,8 +69,8 @@ class EditProfileActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            val imageBitmap = data?.extras?.get("data") as Bitmap
-            profile_image.setImageBitmap(imageBitmap)
+            imageBitmap.value = data?.extras?.get("data") as Bitmap
+            profile_image.setImageBitmap(imageBitmap.value)
             profile_image.visibility= View.VISIBLE
             profile_edit_iv.visibility= View.INVISIBLE
         }
