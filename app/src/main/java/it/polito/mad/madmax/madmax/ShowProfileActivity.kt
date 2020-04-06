@@ -8,7 +8,9 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.textview.MaterialTextView
 import com.google.gson.Gson
+import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.activity_show_profile.*
 
 class ShowProfileActivity : AppCompatActivity() {
@@ -33,11 +35,10 @@ class ShowProfileActivity : AppCompatActivity() {
                 getString(R.string.location_default)
             )
         }
-
-        name_tv.text = user?.fullName
-        nickname_tv.text = user?.nickname
-        email_tv.text = user?.email
-        location_tv.text = user?.location
+        (name_tv as MaterialTextView).text=user?.fullName
+        (nickname_tv as MaterialTextView).text = user?.nickname
+        (email_tv as MaterialTextView).text = user?.email
+        (location_tv as MaterialTextView).text = user?.location
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -70,10 +71,10 @@ class ShowProfileActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode==INTENT_REQUEST_CODE && resultCode== Activity.RESULT_OK){
-            name_tv.text = data?.getStringExtra(getString(R.string.edited_name))
-            nickname_tv.text = data?.getStringExtra(getString(R.string.edited_nickname))
-            email_tv.text = data?.getStringExtra(getString(R.string.edited_email))
-            location_tv.text = data?.getStringExtra(getString(R.string.edited_location))
+            (name_tv as MaterialTextView).text = data?.getStringExtra(getString(R.string.edited_name))
+            (nickname_tv as MaterialTextView).text = data?.getStringExtra(getString(R.string.edited_nickname))
+            (email_tv as MaterialTextView).text = data?.getStringExtra(getString(R.string.edited_email))
+            (location_tv as MaterialTextView).text = data?.getStringExtra(getString(R.string.edited_location))
         }
     }
 
