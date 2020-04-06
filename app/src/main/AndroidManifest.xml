@@ -10,8 +10,8 @@ package="it.polito.mad.madmax.madmax">
     android:roundIcon="@mipmap/ic_launcher_round"
     android:supportsRtl="true"
     android:theme="@style/AppTheme">
-    <activity android:name=".ShowProfileActivity" />
-    <activity android:name=".EditProfileActivity">
+    <activity android:name=".EditProfileActivity" />
+    <activity android:name=".ShowProfileActivity">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
 
@@ -23,6 +23,7 @@ package="it.polito.mad.madmax.madmax">
         android:name="preloaded_fonts"
         android:resource="@array/preloaded_fonts" />
 </application>
-<uses-feature android:name="android.hardware.camera"
+<uses-feature
+    android:name="android.hardware.camera"
     android:required="true" />
 </manifest>

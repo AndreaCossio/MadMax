@@ -17,4 +17,12 @@
     <string name="email_label">Email</string>
     <string name="location_label">Location</string>
 
+    <!-- Edit profile -->
+    <string name="edited_name">it.polito.mad.madmax.madmax.edit_name</string>
+    <string name="edited_nickname">it.polito.mad.madmax.madmax.edit_nickname</string>
+    <string name="edited_email">it.polito.mad.madmax.madmax.edit_email</string>
+    <string name="edited_location">it.polito.mad.madmax.madmax.edit_location</string>
+
+    <!-- SharedPreferences -->
+    <string name="preference_file_key">it.polito.mad.madmax.madmax.PREFERENCE_FILE_KEY</string>
 </resources>

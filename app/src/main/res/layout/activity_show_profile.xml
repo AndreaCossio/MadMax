@@ -38,7 +38,7 @@
             app:layout_constraintTop_toBottomOf="@+id/profile_iv"
             app:layout_constraintVertical_weight="2">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/name_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -46,7 +46,7 @@
                 android:text="@string/name_default"
                 android:textSize="40sp" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/nickname_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
                 android:text="@string/nickname_default"
                 android:textSize="20sp" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/email_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -62,13 +62,14 @@
                 android:text="@string/email_default"
                 android:textSize="20sp" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/location_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/location_default"
                 android:textSize="20sp" />
+
 
         </LinearLayout>
 
