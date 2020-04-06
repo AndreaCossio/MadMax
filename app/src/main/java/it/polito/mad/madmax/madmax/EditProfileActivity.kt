@@ -1,6 +1,7 @@
 package it.polito.mad.madmax.madmax
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -12,7 +13,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.google.android.material.textfield.TextInputEditText
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_edit_profile.*
 
 class EditProfileActivity : AppCompatActivity() {
@@ -78,10 +79,25 @@ class EditProfileActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         intent = Intent(applicationContext, ShowProfileActivity::class.java)
-        intent.putExtra("it.polito.mad.madmax.madmax.name", findViewById<TextInputEditText>(R.id.name_tiet).text.toString())
-        intent.putExtra("it.polito.mad.madmax.madmax.nickname", findViewById<TextInputEditText>(R.id.nickname_tiet).text.toString())
-        intent.putExtra("it.polito.mad.madmax.madmax.email", findViewById<TextInputEditText>(R.id.email_tiet).text.toString())
-        intent.putExtra("it.polito.mad.madmax.madmax.location", findViewById<TextInputEditText>(R.id.location_tiet).text.toString())
+        intent.putExtra(getString(R.string.edited_name), name_tiet.text.toString())
+        intent.putExtra(getString(R.string.edited_nickname), nickname_tiet.text.toString())
+        intent.putExtra(getString(R.string.edited_email), email_tiet.text.toString())
+        intent.putExtra(getString(R.string.edited_location), location_tiet.text.toString())
+
+        val prefs = getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE)
+        val editor = prefs.edit()
+        val user =  User(
+            name_tiet.text.toString(),
+            nickname_tiet.text.toString(),
+            email_tiet.text.toString(),
+            location_tiet.text.toString()
+        )
+        val profile  = Gson().toJson(user)
+        editor.putString("profile",profile)
+
+        editor.apply()
+
+
         setResult(Activity.RESULT_OK, intent)
         finish()
         return true
