@@ -1,7 +1,10 @@
 package it.polito.mad.madmax.madmax
 
-data class User(
-    val fullName:String,
+import java.io.Serializable
+
+data class User (
+    val name: String,
     val nickname: String,
     val email: String,
-    val location: String)
+    val location: String
+) : Serializable

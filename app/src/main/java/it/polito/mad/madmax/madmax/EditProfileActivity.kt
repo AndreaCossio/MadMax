@@ -15,45 +15,104 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_edit_profile.*
+import java.io.Serializable
 
 class EditProfileActivity : AppCompatActivity() {
 
-    private var imageBitmap= MutableLiveData<Bitmap>();
+    private var user: User? = null
+    private var imageBitmap= MutableLiveData<Bitmap>()
     private val REQUEST_IMAGE_CAPTURE = 1
 
+    // On Create actions
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Inflate layout
         setContentView(R.layout.activity_edit_profile)
+
+        // Add click listeners
         profile_edit_iv.setOnClickListener{dispatchTakePictureIntent()}
         profile_image.setOnClickListener{dispatchTakePictureIntent()}
         imageBitmap.observe(this, Observer{ profile_image.setImageBitmap(it)})
-        //TODO get data from intent
+
+        // Get data from intent
+        user = intent.getSerializableExtra(R.string.intent_user.toString()) as User?
+        /* user = if (intent.getStringExtra(R.string.edited_name.toString()) != null) {
+            User(
+                intent.getStringExtra(R.string.edited_name.toString())!!,
+                intent.getStringExtra(R.string.edited_nickname.toString())!!,
+                intent.getStringExtra(R.string.edited_email.toString())!!,
+                intent.getStringExtra(R.string.edited_location.toString())!!
+            )
+        } else {
+            null
+        } */
+        updateFields()
     }
 
+    // Inflate options menu
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.menu_save_profile, menu)
         return true
     }
 
+    // Handle clicks on the options menu
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // TODO check empty fields
+        return when (item.itemId) {
+            // Save button -> save profile
+            R.id.save_profile -> {
+                // Get user data
+                updateUser()
+
+                // Save user data to shared pref
+                val prefs = getSharedPreferences(getString(R.string.preference_file_user), Context.MODE_PRIVATE)
+                with (prefs.edit()) {
+                    putString(R.string.preference_file_user_profile.toString(), Gson().toJson(user))
+                    commit()
+                }
+
+                // Send result
+                val intent = Intent().apply {
+                    putExtra(R.string.intent_user.toString(), user)
+                    /* putExtra(R.string.edited_name.toString(), user?.name)
+                    putExtra(R.string.edited_nickname.toString(), user?.nickname)
+                    putExtra(R.string.edited_email.toString(), user?.email)
+                    putExtra(R.string.edited_location.toString(), user?.location) */
+                }
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+                true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString("name", name_tiet.text.toString())
-        outState.putString("nickname", nickname_tiet.text.toString())
-        outState.putString("email", email_tiet.text.toString())
-        outState.putString("location", location_tiet.text.toString())
+
+        // Get current fields values
+        updateUser()
+
+        // Save fields and photo into the Bundle
+        outState.putSerializable("user", user as Serializable?)
         outState.putParcelable("bitmap", imageBitmap.value)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        name_tiet.setText(savedInstanceState.getString("name"))
-        nickname_tiet.setText(savedInstanceState.getString("nickname"))
-        email_tiet.setText(savedInstanceState.getString("email"))
-        location_tiet.setText(savedInstanceState.getString("location"))
+
+        // Retrieve fields and photo from the Bundle
+        user = savedInstanceState.getSerializable("user") as User?
         imageBitmap.value= savedInstanceState.getParcelable("bitmap")
-        if(imageBitmap.value!=null)
-        {
+
+        // Restore fields
+        updateFields()
+
+        // Restore image
+        if (imageBitmap.value!=null) {
             profile_image.visibility= View.VISIBLE
             profile_edit_iv.visibility= View.INVISIBLE
         }
@@ -77,30 +136,23 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        intent = Intent(applicationContext, ShowProfileActivity::class.java)
-        intent.putExtra(getString(R.string.edited_name), name_tiet.text.toString())
-        intent.putExtra(getString(R.string.edited_nickname), nickname_tiet.text.toString())
-        intent.putExtra(getString(R.string.edited_email), email_tiet.text.toString())
-        intent.putExtra(getString(R.string.edited_location), location_tiet.text.toString())
-
-        val prefs = getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE)
-        val editor = prefs.edit()
-        val user =  User(
+    // Update user variable
+    private fun updateUser() {
+        user = User(
             name_tiet.text.toString(),
             nickname_tiet.text.toString(),
             email_tiet.text.toString(),
             location_tiet.text.toString()
         )
-        val profile  = Gson().toJson(user)
-        editor.putString("profile",profile)
-
-        editor.apply()
-
-
-        setResult(Activity.RESULT_OK, intent)
-        finish()
-        return true
     }
 
+    // Update views using the local variable user
+    private fun updateFields() {
+        if (user != null) {
+            name_tiet.setText(user!!.name)
+            nickname_tiet.setText(user!!.nickname)
+            email_tiet.setText(user!!.email)
+            location_tiet.setText(user!!.location)
+        }
+    }
 }
