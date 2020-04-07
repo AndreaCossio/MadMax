@@ -142,8 +142,8 @@ class EditProfileActivity : AppCompatActivity() {
         if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
             //var myBitmap = BitmapFactory.decodeFile(photoFile!!.absolutePath)
             val uri: Uri = Uri.fromFile(photoFile)
-            var myBitmap = handleSamplingAndRotationBitmap(this, uri)
-            imageBitmap.value = myBitmap
+            imageBitmap.value = handleSamplingAndRotationBitmap(this, uri)
+
             if (imageBitmap.value != null) {
                 profile_image.visibility = View.VISIBLE
                 profile_edit_iv.visibility = View.INVISIBLE
