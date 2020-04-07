@@ -3,13 +3,18 @@ package it.polito.mad.madmax.madmax
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textview.MaterialTextView
 import com.google.gson.Gson
+import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.activity_show_profile.*
 import java.io.Serializable
 
@@ -26,8 +31,9 @@ class ShowProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_show_profile)
 
         // Get user data from shared pref
-        val prefs = getSharedPreferences(getString(R.string.preference_file_user), Context.MODE_PRIVATE)
-        val profile = prefs.getString(R.string.preference_file_user_profile.toString(),null)
+        val prefs =
+            getSharedPreferences(getString(R.string.preference_file_user), Context.MODE_PRIVATE)
+        val profile = prefs.getString(R.string.preference_file_user_profile.toString(), null)
         if (profile != null) {
             user = Gson().fromJson(profile, User::class.java)
             updateFields()
@@ -61,10 +67,6 @@ class ShowProfileActivity : AppCompatActivity() {
         val intent: Intent = Intent(this, EditProfileActivity::class.java).apply {
             // Insert user data
             putExtra(R.string.intent_user.toString(), user as Serializable?)
-            /* putExtra(R.string.edited_name.toString(), user?.name)
-            putExtra(R.string.edited_nickname.toString(), user?.nickname)
-            putExtra(R.string.edited_email.toString(), user?.email)
-            putExtra(R.string.edited_location.toString(), user?.location) */
         }
 
         // Start Edit Profile activity for result
@@ -77,18 +79,8 @@ class ShowProfileActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         // Edit profile intent
-        if (requestCode==EDIT_PROFILE && resultCode==Activity.RESULT_OK) {
+        if (requestCode == EDIT_PROFILE && resultCode == Activity.RESULT_OK) {
             user = data?.getSerializableExtra(R.string.intent_user.toString()) as User
-            /* user = if (data?.getStringExtra(R.string.edited_name.toString()) != null) {
-                User(
-                    data.getStringExtra(R.string.edited_name.toString())!!,
-                    data.getStringExtra(R.string.edited_nickname.toString())!!,
-                    data.getStringExtra(R.string.edited_email.toString())!!,
-                    data.getStringExtra(R.string.edited_location.toString())!!
-                )
-            } else {
-                null
-            } */
             updateFields()
         }
     }
@@ -100,6 +92,18 @@ class ShowProfileActivity : AppCompatActivity() {
             (nickname_tv as MaterialTextView).text = user!!.nickname
             (email_tv as MaterialTextView).text = user!!.email
             (location_tv as MaterialTextView).text = user!!.location
+            if (user!!.uri != null) {
+                val bi = MediaStore.Images.Media.getBitmap(
+                    this.contentResolver,
+                    Uri.parse(user!!.uri)
+                )
+                (profile_image as CircleImageView).apply {
+                    setImageBitmap(bi)
+                    visibility = View.VISIBLE
+                }
+                profile_edit_iv.visibility = View.INVISIBLE
+            }
+
         }
     }
 }

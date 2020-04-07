@@ -38,6 +38,7 @@ class EditProfileActivity : AppCompatActivity() {
 
     private var user: User? = null
     private var photoFile: File? = null
+    private var uri:Uri?=null
     private val CAPTURE_IMAGE_REQUEST = 1
     private lateinit var mCurrentPhotoPath: String
     private var imageBitmap = MutableLiveData<Bitmap>();
@@ -55,16 +56,6 @@ class EditProfileActivity : AppCompatActivity() {
 
         // Get data from intent
         user = intent.getSerializableExtra(R.string.intent_user.toString()) as User?
-        /* user = if (intent.getStringExtra(R.string.edited_name.toString()) != null) {
-            User(
-                intent.getStringExtra(R.string.edited_name.toString())!!,
-                intent.getStringExtra(R.string.edited_nickname.toString())!!,
-                intent.getStringExtra(R.string.edited_email.toString())!!,
-                intent.getStringExtra(R.string.edited_location.toString())!!
-            )
-        } else {
-            null
-        } */
         updateFields()
     }
 
@@ -94,10 +85,7 @@ class EditProfileActivity : AppCompatActivity() {
                 // Send result
                 val intent = Intent().apply {
                     putExtra(R.string.intent_user.toString(), user)
-                    /* putExtra(R.string.edited_name.toString(), user?.name)
-                    putExtra(R.string.edited_nickname.toString(), user?.nickname)
-                    putExtra(R.string.edited_email.toString(), user?.email)
-                    putExtra(R.string.edited_location.toString(), user?.location) */
+
                 }
                 setResult(Activity.RESULT_OK, intent)
                 finish()
@@ -116,7 +104,7 @@ class EditProfileActivity : AppCompatActivity() {
 
         // Save fields and photo into the Bundle
         outState.putSerializable("user", user as Serializable?)
-        outState.putParcelable("bitmap", imageBitmap.value)
+        //outState.putParcelable("bitmap", imageBitmap.value)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -124,16 +112,11 @@ class EditProfileActivity : AppCompatActivity() {
 
         // Retrieve fields and photo from the Bundle
         user = savedInstanceState.getSerializable("user") as User?
-        imageBitmap.value= savedInstanceState.getParcelable("bitmap")
+        //imageBitmap.value= savedInstanceState.getParcelable("bitmap")
 
         // Restore fields
         updateFields()
 
-        // Restore image
-        if (imageBitmap.value!=null) {
-            profile_image.visibility= View.VISIBLE
-            profile_edit_iv.visibility= View.INVISIBLE
-        }
     }
 
 
@@ -141,14 +124,9 @@ class EditProfileActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
             //var myBitmap = BitmapFactory.decodeFile(photoFile!!.absolutePath)
-            val uri: Uri = Uri.fromFile(photoFile)
-            imageBitmap.value = handleSamplingAndRotationBitmap(this, uri)
-
-            if (imageBitmap.value != null) {
-                profile_image.visibility = View.VISIBLE
-                profile_edit_iv.visibility = View.INVISIBLE
-            }
-
+            uri = Uri.fromFile(photoFile)
+            updateUser()
+            updateFields()
         } else {
             displayMessage(baseContext, "Request cancelled or something went wrong.")
         }
@@ -160,10 +138,10 @@ class EditProfileActivity : AppCompatActivity() {
             name_tiet.text.toString(),
             nickname_tiet.text.toString(),
             email_tiet.text.toString(),
-            location_tiet.text.toString()
+            location_tiet.text.toString(),
+            uri.toString()
         )
     }
-
     // Update views using the local variable user
     private fun updateFields() {
         if (user != null) {
@@ -171,6 +149,15 @@ class EditProfileActivity : AppCompatActivity() {
             nickname_tiet.setText(user!!.nickname)
             email_tiet.setText(user!!.email)
             location_tiet.setText(user!!.location)
+            uri=Uri.parse(user!!.uri)
+            imageBitmap.value=MediaStore.Images.Media.getBitmap(
+                this.contentResolver,
+                uri)
+            //if there is a profile picture display it, if not display the standard user avatar
+            if (imageBitmap.value != null) {
+                profile_image.visibility = View.VISIBLE
+                profile_edit_iv.visibility = View.INVISIBLE
+            }
         }
     }
 
