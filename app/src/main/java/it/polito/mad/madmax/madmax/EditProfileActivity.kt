@@ -51,7 +51,7 @@ class EditProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_edit_profile)
 
         // Add click listeners
-        profile_edit_iv.setOnClickListener { captureImage() }
+        profile_image.setOnClickListener { captureImage() }
         imageBitmap.observe(this, Observer { profile_image.setImageBitmap(it) })
 
         // Get data from intent
@@ -154,10 +154,6 @@ class EditProfileActivity : AppCompatActivity() {
                 this.contentResolver,
                 uri)
             //if there is a profile picture display it, if not display the standard user avatar
-            if (imageBitmap.value != null) {
-                profile_image.visibility = View.VISIBLE
-                profile_edit_iv.visibility = View.INVISIBLE
-            }
         }
     }
 

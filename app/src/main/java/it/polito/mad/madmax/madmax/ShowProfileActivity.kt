@@ -3,18 +3,15 @@ package it.polito.mad.madmax.madmax
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textview.MaterialTextView
 import com.google.gson.Gson
-import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.activity_show_profile.*
 import java.io.Serializable
 
@@ -97,11 +94,11 @@ class ShowProfileActivity : AppCompatActivity() {
                     this.contentResolver,
                     Uri.parse(user!!.uri)
                 )
-                (profile_image as CircleImageView).apply {
+                (profile_image as CircleImage).apply {
                     setImageBitmap(bi)
-                    visibility = View.VISIBLE
+
                 }
-                profile_edit_iv.visibility = View.INVISIBLE
+
             }
 
         }

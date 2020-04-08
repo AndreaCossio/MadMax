@@ -11,39 +11,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp">
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/thisa"
+        <it.polito.mad.madmax.madmax.CircleImage
+            android:id="@+id/profile_image"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profile_image"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="16dp"
-                app:civ_border_color="@color/colorPrimary"
-                app:civ_border_width="4dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/profile_edit_iv"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="@string/edit_profile"
-                android:padding="16dp"
-                android:src="@drawable/ic_profile_avatar"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
+            android:layout_weight="1"
+            android:padding="16dp"
+            app:civ_border_color="@color/colorPrimary"
+            app:civ_border_width="4dp"
+            />
         <LinearLayout
             android:id="@+id/fields_edit_ll"
             android:layout_width="0dp"
