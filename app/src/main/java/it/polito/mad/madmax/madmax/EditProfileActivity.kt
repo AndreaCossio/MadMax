@@ -1,7 +1,9 @@
 package it.polito.mad.madmax.madmax
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -18,7 +20,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -28,8 +29,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_edit_profile.*
+import java.io.File
+import java.io.IOException
 import java.io.Serializable
-import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -40,6 +42,7 @@ class EditProfileActivity : AppCompatActivity() {
     private var photoFile: File? = null
     private var uri:Uri?=null
     private val CAPTURE_IMAGE_REQUEST = 1
+    private val GALLERY_IMAGE_REQUEST = 2
     private lateinit var mCurrentPhotoPath: String
     private var imageBitmap = MutableLiveData<Bitmap>();
 
@@ -51,8 +54,8 @@ class EditProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_edit_profile)
 
         // Add click listeners
-        profile_image.setOnClickListener { captureImage() }
-        imageBitmap.observe(this, Observer { profile_image.setImageBitmap(it) })
+        profile_image.setOnClickListener { selectImage(this) }
+        imageBitmap.observe(this, Observer {  (profile_image as CircleImage).setImageBitmap(it) })
 
         // Get data from intent
         user = intent.getSerializableExtra(R.string.intent_user.toString()) as User?
@@ -127,11 +130,34 @@ class EditProfileActivity : AppCompatActivity() {
             uri = Uri.fromFile(photoFile)
             updateUser()
             updateFields()
-        } else {
+        }
+        else if(requestCode == GALLERY_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data!=null)
+        {
+           uri=Uri.parse("file://"+getRealPathFromURI(data.data,this))
+            updateUser()
+            updateFields()
+        }
+
+        else {
             displayMessage(baseContext, "Request cancelled or something went wrong.")
         }
     }
-
+    fun getRealPathFromURI(contentURI: Uri?, context: Activity): String? {
+        val projection =
+            arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = context.managedQuery(
+            contentURI, projection, null,
+            null, null
+        )
+            ?: return null
+        val column_index = cursor
+            .getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        return if (cursor.moveToFirst()) {
+            // cursor.close();
+            cursor.getString(column_index)
+        } else null
+        // cursor.close();
+    }
     // Update user variable
     private fun updateUser() {
         user = User(
@@ -150,11 +176,28 @@ class EditProfileActivity : AppCompatActivity() {
             email_tiet.setText(user!!.email)
             location_tiet.setText(user!!.location)
             uri=Uri.parse(user!!.uri)
-            imageBitmap.value=MediaStore.Images.Media.getBitmap(
+           val bi:Bitmap=MediaStore.Images.Media.getBitmap(
                 this.contentResolver,
                 uri)
+            imageBitmap.value=bi
             //if there is a profile picture display it, if not display the standard user avatar
         }
+    }
+    private fun selectImage(context: Context) {
+        val options =
+            arrayOf<CharSequence>("Take Photo", "Choose from Gallery", "Cancel")
+        val builder: AlertDialog.Builder = AlertDialog.Builder(context)
+        builder.setTitle("Choose your profile picture")
+        builder.setItems(options) { dialog, item ->
+            if (options[item] == "Take Photo") {
+                captureImage()
+            } else if (options[item] == "Choose from Gallery") {
+                getImageFromGallery()
+            } else if (options[item] == "Cancel") {
+                dialog.dismiss()
+            }
+        }
+        builder.show()
     }
 
     private fun captureImage() {
@@ -208,6 +251,14 @@ class EditProfileActivity : AppCompatActivity() {
 
     }
 
+    private fun getImageFromGallery(){
+        val pickPhoto = Intent(
+            Intent.ACTION_PICK,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        )
+        startActivityForResult(pickPhoto, GALLERY_IMAGE_REQUEST)
+    }
+    @SuppressLint("SimpleDateFormat")
     @Throws(IOException::class)
     private fun createImageFile(): File {
         // Create an image file name
@@ -241,6 +292,8 @@ class EditProfileActivity : AppCompatActivity() {
         }
 
     }
+
+
 }
 
 

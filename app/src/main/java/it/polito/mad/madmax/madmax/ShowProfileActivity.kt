@@ -94,12 +94,7 @@ class ShowProfileActivity : AppCompatActivity() {
                     this.contentResolver,
                     Uri.parse(user!!.uri)
                 )
-                (profile_image as CircleImage).apply {
-                    setImageBitmap(bi)
-
-                }
-
-            }
+                (profile_image as CircleImage).setImageBitmap(bi) }
 
         }
     }
