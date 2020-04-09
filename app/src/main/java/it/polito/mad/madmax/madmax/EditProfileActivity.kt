@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -16,10 +17,14 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.AttributeSet
 import android.util.Log
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -134,8 +139,8 @@ class EditProfileActivity : AppCompatActivity() {
         else if(requestCode == GALLERY_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data!=null)
         {
            uri=Uri.parse("file://"+getRealPathFromURI(data.data,this))
-            updateUser()
-            updateFields()
+           updateUser()
+           updateFields()
         }
 
         else {
@@ -176,9 +181,7 @@ class EditProfileActivity : AppCompatActivity() {
             email_tiet.setText(user!!.email)
             location_tiet.setText(user!!.location)
             uri=Uri.parse(user!!.uri)
-           val bi:Bitmap=MediaStore.Images.Media.getBitmap(
-                this.contentResolver,
-                uri)
+           val bi:Bitmap= handleSamplingAndRotationBitmap(this,uri!!)!!
             imageBitmap.value=bi
             //if there is a profile picture display it, if not display the standard user avatar
         }
@@ -187,15 +190,24 @@ class EditProfileActivity : AppCompatActivity() {
         val options =
             arrayOf<CharSequence>("Take Photo", "Choose from Gallery", "Cancel")
         val builder: AlertDialog.Builder = AlertDialog.Builder(context)
-        builder.setTitle("Choose your profile picture")
+        val tv:TextView=TextView(this)
+        tv.text = "Choose your profile picture"
+        tv.setTextColor(resources.getColor(R.color.colorPrimary))
+        tv.gravity=Gravity.CENTER_VERTICAL
+        tv.setPadding(60,60,10,10);
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP,24f)
+        builder.setCustomTitle(tv)
         builder.setItems(options) { dialog, item ->
             if (options[item] == "Take Photo") {
                 captureImage()
             } else if (options[item] == "Choose from Gallery") {
                 getImageFromGallery()
-            } else if (options[item] == "Cancel") {
-                dialog.dismiss()
             }
+        }
+        builder.setNegativeButton("Cancel") { dialog: DialogInterface, which: Int ->
+        Toast.makeText(this,"Canceled",Toast.LENGTH_LONG)
+            .show()
+            dialog.cancel()
         }
         builder.show()
     }
