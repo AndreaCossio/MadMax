@@ -34,7 +34,6 @@
             android:layout_height="0dp"
             android:layout_weight="3"
             android:id="@+id/nickname_tv"
-            android:text="oudqb"
             android:gravity="center"
             android:textColor="@color/colorTextOnPrimary"
             android:textStyle="bold"
