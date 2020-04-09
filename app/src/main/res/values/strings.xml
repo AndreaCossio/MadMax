@@ -13,7 +13,7 @@
     <string name="phone_default">+39 333 333 33 33</string>
 
     <!-- Labels -->
-    <string name="name_label">Name</string>
+    <string name="name_label">Full Name</string>
     <string name="nickname_label">Nickname</string>
     <string name="email_label">Email</string>
     <string name="location_label">Location</string>
