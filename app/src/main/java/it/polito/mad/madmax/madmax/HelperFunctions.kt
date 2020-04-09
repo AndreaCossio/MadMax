@@ -9,6 +9,7 @@ import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.widget.Toast
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -47,8 +48,7 @@ fun handleSamplingAndRotationBitmap(context: Context, selectedImage: Uri): Bitma
     // Decode bitmap with inSampleSize set
     options.inJustDecodeBounds = false
     imageStream = selectedImage.let { context.contentResolver.openInputStream(it) }
-    return BitmapFactory.decodeStream(imageStream, null, options)
-        ?.let { rotateImageIfRequired(context, it, selectedImage) }
+    return BitmapFactory.decodeStream(imageStream, null, options)?.let { rotateImageIfRequired(context, it, selectedImage) }
 }
 
 fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
@@ -104,4 +104,9 @@ fun rotateImage(img: Bitmap, degree: Int): Bitmap? {
         Bitmap.createBitmap(img, 0, 0, img.width, img.height, matrix, true)
     img.recycle()
     return rotatedImg
+}
+
+// Helper function to display a toast
+fun displayMessage(context: Context, message: String) {
+    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
 }

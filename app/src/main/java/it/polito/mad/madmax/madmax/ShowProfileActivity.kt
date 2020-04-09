@@ -15,11 +15,10 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_show_profile.*
 import java.io.Serializable
 
-const val EDIT_PROFILE = 1
-
 class ShowProfileActivity : AppCompatActivity() {
 
     private var user: User? = null
+    private val EDIT_PROFILE = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,8 +27,7 @@ class ShowProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_show_profile)
 
         // Get user data from shared pref
-        val prefs =
-            getSharedPreferences(getString(R.string.preference_file_user), Context.MODE_PRIVATE)
+        val prefs = getSharedPreferences(getString(R.string.preference_file_user), Context.MODE_PRIVATE)
         val profile = prefs.getString(getString(R.string.preference_file_user_profile), null)
         if (profile != null) {
             user = Gson().fromJson(profile, User::class.java)
@@ -50,7 +48,6 @@ class ShowProfileActivity : AppCompatActivity() {
             // Pencil button -> edit profile
             R.id.edit_profile -> {
                 editProfile()
-                true
             }
             else -> return super.onOptionsItemSelected(item)
         }
@@ -64,9 +61,10 @@ class ShowProfileActivity : AppCompatActivity() {
         if (requestCode == EDIT_PROFILE && resultCode == Activity.RESULT_OK) {
             user = data?.getSerializableExtra(getString(R.string.intent_user)) as User
             updateFields()
+            displayMessage(this, "Profile saved successfully")
+        } else {
+            displayMessage(this, "Error saving the profile")
         }
-
-        // TODO show message
     }
 
     // Function to create the intent for the Edit Profile activity
@@ -90,10 +88,7 @@ class ShowProfileActivity : AppCompatActivity() {
             (email_tv as MaterialTextView).text = user!!.email
             (location_tv as MaterialTextView).text = user!!.location
             if (user!!.uri != null) {
-                val bi = MediaStore.Images.Media.getBitmap(
-                    this.contentResolver,
-                    Uri.parse(user!!.uri)
-                )
+                val bi = MediaStore.Images.Media.getBitmap(this.contentResolver, Uri.parse(user!!.uri))
                 (profile_image as CircleImage).setImageBitmap(bi)
             }
         }

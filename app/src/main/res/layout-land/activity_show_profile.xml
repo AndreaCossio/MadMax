@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ShowProfileActivity"
-    android:orientation="horizontal"
-    >
+    android:orientation="horizontal">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -14,6 +13,7 @@
         android:orientation="vertical"
         android:layout_weight="1"
         android:padding="16dp"
+        android:gravity="center"
         android:background="@drawable/gradientbackground">
 
         <it.polito.mad.madmax.madmax.CircleImage
@@ -23,21 +23,18 @@
             android:layout_weight="9"
             android:src="@drawable/person"
             app:civ_border_color="@color/colorTextOnPrimary"
-            app:civ_border_width="3dp"
-
-            />
+            app:civ_border_width="3dp"/>
 
         <com.google.android.material.textview.MaterialTextView
-            android:layout_marginTop="10dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="match_parent"
+            android:id="@+id/nickname_tv"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="3"
-            android:id="@+id/nickname_tv"
-            android:gravity="center"
+            android:layout_marginTop="10dp"
             android:textColor="@color/colorTextOnPrimary"
             android:textStyle="bold"
-            android:textSize="18sp"/>
+            android:textSize="18sp"
+            android:gravity="center"/>
 
     </LinearLayout>
 
@@ -45,10 +42,10 @@
         android:id="@+id/fields_edit_ll"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:gravity="center_vertical"
         android:layout_weight="2"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:gravity="center">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/name_tv"
@@ -58,8 +55,8 @@
             android:drawablePadding="20dp"
             android:hint="@string/name_label"
             android:textColor="@color/colorPrimary"
-            android:textSize="16sp"
-            />
+            android:textSize="16sp" />
+
         <include layout="@xml/divider" />
 
         <com.google.android.material.textview.MaterialTextView
