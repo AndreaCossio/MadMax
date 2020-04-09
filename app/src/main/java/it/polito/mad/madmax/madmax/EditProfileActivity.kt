@@ -188,7 +188,7 @@ class EditProfileActivity : AppCompatActivity() {
     }
     private fun selectImage(context: Context) {
         val options =
-            arrayOf<CharSequence>("Take Photo", "Choose from Gallery", "Cancel")
+            arrayOf<CharSequence>("Take Photo", "Choose from Gallery")
         val builder: AlertDialog.Builder = AlertDialog.Builder(context)
         val tv:TextView=TextView(this)
         tv.text = "Choose your profile picture"
