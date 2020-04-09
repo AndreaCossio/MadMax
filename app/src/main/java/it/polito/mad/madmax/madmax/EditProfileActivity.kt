@@ -197,7 +197,6 @@ class EditProfileActivity : AppCompatActivity() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(context)
         val tv: TextView = TextView(this)
 
-        // TODO improve dialog box
         tv.text = getString(R.string.photo_dialog_choose_photo)
         tv.setTextColor(resources.getColor(R.color.colorPrimary))
         tv.gravity = Gravity.CENTER_VERTICAL
@@ -227,7 +226,6 @@ class EditProfileActivity : AppCompatActivity() {
             // Ask permissions (the callback will call again this method)
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE), CAPTURE_PERMISSIONS_REQUEST)
         } else {
-            // TODO Handle multiple pictures
             Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
                 takePictureIntent.resolveActivity(packageManager)?.also {
                     // Create the File where the photo should go

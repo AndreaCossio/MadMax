@@ -30,7 +30,6 @@ fun createImageFile(context: Context): File {
 
 @Throws(IOException::class)
 fun handleSamplingAndRotationBitmap(context: Context, selectedImage: Uri): Bitmap? {
-    // TODO works but why
     val MAX_HEIGHT = 1024
     val MAX_WIDTH = 1024
 

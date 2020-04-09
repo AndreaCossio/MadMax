@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -89,8 +88,8 @@ class ShowProfileActivity : AppCompatActivity() {
             (location_tv as MaterialTextView).text = user!!.location
             (phone_tv as MaterialTextView).text = user!!.phone
             if (user!!.uri != null) {
-                val bi = MediaStore.Images.Media.getBitmap(this.contentResolver, Uri.parse(user!!.uri))
-                (profile_image as CircleImage).setImageBitmap(bi)
+                val uri = Uri.parse(user!!.uri)
+                (profile_image as CircleImage).setImageBitmap(handleSamplingAndRotationBitmap(this, uri!!)!!)
             }
         }
     }
