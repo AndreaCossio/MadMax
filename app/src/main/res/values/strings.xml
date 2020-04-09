@@ -19,12 +19,13 @@
 
     <!-- Edit profile -->
     <string name="intent_user">it.polito.mad.madmax.madmax.INTENT_USER</string>
-    <!-- <string name="edited_name">it.polito.mad.madmax.madmax.edit_name</string>
-    <string name="edited_nickname">it.polito.mad.madmax.madmax.edit_nickname</string>
-    <string name="edited_email">it.polito.mad.madmax.madmax.edit_email</string>
-    <string name="edited_location">it.polito.mad.madmax.madmax.edit_location</string> -->
 
     <!-- SharedPreferences -->
     <string name="preference_file_user">it.polito.mad.madmax.madmax.PREFERENCE_FILE_USER</string>
-    <string name="preference_file_user_profile">it.polito.mad.madmax.madmax.PREFERENCE_FILE_USER_PROFILE</string>
+    <string name="preference_file_user_profile">user_profile</string>
+
+    <!-- Chose photo dialog -->
+    <string name="photo_dialog_choose_photo">Profile photo</string>
+    <string name="photo_dialog_take_photo">Take a picture</string>
+    <string name="photo_dialog_gallery_photo">Choose from gallery</string>
 </resources>

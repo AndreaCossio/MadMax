@@ -30,7 +30,7 @@ class ShowProfileActivity : AppCompatActivity() {
         // Get user data from shared pref
         val prefs =
             getSharedPreferences(getString(R.string.preference_file_user), Context.MODE_PRIVATE)
-        val profile = prefs.getString(R.string.preference_file_user_profile.toString(), null)
+        val profile = prefs.getString(getString(R.string.preference_file_user_profile), null)
         if (profile != null) {
             user = Gson().fromJson(profile, User::class.java)
             updateFields()
@@ -56,30 +56,30 @@ class ShowProfileActivity : AppCompatActivity() {
         }
     }
 
-    // Function to create the intent for the Edit Profile activity
-    private fun editProfile(): Boolean {
-        // TODO Wouldn't it better to pass nothing and get user data directly from shared pref in
-        //      Edit profile activity?
-        // Build explicit intent
-        val intent: Intent = Intent(this, EditProfileActivity::class.java).apply {
-            // Insert user data
-            putExtra(R.string.intent_user.toString(), user as Serializable?)
-        }
-
-        // Start Edit Profile activity for result
-        startActivityForResult(intent, EDIT_PROFILE)
-        return true
-    }
-
     // Receive result from intents
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         // Edit profile intent
         if (requestCode == EDIT_PROFILE && resultCode == Activity.RESULT_OK) {
-            user = data?.getSerializableExtra(R.string.intent_user.toString()) as User
+            user = data?.getSerializableExtra(getString(R.string.intent_user)) as User
             updateFields()
         }
+
+        // TODO show message
+    }
+
+    // Function to create the intent for the Edit Profile activity
+    private fun editProfile(): Boolean {
+        // Build explicit intent
+        val intent: Intent = Intent(this, EditProfileActivity::class.java).apply {
+            // Insert user data
+            putExtra(getString(R.string.intent_user), user as Serializable?)
+        }
+
+        // Start Edit Profile activity for result
+        startActivityForResult(intent, EDIT_PROFILE)
+        return true
     }
 
     // Update views using the local variable user
@@ -94,8 +94,8 @@ class ShowProfileActivity : AppCompatActivity() {
                     this.contentResolver,
                     Uri.parse(user!!.uri)
                 )
-                (profile_image as CircleImage).setImageBitmap(bi) }
-
+                (profile_image as CircleImage).setImageBitmap(bi)
+            }
         }
     }
 }
