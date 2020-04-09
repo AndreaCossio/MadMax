@@ -1,37 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:baselineAligned="false"
     tools:context=".EditProfileActivity">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:padding="16dp">
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:padding="16dp"
+        android:orientation="vertical"
+        android:gravity="center">
 
         <it.polito.mad.madmax.madmax.CircleImage
             android:id="@+id/profile_image"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:padding="16dp"
+            android:padding="8dp"
             android:src="@drawable/camera"
             app:civ_border_width="3dp" />
 
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:fillViewport="true">
+
         <LinearLayout
             android:id="@+id/fields_edit_ll"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:padding="16dp"
             android:orientation="vertical"
-            android:layout_weight="2"
             android:gravity="center_vertical">
-
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/name_til"
@@ -61,7 +69,7 @@
                     android:id="@+id/nickname_tiet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
+                    android:inputType="textPersonName"
                     android:textColor="@color/colorTextOnSecondary"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -78,7 +86,7 @@
                     android:id="@+id/email_tiet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
+                    android:inputType="textPersonName"
                     android:textColor="@color/colorTextOnSecondary"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -95,13 +103,30 @@
                     android:id="@+id/location_tiet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPostalAddress"
+                    android:inputType="textPersonName"
+                    android:textColor="@color/colorTextOnSecondary"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/phone_til"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/phone_label"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/phone_tiet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"
                     android:textColor="@color/colorTextOnSecondary"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 
-    </LinearLayout>
+    </ScrollView>
 
-</ScrollView>
+</LinearLayout>

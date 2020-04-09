@@ -10,12 +10,14 @@
     <string name="nickname_default">nickname</string>
     <string name="email_default">name.surname@example.com</string>
     <string name="location_default">Location</string>
+    <string name="phone_default">+39 333 333 33 33</string>
 
     <!-- Labels -->
     <string name="name_label">Name</string>
     <string name="nickname_label">Nickname</string>
     <string name="email_label">Email</string>
     <string name="location_label">Location</string>
+    <string name="phone_label">Phone</string>
 
     <!-- Edit profile -->
     <string name="intent_user">it.polito.mad.madmax.madmax.INTENT_USER</string>

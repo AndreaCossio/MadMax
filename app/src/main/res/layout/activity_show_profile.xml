@@ -34,24 +34,24 @@
             android:textColor="@color/colorTextOnPrimary"
             android:textStyle="bold"
             android:textSize="18sp"
-            android:gravity="center"/>
+            android:gravity="center_vertical"/>
 
     </LinearLayout>
 
     <LinearLayout
-        android:padding="16dp"
         android:id="@+id/fields_edit_ll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="24dp"
         android:layout_weight="2"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_marginTop="16dp">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/name_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_person_outline_black_24dp"
+            android:drawableStart="@drawable/ic_person_black_24dp"
             android:drawablePadding="20dp"
             android:hint="@string/name_label"
             android:textColor="@color/colorPrimary"
@@ -78,6 +78,18 @@
             android:drawableStart="@drawable/ic_location_city_black_24dp"
             android:drawablePadding="20dp"
             android:hint="@string/location_label"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp" />
+
+        <include layout="@xml/divider" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/phone_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_phone_black_24dp"
+            android:drawablePadding="20dp"
+            android:hint="@string/phone_label"
             android:textColor="@color/colorPrimary"
             android:textSize="16sp" />
 

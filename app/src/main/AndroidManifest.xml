@@ -33,7 +33,8 @@
             </meta-data>
         </provider>
 
-        <activity android:name=".EditProfileActivity" />
+        <activity
+            android:name=".EditProfileActivity"/>
         <activity android:name=".ShowProfileActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

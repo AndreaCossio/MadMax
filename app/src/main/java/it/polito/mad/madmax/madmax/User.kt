@@ -7,5 +7,6 @@ data class User (
     val nickname: String,
     val email: String,
     val location: String,
+    val phone: String,
     val uri: String?
 ) : Serializable

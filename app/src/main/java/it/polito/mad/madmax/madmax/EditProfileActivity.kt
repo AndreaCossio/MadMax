@@ -170,6 +170,7 @@ class EditProfileActivity : AppCompatActivity() {
             nickname_tiet.text.toString(),
             email_tiet.text.toString(),
             location_tiet.text.toString(),
+            phone_tiet.text.toString(),
             uriString
         )
     }
@@ -181,6 +182,7 @@ class EditProfileActivity : AppCompatActivity() {
             nickname_tiet.setText(user!!.nickname)
             email_tiet.setText(user!!.email)
             location_tiet.setText(user!!.location)
+            phone_tiet.setText(user!!.phone)
             if (user!!.uri != null) {
                 uri = Uri.parse(user!!.uri)
                 (profile_image as CircleImage).setImageBitmap(handleSamplingAndRotationBitmap(this, uri!!)!!)

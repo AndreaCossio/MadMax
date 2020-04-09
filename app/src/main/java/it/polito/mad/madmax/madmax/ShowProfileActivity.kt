@@ -87,6 +87,7 @@ class ShowProfileActivity : AppCompatActivity() {
             (nickname_tv as MaterialTextView).text = user!!.nickname
             (email_tv as MaterialTextView).text = user!!.email
             (location_tv as MaterialTextView).text = user!!.location
+            (phone_tv as MaterialTextView).text = user!!.phone
             if (user!!.uri != null) {
                 val bi = MediaStore.Images.Media.getBitmap(this.contentResolver, Uri.parse(user!!.uri))
                 (profile_image as CircleImage).setImageBitmap(bi)
