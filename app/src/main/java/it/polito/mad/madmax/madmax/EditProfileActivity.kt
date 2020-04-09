@@ -170,7 +170,7 @@ class EditProfileActivity : AppCompatActivity() {
             nickname_tiet.text.toString(),
             email_tiet.text.toString(),
             location_tiet.text.toString(),
-            uri.toString()
+            uri?.toString()
         )
     }
     // Update views using the local variable user
@@ -180,9 +180,11 @@ class EditProfileActivity : AppCompatActivity() {
             nickname_tiet.setText(user!!.nickname)
             email_tiet.setText(user!!.email)
             location_tiet.setText(user!!.location)
-            uri=Uri.parse(user!!.uri)
-           val bi:Bitmap= handleSamplingAndRotationBitmap(this,uri!!)!!
-            imageBitmap.value=bi
+            if (user!!.uri != null) {
+                uri = Uri.parse(user!!.uri)
+                val bi: Bitmap = handleSamplingAndRotationBitmap(this, uri!!)!!
+                imageBitmap.value = bi
+            }
             //if there is a profile picture display it, if not display the standard user avatar
         }
     }
