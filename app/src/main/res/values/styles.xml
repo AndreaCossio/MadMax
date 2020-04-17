@@ -1,23 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light">
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorSecondary">@color/colorSecondary</item>
-        <item name="colorButtonNormal">@color/colorSecondaryDark</item>
-        <item name="colorSecondaryVariant">@color/colorSecondaryDark</item>
-        <item name="android:textColorPrimary">@color/colorTextOnPrimary</item>
-        <item name="android:textColorSecondary">@color/colorTextOnSecondary</item>
-        <item name="colorError">#F44336</item>
-        <item name="colorOnError">#FFFFFF</item>
-        <item name="colorSurface">#FFFFFF</item>
-        <item name="colorOnSurface">#212121</item>
-        <item name="colorOnBackground">#212121</item>
-        <item name="fontFamily">@font/roboto</item>
-        <item name="android:fontFamily">@font/roboto_mono</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
-
 
 </resources>
