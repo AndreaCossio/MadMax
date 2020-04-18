@@ -31,9 +31,9 @@
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="it.polito.mad.madmax.lab02.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:name="it.polito.mad.madmax.lab02.ui.itemdetails.ItemDetailsFragment"
+        android:label="@string/menu_item_details"
+        tools:layout="@layout/item_details_fragment" />
 
     <fragment
         android:id="@+id/nav_slideshow"
