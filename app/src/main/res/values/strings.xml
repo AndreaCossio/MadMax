@@ -1,3 +1,46 @@
 <resources>
     <string name="app_name">Lab02</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+
+    <string name="home_second">Home Second</string>
+
+    <!-- Menu -->
+    <string name="edit_profile">Edit Profile</string>
+    <string name="save_profile">Save</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+
+    <!-- Default values -->
+    <string name="name_default">Name Surname</string>
+    <string name="nickname_default">nickname</string>
+    <string name="email_default">name.surname@example.com</string>
+    <string name="location_default">Location</string>
+    <string name="phone_default">+39 333 333 33 33</string>
+
+    <!-- Labels -->
+    <string name="name_label">Full Name</string>
+    <string name="nickname_label">Nickname</string>
+    <string name="email_label">Email</string>
+    <string name="location_label">Location</string>
+    <string name="phone_label">Phone</string>
+
+    <!-- Edit profile -->
+    <string name="intent_user">it.polito.mad.madmax.madmax.INTENT_USER</string>
+
+    <!-- SharedPreferences -->
+    <string name="preference_file_user">it.polito.mad.madmax.madmax.PREFERENCE_FILE_USER</string>
+    <string name="preference_file_user_profile">user_profile</string>
+
+    <!-- Chose photo dialog -->
+    <string name="photo_dialog_choose_photo">Profile photo</string>
+    <string name="photo_dialog_take_photo">Take a picture</string>
+    <string name="photo_dialog_gallery_photo">Choose from gallery</string>
 </resources>
