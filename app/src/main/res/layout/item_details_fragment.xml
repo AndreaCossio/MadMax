@@ -38,51 +38,20 @@
             android:foregroundGravity="bottom"
             app:cardCornerRadius="30dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+            <RatingBar
+                android:id="@+id/rating_bar"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="16dp"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-
-                <ImageView
-                    android:id="@+id/star1"
-                    android:layout_width="0dp"
-                    android:layout_height="35dp"
-                    android:layout_weight="1"
-
-                    app:srcCompat="@drawable/ic_star_black_24dp" />
-
-                <ImageView
-                    android:id="@+id/star2"
-                    android:layout_width="0dp"
-                    android:layout_height="35dp"
-                    android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_star_black_24dp" />
-
-                <ImageView
-                    android:id="@+id/star3"
-                    android:layout_width="0dp"
-                    android:layout_height="35dp"
-                    android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_star_black_24dp" />
-
-                <ImageView
-                    android:id="@+id/star4"
-                    android:layout_width="0dp"
-                    android:layout_height="35dp"
-                    android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_star_black_24dp" />
-
-                <ImageView
-                    android:id="@+id/star5"
-                    android:layout_width="0dp"
-                    android:layout_height="35dp"
-                    android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_star_black_24dp" />
-            </LinearLayout>
+                android:layout_margin="8dp"
+                android:isIndicator="false"
+                android:numStars="5"
+                android:rating="3.5"
+                android:scaleX="2"
+                android:scaleY="2"
+                android:stepSize="0.25">
+            </RatingBar>
         </androidx.cardview.widget.CardView>
 
     </FrameLayout>
