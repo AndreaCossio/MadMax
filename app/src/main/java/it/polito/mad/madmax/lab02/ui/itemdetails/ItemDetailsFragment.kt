@@ -1,14 +1,13 @@
 package it.polito.mad.madmax.lab02.ui.itemdetails
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import it.polito.mad.madmax.lab02.*
+import it.polito.mad.madmax.lab02.data_models.Item
 import kotlinx.android.synthetic.main.item_details_fragment.*
 import java.io.Serializable
 
@@ -20,6 +19,7 @@ class ItemDetailsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         item.value = Item(
             null,
             getString(R.string.item_name),
@@ -30,6 +30,8 @@ class ItemDetailsFragment : Fragment() {
             getString(R.string.item_expiry),
             3.75.toFloat()
         )
+
+
         return inflater.inflate(R.layout.item_details_fragment, container, false)
     }
 
@@ -42,7 +44,7 @@ class ItemDetailsFragment : Fragment() {
             category_tv.text = it.category
             location_tv.text = it.location
             expiry_tv.text = it.expiry
-            rating_bar.rating=it.stars!!
+            rating_bar.rating = it.stars!!
         })
     }
 
@@ -56,4 +58,23 @@ class ItemDetailsFragment : Fragment() {
         if (savedInstanceState?.getSerializable("item") != null)
             item.value = savedInstanceState.getSerializable("item") as Item
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_edit, menu)
+    }
+
+    // Handle clicks on the options menu
+    override fun onOptionsItemSelected(menuItem: MenuItem): Boolean {
+        return when (menuItem.itemId) {
+            // Pencil button -> edit profile
+            R.id.edit_profile -> {
+                //switch Fragment
+                true;
+            }
+            else -> return super.onOptionsItemSelected(menuItem)
+        }
+    }
+
+
 }
