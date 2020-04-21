@@ -50,6 +50,7 @@
         android:label="ItemDetailsEditFragment" >
         <action
             android:id="@+id/action_nav_edit_fragment_to_nav_item"
-            app:destination="@id/nav_item" />
+            app:destination="@+id/nav_item"
+           />
     </fragment>
 </navigation>

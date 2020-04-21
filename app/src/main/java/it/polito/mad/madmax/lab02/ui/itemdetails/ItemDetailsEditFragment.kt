@@ -23,29 +23,21 @@ class ItemDetailsEditFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+
+        return inflater.inflate(R.layout.item_details_edit_fragement, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         item.observe(context as AppCompatActivity, Observer {
-            price_tv.setText( it.price.toString())
-            title_tv.setText( it.title)
+            price_tv.setText(it.price.toString())
+            title_tv.setText(it.title)
             description_tv.setText(it.description)
             category_tv.setText(it.category)
             location_tv.setText(it.location)
             expiry_tv.setText(it.expiry)
         })
-
-        // This callback will only be called when MyFragment is at least Started.
-        val callback: OnBackPressedCallback =
-            object : OnBackPressedCallback(true /* enabled by default */) {
-                override fun handleOnBackPressed() {
-                    findNavController().navigate(R.id.action_nav_edit_fragment_to_nav_item)
-                }
-            }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-
-
-        return inflater.inflate(R.layout.item_details_edit_fragement, container, false)
-    }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        item.value= arguments?.get("item") as Item
+        item.value = arguments?.get("item") as Item
     }
 }

@@ -7,9 +7,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.NavigationUI
 import it.polito.mad.madmax.lab02.*
 import it.polito.mad.madmax.lab02.data_models.Item
 import kotlinx.android.synthetic.main.item_details_fragment.*
@@ -24,16 +22,6 @@ class ItemDetailsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        item.value = Item(
-            null,
-            getString(R.string.item_name),
-            getString(R.string.item_description),
-            getString(R.string.item_price).toDouble(),
-            getString(R.string.item_category),
-            getString(R.string.item_location),
-            getString(R.string.item_expiry),
-            3.75.toFloat()
-        )
 
 
         return inflater.inflate(R.layout.item_details_fragment, container, false)
@@ -41,6 +29,25 @@ class ItemDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if(arguments!=null)
+        {
+           item.value= requireArguments().get("item") as Item
+        }
+        else
+        {
+            item.value = Item(
+                null,
+                getString(R.string.item_name),
+                getString(R.string.item_description),
+                getString(R.string.item_price).toDouble(),
+                getString(R.string.item_category),
+                getString(R.string.item_location),
+                getString(R.string.item_expiry),
+                3.75.toFloat()
+            )
+
+        }
         item.observe(context as AppCompatActivity, Observer {
             price_tv.text = it.price.toString()
             title_tv.text = it.title
