@@ -30,14 +30,26 @@
     </fragment>
 
     <fragment
-        android:id="@+id/nav_gallery"
+        android:id="@+id/nav_item"
         android:name="it.polito.mad.madmax.lab02.ui.itemdetails.ItemDetailsFragment"
         android:label="@string/menu_item_details"
-        tools:layout="@layout/item_details_fragment" />
+        tools:layout="@layout/item_details_fragment" >
+        <action
+            android:id="@+id/action_nav_item_to_nav_edit_fragment"
+            app:destination="@id/nav_edit_fragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_slideshow"
         android:name="it.polito.mad.madmax.lab02.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
+    <fragment
+        android:id="@+id/nav_edit_fragment"
+        android:name="it.polito.mad.madmax.lab02.ui.itemdetails.ItemDetailsEditFragment"
+        android:label="ItemDetailsEditFragment" >
+        <action
+            android:id="@+id/action_nav_edit_fragment_to_nav_item"
+            app:destination="@id/nav_item" />
+    </fragment>
 </navigation>

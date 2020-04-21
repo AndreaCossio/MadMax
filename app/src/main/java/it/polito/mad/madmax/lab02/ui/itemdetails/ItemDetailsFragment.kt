@@ -3,9 +3,13 @@ package it.polito.mad.madmax.lab02.ui.itemdetails
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
 import it.polito.mad.madmax.lab02.*
 import it.polito.mad.madmax.lab02.data_models.Item
 import kotlinx.android.synthetic.main.item_details_fragment.*
@@ -68,9 +72,16 @@ class ItemDetailsFragment : Fragment() {
     override fun onOptionsItemSelected(menuItem: MenuItem): Boolean {
         return when (menuItem.itemId) {
             // Pencil button -> edit profile
-            R.id.edit_profile -> {
-                //switch Fragment
-                true;
+            R.id.nav_edit_fragment -> {
+    /*            return NavigationUI.onNavDestinationSelected(
+                    menuItem,
+                    requireView().findNavController()
+
+                )
+                        || super.onOptionsItemSelected(menuItem)*/
+                var bundle = bundleOf("item" to item.value)
+                findNavController().navigate(R.id.action_nav_item_to_nav_edit_fragment,bundle)
+                return true
             }
             else -> return super.onOptionsItemSelected(menuItem)
         }
