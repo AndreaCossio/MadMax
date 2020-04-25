@@ -85,7 +85,7 @@ fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeig
 fun rotateImageIfRequired(context: Context, img: Bitmap, selectedImage: Uri): Bitmap? {
     val input = context.contentResolver.openInputStream(selectedImage)
     val ei: ExifInterface
-    ei = if (Build.VERSION.SDK_INT > 23) ExifInterface(input) else ExifInterface(selectedImage.path)
+    ei = if (Build.VERSION.SDK_INT > 23) ExifInterface(input!!) else ExifInterface(selectedImage.path!!)
     val orientation =
         ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
     return when (orientation) {

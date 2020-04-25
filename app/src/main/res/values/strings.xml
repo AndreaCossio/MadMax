@@ -51,4 +51,149 @@
     <string name="photo_dialog_choose_photo">Profile photo</string>
     <string name="photo_dialog_take_photo">Take a picture</string>
     <string name="photo_dialog_gallery_photo">Choose from gallery</string>
+
+
+    <!-- Categories and sub-categories -->
+    <string-array name="main_categories">
+        <item>Arts &amp; Crafts</item>
+        <item>Sports &amp; Hobby</item>
+        <item>Baby</item>
+        <item>Women\'s fashion</item>
+        <item>Men\'s fashion</item>
+        <item>Electronics</item>
+        <item>Games &amp; Videogames</item>
+        <item>Automotive</item>
+    </string-array>
+
+    <string-array name="art_and_crafts_sub">
+        <item>Painting, Drawing &amp; Art Supplies</item>
+        <item>Sewing</item>
+        <item>Scrapbooking &amp; Stamping</item>
+        <item>Party Decorations &amp;Supplies</item>
+
+    </string-array>
+
+    <string-array name="sports_and_hobby_sub">
+        <item>Sports and Outdoors</item>
+        <item>Outdoor Recreation</item>
+        <item>Sports &amp; Fitness</item>
+        <item>Pet Supplies</item>
+    </string-array>
+
+    <string-array name="baby_sub">
+        <item>Apparel &amp; Accessories</item>
+        <item>Baby &amp; Toddler Toys</item>
+        <item>Car Seats &amp; Accessories</item>
+        <item>Pregnancy &amp; Maternity</item>
+        <item>Strollers &amp; Accessories</item>
+    </string-array>
+
+    <string-array name="womens_fashion_sub">
+        <item>Clothing</item>
+        <item>Shoes</item>
+        <item>Watches</item>
+        <item>Handbags</item>
+        <item>Accessories</item>
+    </string-array>
+
+    <string-array name="mens_fashion_sub">
+        <item>Clothing</item>
+        <item>Shoes</item>
+        <item>Watches</item>
+        <item>Accessories</item>
+    </string-array>
+
+    <string-array name="electronics_sub">
+        <item>Computers</item>
+        <item>Monitors</item>
+        <item>Printers &amp; Scanners</item>
+        <item>Camera &amp; Photo</item>
+        <item>Smartphone &amp; Tablet</item>
+        <item>Audio</item>
+        <item>Television &amp; Video</item>
+        <item>Video Game Consoles</item>
+        <item>Wearable Technology</item>
+        <item>Accessories &amp; Supplies</item>
+        <item>Irons &amp; Steamers</item>
+        <item>Vacuums &amp; Floor Care</item>
+    </string-array>
+
+    <string-array name="games_and_videogames_sub">
+        <item>Action Figures &amp; Statues</item>
+        <item>Arts &amp; Crafts</item>
+        <item>Building Toys</item>
+        <item>Dolls &amp; Accessories</item>
+        <item>Kids\' Electronics</item>
+        <item>Learning &amp; Education</item>
+        <item>Tricycles, Scooters &amp; Wagons</item>
+        <item>Videogames</item>
+    </string-array>
+
+    <string-array name="automotive_sub">
+        <item>Car Electronics &amp; Accessories</item>
+        <item>Accessories</item>
+        <item>Motorcycle &amp; Powersports</item>
+        <item>Replacement Parts</item>
+        <item>RV Parts &amp; Accessories</item>
+        <item>Tools &amp; Equipment</item>
+    </string-array>
+
+
 </resources>
+
+    <!--Arts &amp; Crafts
+    1.1 Painting, Drawing &amp; Art Supplies
+    1.2 Sewing
+    1.3 Scrapbooking &amp; Stamping
+    1.4 Party Decorations &amp; Supplies
+    ts &amp; Hobby
+    2.1 Sports and Outdoors
+    2.2 Outdoor Recreation
+    2.3 Sports &amp; Fitness
+    2.4 Pet Supplies
+    Baby
+    3.1 Apparel &amp; Accessories
+    3.2 Baby &amp; Toddler Toys
+    3.3 Car Seats &amp; Accessories
+    3.4 Pregnancy &amp; Maternity
+    3.5 Strollers &amp; Accessories
+    Women's fashion
+    4.1 Clothing
+    4.2 Shoes
+    4.3 Watches
+    4.4 Handbags
+    4.5 Accessories
+    Men's fashion
+    5.1 Clothing
+    5.2 Shoes
+    5.3 Watches
+    5.4 Accessories
+    Electronics
+    6.1 Computers
+    6.2 Monitors
+    6.3 Printers &amp; Scanners
+    6.4 Camera &amp; Photo
+    6.5 Smartphone &amp; Tablet
+    6.6 Audio
+    6.7 Television &amp; Video
+    6.8 Video Game Consoles
+    6.9 Wearable Technology
+    6.10 Accessories &amp; Supplies
+    6.11 Irons &amp; Steamers
+    6.12 Vacuums &amp; Floor Care
+    Games &amp; Videogames
+    7.1 Action Figures &amp; Statues
+    7.2 Arts &amp; Crafts
+    7.3 Building Toys
+    7.4 Dolls &amp; Accessories
+    7.5 Kids' Electronics
+    7.6 Learning &amp; Education
+    7.10 Tricycles, Scooters &amp; Wagons
+    7.11 Videogames
+    Automotive
+    8.1 Car Electronics &amp; Accessories
+    8.2 Accessories
+    8.3 Motorcycle &amp; Powersports
+    8.4 Replacement Parts
+    8.5 RV Parts &amp; Accessories
+    8.6 Tools &amp; Equipment-->

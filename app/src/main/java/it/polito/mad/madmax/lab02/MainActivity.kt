@@ -1,5 +1,6 @@
 package it.polito.mad.madmax.lab02
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -13,6 +14,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import kotlinx.android.synthetic.main.item_details_edit_fragement.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -52,5 +55,9 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
     }
 }

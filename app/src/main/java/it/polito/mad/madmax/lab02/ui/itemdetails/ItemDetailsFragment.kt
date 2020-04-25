@@ -1,6 +1,7 @@
 package it.polito.mad.madmax.lab02.ui.itemdetails
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -33,6 +34,7 @@ class ItemDetailsFragment : Fragment() {
         if(arguments!=null)
         {
            item.value= requireArguments().get("item") as Item
+
         }
         else
         {
@@ -94,5 +96,13 @@ class ItemDetailsFragment : Fragment() {
         }
     }
 
+    fun getNewItemData(){
+        price_tv.text = (item.value?.price.toString())
+        title_tv.text = (item.value?.price.toString())
+        description_tv.text = (item.value?.description)
+        category_tv.text = (item.value?.category)
+        location_tv.text = (item.value?.location)
+        expiry_tv.text = (item.value?.expiry)
+    }
 
 }
