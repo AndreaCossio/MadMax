@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -35,6 +34,7 @@ import it.polito.mad.madmax.madmax.handleSamplingAndRotationBitmap
 import kotlinx.android.synthetic.main.item_details_edit_fragement.*
 import java.io.File
 import java.io.IOException
+import java.io.Serializable
 import java.lang.Exception
 
 
@@ -70,15 +70,17 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
             expiry_tv.text = (it.expiry)
             if (item.value!!.photo != null) {
                 uri = Uri.parse(item.value!!.photo)
-                item_image.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), uri!!)!!)
+                item_image.setImageBitmap(
+                    handleSamplingAndRotationBitmap(
+                        requireContext(),
+                        uri!!
+                    )
+                )
             }
         })
-        if(savedInstanceState != null){
-            item.value = savedInstanceState.get("item") as Item
-        }
 
         val categories = resources.getStringArray(R.array.main_categories)
-        val dataAdapter= ArrayAdapter<String>(
+        val dataAdapter = ArrayAdapter<String>(
             this.requireContext(),
             R.layout.support_simple_spinner_dropdown_item,
             categories
@@ -94,24 +96,25 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
 
         camera_button.setOnClickListener { selectImage(requireContext()) }
-        item.value = arguments?.get("item") as Item
+
+        item.value = requireArguments().get("item") as Item
 
     }
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_save,menu)
+        inflater.inflate(R.menu.menu_save, menu)
     }
 
 
     override fun onOptionsItemSelected(menuitem: MenuItem): Boolean {
 
         return when (menuitem.itemId) {
-            R.id.nav_save_fragment ->{
-
-                val bundle = bundleOf("item" to updateItem())
-                findNavController().navigate(R.id.action_nav_edit_fragment_to_nav_item,bundle)
+            R.id.nav_save_fragment -> {
+                updateItem()
+                val bundle = bundleOf("item" to item.value)
+                findNavController().navigate(R.id.action_nav_edit_fragment_to_nav_item, bundle)
                 return true
             }
             else -> super.onOptionsItemSelected(menuitem)
@@ -120,34 +123,41 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
 
-    private fun showDatePicker(){
+    private fun showDatePicker() {
         val builder = MaterialDatePicker.Builder.datePicker()
         val picker = builder.build()
 
-        picker.addOnPositiveButtonClickListener { expiry_tv.text = picker.headerText}
-        picker.show(childFragmentManager,picker.toString())
+        picker.addOnPositiveButtonClickListener { expiry_tv.text = picker.headerText }
+        picker.show(childFragmentManager, picker.toString())
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putSerializable("item", item.value)
+        super.onSaveInstanceState(outState)
+        updateItem()
+        outState.putSerializable("item", item.value as Serializable)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState?.getSerializable("item") != null)
+            item.value = savedInstanceState.getSerializable("item") as Item
     }
 
 
-    private fun updateItem() : Item{
+    private fun updateItem(): Boolean {
         var uriString: String? = null
-        if (uri != null) {
-            uriString = uri.toString()
-        }
-        return Item(
+        if (uri != null) uriString = uri.toString()
+        item.value = Item(
             uriString,
-                    title_tv.text.toString(),
-                    description_tv.text.toString(),
-            price_tv.text.toString().toDoubleOrNull()?: item.value?.price,
-                    spinner2.selectedItem.toString(),
-                    location_tv.text.toString(),
-                    expiry_tv.text.toString(),
+            title_tv.text.toString(),
+            description_tv.text.toString(),
+            price_tv.text.toString().toDoubleOrNull() ?: item.value?.price,
+            spinner2.selectedItem.toString(),
+            location_tv.text.toString(),
+            expiry_tv.text.toString(),
             item.value?.stars
         )
+        return true;
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -158,39 +168,39 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val text: String = parent?.getItemAtPosition(position).toString()
         val secondList: Int
 
-        when (text){
+        when (text) {
 
-            "Arts & Crafts" ->{
-            secondList = R.array.art_and_crafts_sub
-        }
-            "Sports & Hobby"->{
-            secondList = R.array.sports_and_hobby_sub
-        }
-            "Baby" ->{
-            secondList = R.array.baby_sub
-        }
-            "Women\'s fashion"->{
-            secondList = R.array.womens_fashion_sub
-        }
-            "Men\'s fashion"->{
-            secondList = R.array.mens_fashion_sub
-        }
-            "Electronics"->{
-            secondList = R.array.electronics_sub
-        }
-            "Games & Videogames"->{
-            secondList = R.array.games_and_videogames_sub
-        }
-            "Automotive"->{
-            secondList = R.array.automotive_sub
-        }
+            "Arts & Crafts" -> {
+                secondList = R.array.art_and_crafts_sub
+            }
+            "Sports & Hobby" -> {
+                secondList = R.array.sports_and_hobby_sub
+            }
+            "Baby" -> {
+                secondList = R.array.baby_sub
+            }
+            "Women\'s fashion" -> {
+                secondList = R.array.womens_fashion_sub
+            }
+            "Men\'s fashion" -> {
+                secondList = R.array.mens_fashion_sub
+            }
+            "Electronics" -> {
+                secondList = R.array.electronics_sub
+            }
+            "Games & Videogames" -> {
+                secondList = R.array.games_and_videogames_sub
+            }
+            "Automotive" -> {
+                secondList = R.array.automotive_sub
+            }
 
 
             else -> throw Exception()
         }
 
         val elements = resources.getStringArray(secondList)
-        val dataAdapter= ArrayAdapter<String>(
+        val dataAdapter = ArrayAdapter<String>(
             this.requireContext(),
             R.layout.support_simple_spinner_dropdown_item,
             elements
@@ -203,7 +213,10 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun selectImage(context: Context) {
 
-        val options = arrayOf<CharSequence>(getString(R.string.photo_dialog_take_photo), getString(R.string.photo_dialog_gallery_photo))
+        val options = arrayOf<CharSequence>(
+            getString(R.string.photo_dialog_take_photo),
+            getString(R.string.photo_dialog_gallery_photo)
+        )
         val builder: AlertDialog.Builder = AlertDialog.Builder(context)
         val tv: TextView = TextView(this.requireContext())
 
@@ -211,7 +224,7 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         tv.setTextColor(resources.getColor(R.color.colorPrimary))
         tv.gravity = Gravity.CENTER_VERTICAL
         tv.setPadding(60, 60, 10, 10)
-        tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP,24f)
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24f)
 
         builder.setCustomTitle(tv)
         builder.setItems(options) { _, item ->
@@ -231,10 +244,21 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
     // Handle capturing the Image
     private fun captureImage() {
         // Check permissions
-        if (ContextCompat.checkSelfPermission(this.requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(this.requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this.requireContext(),
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(
+                this.requireContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             // Ask permissions (the callback will call again this method)
-            ActivityCompat.requestPermissions(this.requireActivity(), arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE), CAPTURE_PERMISSIONS_REQUEST)
+            ActivityCompat.requestPermissions(
+                this.requireActivity(),
+                arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                CAPTURE_PERMISSIONS_REQUEST
+            )
         } else {
             Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
                 takePictureIntent.resolveActivity(requireActivity().packageManager)?.also {
@@ -249,7 +273,14 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     // If file generated correctly, generate intent
                     photoFile?.also {
                         uri = Uri.fromFile(it)
-                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(this.requireContext(), "it.polito.mad.madmax.lab02.fileprovider", it))
+                        takePictureIntent.putExtra(
+                            MediaStore.EXTRA_OUTPUT,
+                            FileProvider.getUriForFile(
+                                this.requireContext(),
+                                "it.polito.mad.madmax.lab02.fileprovider",
+                                it
+                            )
+                        )
                         startActivityForResult(takePictureIntent, CAPTURE_IMAGE_REQUEST)
                     }
                 }
@@ -260,11 +291,20 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     // Handle selecting the image from the gallery
     private fun getImageFromGallery() {
-        if (ContextCompat.checkSelfPermission(this.requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this.requireContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             // Ask permissions (the callback will call again this method)
-            ActivityCompat.requestPermissions(this.requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), GALLERY_PERMISSIONS_REQUEST)
+            ActivityCompat.requestPermissions(
+                this.requireActivity(),
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                GALLERY_PERMISSIONS_REQUEST
+            )
         } else {
-            val pickPhoto = Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            val pickPhoto =
+                Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             pickPhoto.type = "image/*"
             startActivityForResult(pickPhoto, GALLERY_IMAGE_REQUEST)
         }
@@ -275,8 +315,6 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         super.onActivityResult(requestCode, resultCode, data)
         // Capture image intent
         if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
-            item.value = updateItem()
-            val bitmap = data!!.extras!!.get("data") as Bitmap
             displayMessage(this.requireContext(), "Picture taken correctly")
         }
         // Capture image bad
@@ -289,7 +327,7 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         // Gallery intent
         else if (requestCode == GALLERY_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             uri = data.data
-            item.value = updateItem()
+            updateItem()
             displayMessage(this.requireContext(), "Picture loaded correctly")
         } else {
             displayMessage(requireContext(), "Request cancelled or something went wrong.")

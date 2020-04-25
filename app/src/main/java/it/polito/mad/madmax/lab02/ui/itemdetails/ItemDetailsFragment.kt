@@ -1,6 +1,9 @@
 package it.polito.mad.madmax.lab02.ui.itemdetails
 
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.madmax.lab02.*
 import it.polito.mad.madmax.lab02.data_models.Item
+import it.polito.mad.madmax.madmax.handleSamplingAndRotationBitmap
 import kotlinx.android.synthetic.main.item_details_fragment.*
 import java.io.Serializable
 
@@ -24,20 +28,16 @@ class ItemDetailsFragment : Fragment() {
     ): View? {
         setHasOptionsMenu(true)
 
-
         return inflater.inflate(R.layout.item_details_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if(arguments!=null)
-        {
-           item.value= requireArguments().get("item") as Item
+        if (arguments != null) {
+            item.value = requireArguments().get("item") as Item
 
-        }
-        else
-        {
+        } else {
             item.value = Item(
                 null,
                 getString(R.string.item_name),
@@ -50,7 +50,16 @@ class ItemDetailsFragment : Fragment() {
             )
 
         }
+
         item.observe(context as AppCompatActivity, Observer {
+            if (it.photo != null) {
+                item_image.setImageBitmap(
+                    handleSamplingAndRotationBitmap(
+                        context as AppCompatActivity,
+                        Uri.parse(it.photo!!)
+                    )
+                )
+            }
             price_tv.text = it.price.toString()
             title_tv.text = it.title
             description_tv.text = it.description
@@ -63,7 +72,8 @@ class ItemDetailsFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putSerializable("item", item.value as Serializable)
+        if(item.value!=null)
+            outState.putSerializable("item", item.value as Serializable)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -82,27 +92,18 @@ class ItemDetailsFragment : Fragment() {
         return when (menuItem.itemId) {
             // Pencil button -> edit profile
             R.id.nav_edit_fragment -> {
-    /*            return NavigationUI.onNavDestinationSelected(
-                    menuItem,
-                    requireView().findNavController()
+                /*            return NavigationUI.onNavDestinationSelected(
+                        menuItem,
+                        requireView().findNavController()
 
-                )
-                        || super.onOptionsItemSelected(menuItem)*/
-                var bundle = bundleOf("item" to item.value)
-                findNavController().navigate(R.id.action_nav_item_to_nav_edit_fragment,bundle)
-                return true
+                    )
+                            || super.onOptionsItemSelected(menuItem)*/
+                val bundle = bundleOf("item" to item.value)
+                findNavController().navigate(R.id.action_nav_item_to_nav_edit_fragment, bundle)
+                true
             }
-            else -> return super.onOptionsItemSelected(menuItem)
+            else -> super.onOptionsItemSelected(menuItem)
         }
-    }
-
-    fun getNewItemData(){
-        price_tv.text = (item.value?.price.toString())
-        title_tv.text = (item.value?.price.toString())
-        description_tv.text = (item.value?.description)
-        category_tv.text = (item.value?.category)
-        location_tv.text = (item.value?.location)
-        expiry_tv.text = (item.value?.expiry)
     }
 
 }
