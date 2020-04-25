@@ -41,9 +41,9 @@
 
     <fragment
         android:id="@+id/nav_slideshow"
-        android:name="it.polito.mad.madmax.lab02.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:name="it.polito.mad.madmax.lab02.ui.itemdetails.ItemListFragment"
+        android:label="Item List"
+        tools:layout="@layout/item_list_fragment" />
     <fragment
         android:id="@+id/nav_edit_fragment"
         android:name="it.polito.mad.madmax.lab02.ui.itemdetails.ItemDetailsEditFragment"

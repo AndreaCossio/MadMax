@@ -1,20 +1,10 @@
 package it.polito.mad.madmax.lab02.ui.itemdetails
 
-import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.madmax.lab02.*
 import it.polito.mad.madmax.lab02.data_models.Item
-import kotlinx.android.synthetic.main.item_details_fragment.*
-import java.io.Serializable
 
 class RvAdapter(val items: ArrayList<Item>) : RecyclerView.Adapter<RvAdapter.ViewHolder>() {
 
@@ -27,13 +17,19 @@ class RvAdapter(val items: ArrayList<Item>) : RecyclerView.Adapter<RvAdapter.Vie
         return items.size
     }
 
-    override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
-        p0.title?.text = items[p1].title
-        p0.description?.text = items[p1].description
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.title.text = items[position].title
+        holder.description.text = items[position].description
+        holder.bind(items[position]);
+
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val title = itemView.findViewById<TextView>(R.id.title)
-        val description = itemView.findViewById<TextView>(R.id.description)
+        val title: TextView = itemView.findViewById(R.id.title)
+        val description: TextView = itemView.findViewById(R.id.description)
+        fun bind(u: Item) {
+            title.text = u.title
+            description.text = u.description
+        }
     }
 }
