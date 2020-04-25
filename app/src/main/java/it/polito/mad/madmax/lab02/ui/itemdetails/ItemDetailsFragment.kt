@@ -69,7 +69,7 @@ class ItemDetailsFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if(item.value!=null)
+        if (item.value != null)
             outState.putSerializable("item", item.value as Serializable)
     }
 

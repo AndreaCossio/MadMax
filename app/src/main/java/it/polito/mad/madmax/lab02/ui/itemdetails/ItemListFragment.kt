@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.madmax.lab02.R
 import it.polito.mad.madmax.lab02.data_models.Item
 import kotlinx.android.synthetic.main.item_list_fragment.*
+
 class ItemListFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
@@ -22,17 +23,13 @@ class ItemListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val rootView: View =  inflater.inflate(R.layout.item_list_fragment, container, false)
-        // 1. get a reference to recyclerView
+        val rootView: View = inflater.inflate(R.layout.item_list_fragment, container, false)
+
         // 1. get a reference to recyclerView
         val recyclerView = rootView.findViewById(R.id.recyclerView) as RecyclerView
 
         // 2. set layoutManger
-
-        // 2. set layoutManger
         recyclerView.layoutManager = LinearLayoutManager(activity)
-
-        // this is data fro recycler view
 
         // this is data fro recycler view
         val itemsData: ArrayList<Item> = arrayListOf<Item>(
@@ -98,16 +95,10 @@ class ItemListFragment : Fragment() {
             )
         )
 
-
-        // 3. create an adapter
-
-
         // 3. create an adapter
         val mAdapter = RvAdapter(itemsData)
         // 4. set adapter
-        // 4. set adapter
         recyclerView.adapter = mAdapter
-        // 5. set item animator to DefaultAnimator
         // 5. set item animator to DefaultAnimator
         recyclerView.itemAnimator = DefaultItemAnimator()
 
@@ -118,7 +109,6 @@ class ItemListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
     }
-
 
 
 }
