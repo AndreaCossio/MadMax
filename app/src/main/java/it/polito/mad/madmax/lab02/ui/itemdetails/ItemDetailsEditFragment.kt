@@ -65,7 +65,6 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
             price_tv.setText(it.price.toString())
             title_tv.setText(it.title.toString())
             description_tv.setText(it.description)
-            category_tv.setText(it.category)
             location_tv.setText(it.location)
             expiry_tv.text = (it.expiry)
             if (item.value!!.photo != null) {
