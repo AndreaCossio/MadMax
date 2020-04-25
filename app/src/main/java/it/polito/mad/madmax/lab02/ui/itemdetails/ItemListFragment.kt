@@ -10,8 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import it.polito.mad.madmax.lab02.R
 import it.polito.mad.madmax.lab02.data_models.Item
-
-
+import kotlinx.android.synthetic.main.item_list_fragment.*
 class ItemListFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
