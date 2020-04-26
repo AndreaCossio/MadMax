@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         // Define the app bar configuration
         // Each top-level destination's id is passed
         appBarConfig = AppBarConfiguration(setOf(
-            R.id.nav_home, R.id.nav_slideshow
+           R.id.nav_item_list
         ), main_drawer_layout)
 
         // Setup the navigation Controller
