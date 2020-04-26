@@ -1,11 +1,14 @@
 package it.polito.mad.madmax.lab02.ui.itemdetails
 
+import android.content.ContentValues
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -31,6 +34,12 @@ class ItemDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+/*        val fm: FragmentManager? = fragmentManager
+        if (fm != null) {
+            for (entry in 0 until fm.backStackEntryCount) {
+                Log.i(ContentValues.TAG, "Found fragment: " + fm.getBackStackEntryAt(entry).getId())
+            }
+        }*/
         if (arguments != null) {
             item.value = requireArguments().get("item") as Item
 

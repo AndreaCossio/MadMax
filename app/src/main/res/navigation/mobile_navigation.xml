@@ -55,6 +55,8 @@
         <action
             android:id="@+id/action_nav_edit_fragment_to_nav_item"
             app:destination="@+id/nav_item"
+            app:popUpTo="@id/nav_item"
+            app:popUpToInclusive="true"
            />
     </fragment>
 </navigation>

@@ -3,6 +3,7 @@ package it.polito.mad.madmax.lab02.ui.itemdetails
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -10,6 +11,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.util.TypedValue
 import android.view.*
 import android.widget.AdapterView
@@ -22,6 +24,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -35,7 +38,6 @@ import kotlinx.android.synthetic.main.item_details_edit_fragement.*
 import java.io.File
 import java.io.IOException
 import java.io.Serializable
-import java.lang.Exception
 
 
 class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
@@ -61,6 +63,13 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+/*        val fm: FragmentManager? = fragmentManager
+
+        if (fm != null) {
+            for (entry in 0 until fm.backStackEntryCount) {
+                Log.i(TAG, "Found fragment: " + fm.getBackStackEntryAt(entry).getId())
+            }
+        }*/
         item.observe(context as AppCompatActivity, Observer {
             price_tv.setText(it.price.toString())
             title_tv.setText(it.title.toString())
@@ -147,12 +156,12 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         var uriString: String? = null
         if (uri != null) uriString = uri.toString()
         item.value = Item(
-            uriString,
-            title_tv.text.toString(),
-            description_tv.text.toString(),
-            price_tv.text.toString().toDoubleOrNull() ?: item.value?.price,
-            spinner2.selectedItem.toString(),
-            location_tv.text.toString(),
+                uriString,
+                title_tv.text.toString(),
+                description_tv.text.toString(),
+                price_tv.text.toString().toDoubleOrNull() ?: item.value?.price,
+                spinner2.selectedItem.toString(),
+                location_tv.text.toString(),
             expiry_tv.text.toString(),
             item.value?.stars
         )
