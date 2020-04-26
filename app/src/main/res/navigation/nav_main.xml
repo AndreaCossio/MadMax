@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_main"
+    app:startDestination="@+id/nav_home">
+
+    <!-- Home -->
+    <fragment
+        android:id="@id/nav_home"
+        android:name="it.polito.mad.madmax.lab02.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_nav_home_to_nav_profile"
+            app:destination="@id/nav_profile" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_slideshow"
+            app:destination="@id/nav_slideshow" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_gallery"
+            app:destination="@id/nav_gallery" />
+    </fragment>
+
+    <!-- Gallery -->
+    <fragment
+        android:id="@id/nav_gallery"
+        android:name="it.polito.mad.madmax.lab02.ui.itemdetails.ItemDetailsFragment"
+        android:label="@string/menu_item_details"
+        tools:layout="@layout/item_details_fragment" />
+
+    <!-- Slideshow -->
+    <fragment
+        android:id="@id/nav_slideshow"
+        android:name="it.polito.mad.madmax.lab02.ui.slideshow.SlideshowFragment"
+        android:label="@string/menu_slideshow"
+        tools:layout="@layout/fragment_slideshow" />
+
+    <!-- User profile -->
+    <fragment
+        android:id="@id/nav_profile"
+        android:name="it.polito.mad.madmax.lab02.ui.profile.ShowProfileFragment"
+        android:label="@string/nav_title_show_profile"
+        tools:layout="@layout/fragment_show_profile" >
+        <action
+            android:id="@+id/action_edit_profile"
+            app:destination="@id/editProfileFragment" />
+    </fragment>
+
+    <!-- Edit profile -->
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="it.polito.mad.madmax.lab02.ui.profile.EditProfileFragment"
+        android:label="@string/nav_title_edit_profile" >
+        <argument
+            android:name="user"
+            app:argType="it.polito.mad.madmax.lab02.ui.profile.User"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+
+</navigation>

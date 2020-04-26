@@ -1,4 +1,5 @@
 <resources>
+    <!-- TODO variables in xml -->
     <string name="app_name">Lab02</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -8,7 +9,6 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
-
     <string name="home_second">Home Second</string>
 
     <!-- Menu -->
@@ -17,6 +17,7 @@
     <string name="menu_home">Home</string>
     <string name="menu_item_details">Item details</string>
     <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_profile">Profile</string>
 
     <!-- Default values -->
     <string name="name_default">Name Surname</string>
@@ -40,8 +41,15 @@
     <string name="location_label">Location</string>
     <string name="phone_label">Phone</string>
 
+    <!-- Error messages -->
+    <string name="error_required">Sorry, this field is required</string>
+
+    <!-- Navigation titles -->
+    <string name="nav_title_show_profile">Profile</string>
+    <string name="nav_title_edit_profile">Edit profile</string>
+
     <!-- Edit profile -->
-    <string name="intent_user">it.polito.mad.madmax.madmax.INTENT_USER</string>
+    <string name="intent_user">it.polito.mad.madmax.lab02.ui.profile.INTENT_USER</string>
 
     <!-- SharedPreferences -->
     <string name="preference_file_user">it.polito.mad.madmax.madmax.PREFERENCE_FILE_USER</string>
@@ -51,4 +59,6 @@
     <string name="photo_dialog_choose_photo">Profile photo</string>
     <string name="photo_dialog_take_photo">Take a picture</string>
     <string name="photo_dialog_gallery_photo">Choose from gallery</string>
+    <string name="photo_dialog_cancel">Cancel</string>
+    <string name="photo_file_authority">it.polito.mad.madmax.lab02.fileprovider</string>
 </resources>
