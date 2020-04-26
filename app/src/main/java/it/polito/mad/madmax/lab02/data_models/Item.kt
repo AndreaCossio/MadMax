@@ -1,4 +1,4 @@
-package it.polito.mad.madmax.lab02
+package it.polito.mad.madmax.lab02.data_models
 
 import java.io.Serializable
 import java.net.URL
