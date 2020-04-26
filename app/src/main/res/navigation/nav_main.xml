@@ -14,27 +14,41 @@
         <action
             android:id="@+id/action_nav_home_to_nav_profile"
             app:destination="@id/nav_profile" />
-        <action
-            android:id="@+id/action_nav_home_to_nav_slideshow"
-            app:destination="@id/nav_slideshow" />
-        <action
-            android:id="@+id/action_nav_home_to_nav_gallery"
-            app:destination="@id/nav_gallery" />
     </fragment>
 
-    <!-- Gallery -->
+    <!-- ItemList -->
     <fragment
-        android:id="@id/nav_gallery"
+        android:id="@+id/nav_slideshow"
+        android:name="it.polito.mad.madmax.lab02.ui.itemdetails.ItemListFragment"
+        android:label="Item List"
+        tools:layout="@layout/item_list_fragment" >
+        <action
+            android:id="@+id/action_nav_slideshow_to_nav_item"
+            app:destination="@id/nav_item" />
+    </fragment>
+
+    <!-- Item detail -->
+    <fragment
+        android:id="@+id/nav_item"
         android:name="it.polito.mad.madmax.lab02.ui.itemdetails.ItemDetailsFragment"
         android:label="@string/menu_item_details"
-        tools:layout="@layout/item_details_fragment" />
+        tools:layout="@layout/item_details_fragment" >
+        <action
+            android:id="@+id/action_nav_item_to_nav_edit_fragment"
+            app:destination="@id/nav_edit_fragment" />
+    </fragment>
 
-    <!-- Slideshow -->
+    <!-- Edit Item -->
     <fragment
-        android:id="@id/nav_slideshow"
-        android:name="it.polito.mad.madmax.lab02.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_edit_fragment"
+        android:name="it.polito.mad.madmax.lab02.ui.itemdetails.ItemDetailsEditFragment"
+        android:label="ItemDetailsEditFragment" >
+        <action
+            android:id="@+id/action_nav_edit_fragment_to_nav_item"
+            app:destination="@+id/nav_item"
+            app:popUpTo="@id/nav_item"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <!-- User profile -->
     <fragment
@@ -54,7 +68,7 @@
         android:label="@string/nav_title_edit_profile" >
         <argument
             android:name="user"
-            app:argType="it.polito.mad.madmax.lab02.ui.profile.User"
+            app:argType="it.polito.mad.madmax.lab02.data_models.User"
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>

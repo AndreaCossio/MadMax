@@ -2,8 +2,6 @@ package it.polito.mad.madmax.lab02.ui.itemdetails
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -11,29 +9,28 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.util.TypedValue
 import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.datepicker.MaterialDatePicker
 import it.polito.mad.madmax.lab02.R
+import it.polito.mad.madmax.lab02.createImageFile
 import it.polito.mad.madmax.lab02.data_models.Item
-import it.polito.mad.madmax.madmax.createImageFile
-import it.polito.mad.madmax.madmax.displayMessage
-import it.polito.mad.madmax.madmax.handleSamplingAndRotationBitmap
+import it.polito.mad.madmax.lab02.displayMessage
+import it.polito.mad.madmax.lab02.handleSamplingAndRotationBitmap
 import kotlinx.android.synthetic.main.item_details_edit_fragement.*
 import java.io.File
 import java.io.IOException
@@ -57,7 +54,7 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.item_details_edit_fragement, container, false)
+        return inflater.inflate(R.layout.item_details_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

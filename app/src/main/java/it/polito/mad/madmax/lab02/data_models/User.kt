@@ -1,4 +1,4 @@
-package it.polito.mad.madmax.lab02.ui.profile
+package it.polito.mad.madmax.lab02.data_models
 
 import java.io.Serializable
 

@@ -19,6 +19,7 @@ import androidx.navigation.fragment.navArgs
 import com.google.gson.Gson
 import it.polito.mad.madmax.lab02.R
 import it.polito.mad.madmax.lab02.createImageFile
+import it.polito.mad.madmax.lab02.data_models.User
 import it.polito.mad.madmax.lab02.displayMessage
 import it.polito.mad.madmax.lab02.handleSamplingAndRotationBitmap
 import kotlinx.android.synthetic.main.fragment_edit_profile.*

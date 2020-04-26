@@ -1,20 +1,16 @@
 package it.polito.mad.madmax.lab02.ui.itemdetails
 
-import android.content.ContentValues
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import it.polito.mad.madmax.lab02.*
 import it.polito.mad.madmax.lab02.data_models.Item
-import it.polito.mad.madmax.madmax.handleSamplingAndRotationBitmap
 import kotlinx.android.synthetic.main.item_details_fragment.*
 import java.io.Serializable
 

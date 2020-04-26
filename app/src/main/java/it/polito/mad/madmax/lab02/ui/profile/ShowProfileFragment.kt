@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import it.polito.mad.madmax.lab02.R
+import it.polito.mad.madmax.lab02.data_models.User
 import it.polito.mad.madmax.lab02.handleSamplingAndRotationBitmap
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 
