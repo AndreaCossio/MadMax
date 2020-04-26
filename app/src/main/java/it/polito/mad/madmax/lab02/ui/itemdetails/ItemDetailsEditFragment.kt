@@ -54,7 +54,7 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.item_details_fragment, container, false)
+        return inflater.inflate(R.layout.item_details_edit_fragement, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
