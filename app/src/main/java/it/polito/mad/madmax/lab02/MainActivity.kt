@@ -1,6 +1,5 @@
 package it.polito.mad.madmax.lab02
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
@@ -48,9 +47,5 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         return findNavController(R.id.nav_host_fragment).navigateUp(appBarConfig) || super.onSupportNavigateUp()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
     }
 }
