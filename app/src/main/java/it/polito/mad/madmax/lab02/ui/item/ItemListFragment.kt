@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import it.polito.mad.madmax.lab02.R
 import it.polito.mad.madmax.lab02.data_models.Item
 
@@ -17,11 +18,7 @@ class ItemListFragment : Fragment() {
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView: View = inflater.inflate(R.layout.item_list_fragment, container, false)
 
         // 1. get a reference to recyclerView
@@ -31,9 +28,7 @@ class ItemListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
         // this is data fro recycler view
-        val itemsData: ArrayList<Item> = arrayListOf<Item>(
-            Item ()
-        )
+        val itemsData: ArrayList<Item> = arrayListOf<Item>(Item ())
 
         // 3. create an adapter
         val mAdapter = RvAdapter(itemsData)
@@ -43,8 +38,16 @@ class ItemListFragment : Fragment() {
         recyclerView.itemAnimator = DefaultItemAnimator()
 
         return rootView
-
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        activity?.findViewById<FloatingActionButton>(R.id.fab)?.visibility = View.VISIBLE
+    }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        activity?.findViewById<FloatingActionButton>(R.id.fab)?.visibility = View.GONE
+
+    }
 }
