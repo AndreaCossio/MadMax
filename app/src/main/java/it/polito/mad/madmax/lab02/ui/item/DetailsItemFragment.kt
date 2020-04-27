@@ -55,7 +55,7 @@ class DetailsItemFragment : Fragment() {
             title_tv.text = item.title
             description_tv.text = item.description
             category_tv.text = item.category
-            location_tv.text = item.location
+            profile_location.text = item.location
             expiry_tv.text = item.expiry
             rating_bar.rating = item.stars.toFloat()
             item.photo?.also { photo ->

@@ -52,7 +52,7 @@ class EditProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        profile_image.setOnClickListener { selectImage() }
+        profile_edit_photo.setOnClickListener { selectImage() }
         updateFields()
     }
 
@@ -90,9 +90,9 @@ class EditProfileFragment : Fragment() {
                 } else {*/
                     // TODO better notifications here
                     // Save user data to shared pref
-                    val prefs = activity?.getSharedPreferences(getString(R.string.preference_file_user), Context.MODE_PRIVATE) ?: return false
+                    val prefs = activity?.getSharedPreferences(getString(R.string.preferences_user_file), Context.MODE_PRIVATE) ?: return false
                     with (prefs.edit()) {
-                        putString(getString(R.string.preference_file_user_profile), Gson().toJson(user))
+                        putString(getString(R.string.preference_user), Gson().toJson(user))
                         apply()
                     }
 
@@ -111,12 +111,12 @@ class EditProfileFragment : Fragment() {
             displayMessage(requireContext(), "Picture taken correctly")
         }
         else if (requestCode == captureIntentRequest && resultCode != Activity.RESULT_OK) {
-            user?.uri?.also { File(it).delete() }
+            user?.photo?.also { File(it).delete() }
             displayMessage(requireContext(), "There was an error taking the picture")
         }
         else if (requestCode == galleryIntentRequest && resultCode == Activity.RESULT_OK && data != null) {
             val photoUri = data.data!!.toString()
-            user = user?.apply { uri = photoUri } ?: User(uri = photoUri)
+            user = user?.apply { photo = photoUri } ?: User(photo = photoUri)
             updateFields()
             displayMessage(requireContext(), "Picture loaded correctly")
         } else {
@@ -180,8 +180,8 @@ class EditProfileFragment : Fragment() {
 
                         // If file generated correctly, generate intent
                         photoFile?.also {
-                            val photoUri = FileProvider.getUriForFile(requireContext(), getString(R.string.photo_file_authority), it)
-                            user = user?.apply { uri = photoUri.toString() } ?: User(uri = photoUri.toString())
+                            val photoUri = FileProvider.getUriForFile(requireContext(), getString(R.string.file_provider), it)
+                            user = user?.apply { photo = photoUri.toString() } ?: User(photo = photoUri.toString())
                             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
                             startActivityForResult(takePictureIntent, captureIntentRequest)
                         }
@@ -208,30 +208,30 @@ class EditProfileFragment : Fragment() {
     // Update user variable using views
     private fun updateUser() {
         user = user?.apply {
-            name = name_tiet.text.toString()
-            nickname = nickname_tiet.text.toString()
-            email = email_tiet.text.toString()
-            location = location_tiet.text.toString()
-            phone = phone_tiet.text.toString()
+            name = profile_edit_name.text.toString()
+            nickname = profile_edit_nickname.text.toString()
+            email = profile_edit_email.text.toString()
+            location = profile_edit_location.text.toString()
+            phone = profile_edit_phone.text.toString()
         } ?: User(
-            name = name_tiet.text.toString(),
-            nickname = nickname_tiet.text.toString(),
-            email = email_tiet.text.toString(),
-            location = location_tiet.text.toString(),
-            phone = phone_tiet.text.toString()
+            name = profile_edit_name.text.toString(),
+            nickname = profile_edit_nickname.text.toString(),
+            email = profile_edit_email.text.toString(),
+            location = profile_edit_location.text.toString(),
+            phone = profile_edit_phone.text.toString()
         )
     }
 
     // Update views using the local variable user
     private fun updateFields() {
         user?.also { user ->
-            name_tiet.setText(user.name)
-            nickname_tiet.setText(user.nickname)
-            email_tiet.setText(user.email)
-            location_tiet.setText(user.location)
-            phone_tiet.setText(user.phone)
-            user.uri?.also { uri ->
-                profile_image.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(uri))!!)
+            profile_edit_name.setText(user.name)
+            profile_edit_nickname.setText(user.nickname)
+            profile_edit_email.setText(user.email)
+            profile_edit_location.setText(user.location)
+            profile_edit_phone.setText(user.phone)
+            user.photo?.also { uri ->
+                profile_edit_photo.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(uri))!!)
             }
         }
     }

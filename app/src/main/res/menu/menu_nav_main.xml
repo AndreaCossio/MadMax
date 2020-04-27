@@ -4,9 +4,9 @@
 
         <!-- User profile -->
         <item
-            android:id="@+id/nav_profile"
+            android:id="@id/nav_show_profile_fragment"
             android:icon="@drawable/ic_account_circle_24dp"
-            android:title="@string/menu_profile" />
+            android:title="@string/title_show_profile_fragment" />
 
     </group>
 </menu>

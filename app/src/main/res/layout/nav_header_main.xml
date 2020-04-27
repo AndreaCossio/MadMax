@@ -13,25 +13,26 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <it.polito.mad.madmax.lab02.ui.profile.CircleImage
-        android:id="@+id/user_picture"
+        android:id="@+id/nav_header_photo"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:src="@drawable/person"
         app:civ_border_color="@color/colorTextOnPrimary"
         app:civ_border_width="3dp"
         android:layout_marginTop="16dp"/>
+    
     <TextView
-        android:id="@+id/user_nickname"
+        android:id="@+id/nav_header_nickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="@string/nav_header_title"
+        android:text="@string/profile_nickname"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
-        android:id="@+id/user_email"
+        android:id="@+id/nav_header_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/nav_header_subtitle" />
+        android:text="@string/profile_email" />
 
 </LinearLayout>

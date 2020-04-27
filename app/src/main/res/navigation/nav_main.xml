@@ -3,31 +3,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_main"
-    app:startDestination="@id/nav_item_list">
+    app:startDestination="@id/nav_item_list_fragment">
 
-    <!-- ItemList -->
+    <!-- Home -->
     <fragment
-        android:id="@+id/nav_item_list"
+        android:id="@+id/nav_item_list_fragment"
         android:name="it.polito.mad.madmax.lab02.ui.item.ItemListFragment"
-        android:label="Item List"
+        android:label="@string/title_list_item_fragment"
         tools:layout="@layout/item_list_fragment" >
         <action
             android:id="@+id/action_nav_slideshow_to_nav_item"
-            app:destination="@id/nav_item" />
+            app:destination="@id/nav_details_item_fragment" />
         <action
             android:id="@+id/action_nav_item_list_to_nav_profile"
-            app:destination="@id/nav_profile" />
+            app:destination="@id/nav_show_profile_fragment" />
     </fragment>
 
-    <!-- Item detail -->
+    <!-- Details item -->
     <fragment
-        android:id="@+id/nav_item"
+        android:id="@+id/nav_details_item_fragment"
         android:name="it.polito.mad.madmax.lab02.ui.item.DetailsItemFragment"
-        android:label="@string/menu_item_details"
+        android:label="@string/title_details_item_fragment"
         tools:layout="@layout/fragment_details_item" >
         <action
             android:id="@+id/action_edit_item"
-            app:destination="@id/nav_edit_item" />
+            app:destination="@id/nav_edit_item_fragment" />
         <argument
             android:name="item"
             app:argType="it.polito.mad.madmax.lab02.data_models.Item"
@@ -35,15 +35,16 @@
             android:defaultValue="@null" />
     </fragment>
 
-    <!-- Edit Item -->
+    <!-- Edit item -->
     <fragment
-        android:id="@+id/nav_edit_item"
+        android:id="@+id/nav_edit_item_fragment"
         android:name="it.polito.mad.madmax.lab02.ui.item.EditItemFragment"
-        android:label="ItemDetailsEditFragment" >
+        android:label="@string/title_edit_item_fragment"
+        tools:layout="@layout/fragment_edit_item" >
         <action
             android:id="@+id/action_save_item"
-            app:destination="@+id/nav_item"
-            app:popUpTo="@id/nav_item"
+            app:destination="@+id/nav_details_item_fragment"
+            app:popUpTo="@id/nav_details_item_fragment"
             app:popUpToInclusive="true" />
         <argument
             android:name="item"
@@ -52,22 +53,23 @@
             android:defaultValue="@null" />
     </fragment>
 
-    <!-- User profile -->
+    <!-- Show profile -->
     <fragment
-        android:id="@id/nav_profile"
+        android:id="@+id/nav_show_profile_fragment"
         android:name="it.polito.mad.madmax.lab02.ui.profile.ShowProfileFragment"
-        android:label="@string/nav_title_show_profile"
+        android:label="@string/title_show_profile_fragment"
         tools:layout="@layout/fragment_show_profile" >
         <action
             android:id="@+id/action_edit_profile"
-            app:destination="@id/nav_profile_edit" />
+            app:destination="@id/nav_edit_profile_fragment" />
     </fragment>
 
     <!-- Edit profile -->
     <fragment
-        android:id="@+id/nav_profile_edit"
+        android:id="@+id/nav_edit_profile_fragment"
         android:name="it.polito.mad.madmax.lab02.ui.profile.EditProfileFragment"
-        android:label="@string/nav_title_edit_profile" >
+        android:label="@string/title_edit_profile_fragment"
+        tools:layout="@layout/fragment_edit_profile">
         <argument
             android:name="user"
             app:argType="it.polito.mad.madmax.lab02.data_models.User"

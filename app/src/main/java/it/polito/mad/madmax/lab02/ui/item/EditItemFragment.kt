@@ -2,7 +2,6 @@ package it.polito.mad.madmax.lab02.ui.item
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -55,7 +54,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val categories = resources.getStringArray(R.array.main_categories)
+        val categories = resources.getStringArray(R.array.item_categories_main)
         val dataAdapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, categories)
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         dataAdapter.notifyDataSetChanged()
@@ -63,7 +62,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
         spinner1.onItemSelectedListener = this
 
         change_date.setOnClickListener { showDatePicker() }
-        camera_button.setOnClickListener { selectImage(requireContext()) }
+        camera_button.setOnClickListener { selectImage() }
 
         updateFields()
     }
@@ -135,7 +134,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     // Click listener for changing the user profile photo
     // Shows a dialog
-    private fun selectImage(context: Context) {
+    private fun selectImage() {
         val builder = android.app.AlertDialog.Builder(requireActivity())
         requireActivity().packageManager?.also { pm ->
             pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY).also { hasCamera ->
@@ -174,7 +173,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                         // If file generated correctly, generate intent
                         photoFile?.also {
-                            val photoUri = FileProvider.getUriForFile(requireContext(), getString(R.string.photo_file_authority), it)
+                            val photoUri = FileProvider.getUriForFile(requireContext(), getString(R.string.file_provider), it)
                             item = item?.apply { photo = photoUri.toString() } ?: Item(photo = photoUri.toString())
                             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
                             startActivityForResult(takePictureIntent, captureIntentRequest)
@@ -215,14 +214,14 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val text: String = parent?.getItemAtPosition(position).toString()
 
         val secondList: Int = when (text) {
-            "Arts & Crafts" -> { R.array.art_and_crafts_sub }
-            "Sports & Hobby" -> { R.array.sports_and_hobby_sub }
-            "Baby" -> { R.array.baby_sub }
-            "Women\'s fashion" -> { R.array.womens_fashion_sub }
-            "Men\'s fashion" -> { R.array.mens_fashion_sub }
-            "Electronics" -> { R.array.electronics_sub }
-            "Games & Videogames" -> { R.array.games_and_videogames_sub }
-            "Automotive" -> { R.array.automotive_sub }
+            "Arts & Crafts" -> { R.array.item_categories_sub_art_and_crafts }
+            "Sports & Hobby" -> { R.array.item_categories_sub_sports_and_hobby }
+            "Baby" -> { R.array.item_categories_sub_baby }
+            "Women\'s fashion" -> { R.array.item_categories_sub_womens_fashion }
+            "Men\'s fashion" -> { R.array.item_categories_sub_mens_fashion }
+            "Electronics" -> { R.array.item_categories_sub_electronics }
+            "Games & Videogames" -> { R.array.item_categories_sub_games_and_videogames }
+            "Automotive" -> { R.array.item_categories_sub_automotive }
 
             else -> throw Exception()
         }
@@ -241,14 +240,14 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
             description = description_tv.text.toString()
             category = spinner1.selectedItem.toString() // 1 or 2?
             price = price_tv.text.toString().toDouble()
-            location = location_tv.text.toString()
+            location = profile_location.text.toString()
             expiry = expiry_tv.text.toString()
         } ?: Item (
             title = title_tv.text.toString(),
             description = description_tv.text.toString(),
             category = spinner1.selectedItem.toString(), // 1 or 2?
             price = price_tv.text.toString().toDouble(),
-            location = location_tv.text.toString(),
+            location = profile_location.text.toString(),
             expiry = expiry_tv.text.toString()
         )
     }
@@ -259,7 +258,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
             title_tv.setText(item.title)
             description_tv.setText(item.description)
             price_tv.setText(item.price.toString())
-            location_tv.setText(item.location)
+            profile_location.setText(item.location)
             expiry_tv.text = (item.expiry)
             item.photo?.also { photo ->
                 item_image.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(photo)))

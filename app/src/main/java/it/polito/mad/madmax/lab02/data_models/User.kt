@@ -8,5 +8,5 @@ data class User (
     var email: String = "",
     var location: String = "",
     var phone: String = "",
-    var uri: String? = null
+    var photo: String? = null
 ) : Serializable

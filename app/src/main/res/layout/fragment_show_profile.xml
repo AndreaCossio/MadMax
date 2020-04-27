@@ -15,7 +15,7 @@
         android:background="@drawable/gradientbackground">
 
         <it.polito.mad.madmax.lab02.ui.profile.CircleImage
-            android:id="@+id/profile_image"
+            android:id="@+id/profile_photo"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="9"
@@ -24,7 +24,7 @@
             app:civ_border_width="3dp" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/nickname_tv"
+            android:id="@+id/profile_nickname"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="3"
@@ -37,7 +37,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/fields_edit_ll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"
@@ -46,48 +45,48 @@
         android:layout_marginTop="16dp">
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/name_tv"
+            android:id="@+id/profile_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/ic_person_black_24dp"
             android:drawablePadding="20dp"
-            android:hint="@string/name_label"
+            android:hint="@string/profile_name"
             android:textColor="@color/colorPrimary"
             android:textSize="16sp" />
 
         <include layout="@xml/divider" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/email_tv"
+            android:id="@+id/profile_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/ic_local_post_office_black_24dp"
             android:drawablePadding="20dp"
-            android:hint="@string/email_label"
+            android:hint="@string/profile_email"
             android:textColor="@color/colorPrimary"
             android:textSize="16sp" />
 
         <include layout="@xml/divider" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/location_tv"
+            android:id="@+id/profile_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/ic_location_city_black_24dp"
             android:drawablePadding="20dp"
-            android:hint="@string/location_label"
+            android:hint="@string/profile_location"
             android:textColor="@color/colorPrimary"
             android:textSize="16sp" />
 
         <include layout="@xml/divider" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/phone_tv"
+            android:id="@+id/profile_phone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/ic_phone_black_24dp"
             android:drawablePadding="20dp"
-            android:hint="@string/phone_label"
+            android:hint="@string/profile_phone"
             android:textColor="@color/colorPrimary"
             android:textSize="16sp" />
 

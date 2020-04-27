@@ -48,8 +48,8 @@
                 android:rating="3.5"
                 android:scaleX="2"
                 android:scaleY="2"
-                android:stepSize="0.25">
-            </RatingBar>
+                android:stepSize="0.25" />
+
         </androidx.cardview.widget.CardView>
 
     </FrameLayout>
@@ -81,7 +81,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:text="@string/item_price"
+                    android:hint="@string/item_price"
                     android:textColor="@color/colorTextOnSecondary"
                     android:textSize="24sp" />
 
@@ -93,23 +93,24 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="16dp"
                     android:gravity="end"
-                    android:text="@string/item_name"
+                    android:hint="@string/item_title"
                     android:textColor="@color/colorTextOnSecondary"
                     android:textSize="18sp" />
+
             </LinearLayout>
 
             <TextView
                 android:id="@+id/description_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/item_description"
+                android:hint="@string/item_description"
                 android:textAlignment="textStart" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="8dp"
-                android:text="Item Details"
+                android:text="@string/item_details"
                 android:textAllCaps="false"
                 android:textColor="@color/colorSecondary"
                 android:textSize="24sp"
@@ -118,7 +119,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:baselineAligned="false">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -131,21 +133,22 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="8dp"
-                        android:text="Category:" />
+                        android:text="@string/item_category_main" />
 
                     <TextView
                         android:id="@+id/textView7"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="8dp"
-                        android:text="Location:" />
+                        android:text="@string/item_location" />
 
                     <TextView
                         android:id="@+id/textView8"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="8dp"
-                        android:text="Expiry date:" />
+                        android:text="@string/item_expiry" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -159,15 +162,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="8dp"
-                        android:text="@string/item_category"
+                        android:hint="@string/item_category_main"
                         android:textColor="@color/colorTextOnSecondary" />
 
                     <TextView
-                        android:id="@+id/location_tv"
+                        android:id="@+id/profile_location"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="8dp"
-                        android:text="@string/item_location"
+                        android:hint="@string/item_location"
                         android:textColor="@color/colorTextOnSecondary" />
 
                     <TextView
@@ -175,11 +178,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="8dp"
-                        android:text="@string/item_expiry"
+                        android:hint="@string/item_expiry"
                         android:textColor="@color/colorTextOnSecondary" />
+
                 </LinearLayout>
+
             </LinearLayout>
+
         </LinearLayout>
+
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

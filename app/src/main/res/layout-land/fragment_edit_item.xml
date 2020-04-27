@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
         android:layout_width="wrap_content"
@@ -50,7 +49,6 @@
         app:layout_constraintStart_toStartOf="@+id/guideline3"
         app:layout_constraintTop_toTopOf="parent">
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -61,13 +59,12 @@
             app:layout_constraintTop_toTopOf="@+id/guideline3">
 
             <com.google.android.material.textfield.TextInputLayout
-
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:hint="Price"
-                android:textColorHint="@color/colorSecondaryDark">
+                android:hint="@string/item_price"
+                android:textColorHint="@color/colorSecondaryDark"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/price_tv"
@@ -78,13 +75,12 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:hint="Title"
-                android:textColorHint="@color/colorSecondaryDark">
+                android:hint="@string/item_title"
+                android:textColorHint="@color/colorSecondaryDark"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/title_tv"
@@ -95,13 +91,12 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:hint="Description"
-                android:textColorHint="@color/colorSecondaryDark">
+                android:hint="@string/item_description"
+                android:textColorHint="@color/colorSecondaryDark"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/description_tv"
@@ -117,11 +112,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:hint="Location"
+                android:hint="@string/item_location"
                 android:textColorHint="@color/colorSecondaryDark">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/location_tv"
+                    android:id="@+id/profile_location"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorPrimaryDark" />
@@ -133,11 +128,10 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="Main category"
+                android:text="@string/item_category_main"
                 android:textColor="@color/colorSecondaryDark" />
 
             <!-- Spinner Dropdown -->
-
             <Spinner
                 android:id="@+id/spinner1"
                 android:layout_width="fill_parent"
@@ -150,11 +144,10 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="Sub category"
+                android:text="@string/item_category_sub"
                 android:textColor="@color/colorSecondaryDark" />
 
             <!-- Spinner Dropdown -->
-
             <Spinner
                 android:id="@+id/spinner2"
                 android:layout_width="fill_parent"
@@ -167,7 +160,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="Expiry Date"
+                android:text="@string/item_expiry"
                 android:textColor="@color/colorSecondaryDark" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -176,7 +169,6 @@
                 android:padding="8dp">
 
                 <TextView
-
                     android:id="@+id/expiry_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -190,14 +182,13 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/change_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|end"
                     android:backgroundTint="@color/colorSecondary"
-                    android:text="Change"
+                    android:text="@string/item_change"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
@@ -208,8 +199,6 @@
 
         </LinearLayout>
 
-
     </ScrollView>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

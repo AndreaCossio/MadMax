@@ -30,7 +30,7 @@ class ShowProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // Update user from shared preferences (put in here to load also after edit profile)
         // TODO we could find a better solution to this (firebase)
-        activity?.getSharedPreferences(getString(R.string.preference_file_user), Context.MODE_PRIVATE)?.getString(getString(R.string.preference_file_user_profile), null)?.let {
+        activity?.getSharedPreferences(getString(R.string.preferences_user_file), Context.MODE_PRIVATE)?.getString(getString(R.string.preference_user), null)?.let {
             user = Gson().fromJson(it, User::class.java)
         }
         updateFields()
@@ -53,13 +53,13 @@ class ShowProfileFragment : Fragment() {
     // Update views using the local variable user
     private fun updateFields() {
         user?.also { user ->
-            name_tv.text = user.name
-            nickname_tv.text = user.nickname
-            email_tv.text = user.email
-            location_tv.text = user.location
-            phone_tv.text = user.phone
-            user.uri?.also { uri ->
-                profile_image.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(uri))!!)
+            profile_name.text = user.name
+            profile_nickname.text = user.nickname
+            profile_email.text = user.email
+            profile_location.text = user.location
+            profile_phone.text = user.phone
+            user.photo?.also { uri ->
+                profile_photo.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(uri))!!)
             }
         }
     }

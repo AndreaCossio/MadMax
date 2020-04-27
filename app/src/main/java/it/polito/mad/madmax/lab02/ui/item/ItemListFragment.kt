@@ -32,15 +32,7 @@ class ItemListFragment : Fragment() {
 
         // this is data fro recycler view
         val itemsData: ArrayList<Item> = arrayListOf<Item>(
-            Item (
-                title = getString(R.string.item_name),
-                description = getString(R.string.item_description),
-                price = getString(R.string.item_price).toDouble(),
-                category = getString(R.string.item_category),
-                location = getString(R.string.item_location),
-                expiry = getString(R.string.item_expiry),
-                stars = 3.75
-            )
+            Item ()
         )
 
         // 3. create an adapter
