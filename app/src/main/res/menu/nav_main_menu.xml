@@ -3,23 +3,12 @@
 
     <group android:checkableBehavior="single">
 
-        <!-- Home -->
-        <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_home" />
 
-        <!-- Item detail TODO remove after gallery completed -->
+        <!-- Item List -->
         <item
-            android:id="@+id/nav_item"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_item_details" />
-
-        <!-- Slideshow -->
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
+            android:id="@+id/nav_item_list"
+            android:icon="@drawable/ic_format_list_bulleted_24dp"
+            android:title="@string/menu_item_list" />
 
         <!-- User profile -->
         <item
