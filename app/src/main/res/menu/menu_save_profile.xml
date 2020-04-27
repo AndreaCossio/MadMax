@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/save_profile"
+        android:id="@+id/menu_save_profile_save"
         android:title="@string/save_profile"
         app:showAsAction="always" />
 </menu>

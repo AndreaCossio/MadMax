@@ -1,8 +1,7 @@
-package it.polito.mad.madmax.lab02.ui.profile
+package it.polito.mad.madmax.lab02.ui.item
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,29 +9,32 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.*
-import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.google.gson.Gson
+import com.google.android.material.datepicker.MaterialDatePicker
 import it.polito.mad.madmax.lab02.R
 import it.polito.mad.madmax.lab02.createImageFile
-import it.polito.mad.madmax.lab02.data_models.User
+import it.polito.mad.madmax.lab02.data_models.Item
 import it.polito.mad.madmax.lab02.displayMessage
 import it.polito.mad.madmax.lab02.handleSamplingAndRotationBitmap
-import kotlinx.android.synthetic.main.fragment_edit_profile.*
+import kotlinx.android.synthetic.main.fragment_edit_item.*
 import java.io.File
 import java.io.IOException
 
-class EditProfileFragment : Fragment() {
 
-    // User
-    private var user: User? = null
+class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
+
+    // Item
+    private var item: Item? = null
 
     // Destination arguments
-    private val args: EditProfileFragmentArgs by navArgs()
+    private val args: EditItemFragmentArgs by navArgs()
 
     // Intent codes
     private val capturePermissionRequest = 0
@@ -43,64 +45,56 @@ class EditProfileFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        user = args.user
+        item = args.item
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_edit_profile, container, false)
+        return inflater.inflate(R.layout.fragment_edit_item, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        profile_image.setOnClickListener { selectImage() }
+
+        val categories = resources.getStringArray(R.array.main_categories)
+        val dataAdapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, categories)
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        dataAdapter.notifyDataSetChanged()
+        spinner1.adapter = dataAdapter
+        spinner1.onItemSelectedListener = this
+
+        change_date.setOnClickListener { showDatePicker() }
+        camera_button.setOnClickListener { selectImage(requireContext()) }
+
         updateFields()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        updateUser()
-        outState.putSerializable("user", user)
+        updateItem()
+        outState.putSerializable("item", item)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        savedInstanceState?.getSerializable("user")?.also {
-            user = it as User
+        savedInstanceState?.getSerializable("item")?.also {
+            item = it as Item
             updateFields()
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_save_profile, menu)
+        inflater.inflate(R.menu.menu_save_item, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_save_profile_save -> {
-                updateUser()
-                // TODO handle errors
-                // TODO pan fields up with keyboard (like whatsapp)
-                /*if (user!!.name == "" || user!!.email == "" || user!!.nickname == "" || user!!.location == "" || user!!.phone == "") {
-                    if (user!!.name == "") {
-                        name_tiet.error = getString(R.string.error_required)
-                    }
-                    //displayMessage(requireContext(), "Fill every field to continue")
-                    false
-                } else {*/
-                    // TODO better notifications here
-                    // Save user data to shared pref
-                    val prefs = activity?.getSharedPreferences(getString(R.string.preference_file_user), Context.MODE_PRIVATE) ?: return false
-                    with (prefs.edit()) {
-                        putString(getString(R.string.preference_file_user_profile), Gson().toJson(user))
-                        apply()
-                    }
-
-                    (activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
-                    findNavController().popBackStack()
-                    true
-                //}
-            } else -> return super.onOptionsItemSelected(item)
+    override fun onOptionsItemSelected(menuitem: MenuItem): Boolean {
+        return when (menuitem.itemId) {
+            R.id.menu_save_item_save -> {
+                // TODO save to shared pref or database and handle missing entries
+                updateItem()
+                findNavController().navigate(EditItemFragmentDirections.actionSaveItem(item))
+                true
+            } else -> super.onOptionsItemSelected(menuitem)
         }
     }
 
@@ -108,17 +102,17 @@ class EditProfileFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == captureIntentRequest && resultCode == Activity.RESULT_OK) {
             updateFields()
-            displayMessage(requireContext(), "Picture taken correctly")
+            displayMessage(this.requireContext(), "Picture taken correctly")
         }
         else if (requestCode == captureIntentRequest && resultCode != Activity.RESULT_OK) {
-            user?.uri?.also { File(it).delete() }
-            displayMessage(requireContext(), "There was an error taking the picture")
+            item?.photo?.also { File(it).delete() }
+            displayMessage(this.requireContext(), "There was an error taking the picture")
         }
         else if (requestCode == galleryIntentRequest && resultCode == Activity.RESULT_OK && data != null) {
             val photoUri = data.data!!.toString()
-            user = user?.apply { uri = photoUri } ?: User(uri = photoUri)
+            item = item?.apply { photo = photoUri } ?: Item(photo = photoUri)
             updateFields()
-            displayMessage(requireContext(), "Picture loaded correctly")
+            displayMessage(this.requireContext(), "Picture loaded correctly")
         } else {
             displayMessage(requireContext(), "Request cancelled or something went wrong.")
         }
@@ -141,8 +135,8 @@ class EditProfileFragment : Fragment() {
 
     // Click listener for changing the user profile photo
     // Shows a dialog
-    private fun selectImage() {
-        val builder = AlertDialog.Builder(requireActivity())
+    private fun selectImage(context: Context) {
+        val builder = android.app.AlertDialog.Builder(requireActivity())
         requireActivity().packageManager?.also { pm ->
             pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY).also { hasCamera ->
                 if (hasCamera) {
@@ -165,7 +159,7 @@ class EditProfileFragment : Fragment() {
     // Handle capturing the Image
     private fun captureImage() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.CAMERA), capturePermissionRequest)
+            ActivityCompat.requestPermissions(this.requireActivity(), arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE), capturePermissionRequest)
         } else {
             Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
                 activity?.packageManager?.also { pm ->
@@ -181,7 +175,7 @@ class EditProfileFragment : Fragment() {
                         // If file generated correctly, generate intent
                         photoFile?.also {
                             val photoUri = FileProvider.getUriForFile(requireContext(), getString(R.string.photo_file_authority), it)
-                            user = user?.apply { uri = photoUri.toString() } ?: User(uri = photoUri.toString())
+                            item = item?.apply { photo = photoUri.toString() } ?: Item(photo = photoUri.toString())
                             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
                             startActivityForResult(takePictureIntent, captureIntentRequest)
                         }
@@ -205,33 +199,70 @@ class EditProfileFragment : Fragment() {
         }
     }
 
+    // Show date picker
+    private fun showDatePicker() {
+        val builder = MaterialDatePicker.Builder.datePicker()
+        val picker = builder.build()
+        picker.addOnPositiveButtonClickListener { expiry_tv.text = picker.headerText }
+        picker.show(childFragmentManager, picker.toString())
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        val text: String = parent?.getItemAtPosition(position).toString()
+
+        val secondList: Int = when (text) {
+            "Arts & Crafts" -> { R.array.art_and_crafts_sub }
+            "Sports & Hobby" -> { R.array.sports_and_hobby_sub }
+            "Baby" -> { R.array.baby_sub }
+            "Women\'s fashion" -> { R.array.womens_fashion_sub }
+            "Men\'s fashion" -> { R.array.mens_fashion_sub }
+            "Electronics" -> { R.array.electronics_sub }
+            "Games & Videogames" -> { R.array.games_and_videogames_sub }
+            "Automotive" -> { R.array.automotive_sub }
+
+            else -> throw Exception()
+        }
+
+        val elements = resources.getStringArray(secondList)
+        val dataAdapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, elements)
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        dataAdapter.notifyDataSetChanged()
+        spinner2.adapter = dataAdapter
+    }
+
     // Update user variable using views
-    private fun updateUser() {
-        user = user?.apply {
-            name = name_tiet.text.toString()
-            nickname = nickname_tiet.text.toString()
-            email = email_tiet.text.toString()
-            location = location_tiet.text.toString()
-            phone = phone_tiet.text.toString()
-        } ?: User(
-            name = name_tiet.text.toString(),
-            nickname = nickname_tiet.text.toString(),
-            email = email_tiet.text.toString(),
-            location = location_tiet.text.toString(),
-            phone = phone_tiet.text.toString()
+    private fun updateItem() {
+        item = item?.apply {
+            title = title_tv.text.toString()
+            description = description_tv.text.toString()
+            category = spinner1.selectedItem.toString() // 1 or 2?
+            price = price_tv.text.toString().toDouble()
+            location = location_tv.text.toString()
+            expiry = expiry_tv.text.toString()
+        } ?: Item (
+            title = title_tv.text.toString(),
+            description = description_tv.text.toString(),
+            category = spinner1.selectedItem.toString(), // 1 or 2?
+            price = price_tv.text.toString().toDouble(),
+            location = location_tv.text.toString(),
+            expiry = expiry_tv.text.toString()
         )
     }
 
-    // Update views using the local variable user
+    // Update views using the local variable item
     private fun updateFields() {
-        user?.also { user ->
-            name_tiet.setText(user.name)
-            nickname_tiet.setText(user.nickname)
-            email_tiet.setText(user.email)
-            location_tiet.setText(user.location)
-            phone_tiet.setText(user.phone)
-            user.uri?.also { uri ->
-                profile_image.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(uri))!!)
+        item?.also { item ->
+            title_tv.setText(item.title)
+            description_tv.setText(item.description)
+            price_tv.setText(item.price.toString())
+            location_tv.setText(item.location)
+            expiry_tv.text = (item.expiry)
+            item.photo?.also { photo ->
+                item_image.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(photo)))
             }
         }
     }

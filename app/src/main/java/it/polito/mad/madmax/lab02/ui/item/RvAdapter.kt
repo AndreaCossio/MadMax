@@ -1,20 +1,21 @@
-package it.polito.mad.madmax.lab02.ui.itemdetails
+package it.polito.mad.madmax.lab02.ui.item
 
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.navigation.Navigation.findNavController
-
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
-import it.polito.mad.madmax.lab02.*
+import it.polito.mad.madmax.lab02.R
 import it.polito.mad.madmax.lab02.data_models.Item
 
 class RvAdapter(private val items: ArrayList<Item>) : RecyclerView.Adapter<RvAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
-        val v = LayoutInflater.from(p0?.context).inflate(R.layout.adapter_item_layout, p0, false)
-        return ViewHolder(v);
+        val v = LayoutInflater.from(p0.context).inflate(R.layout.adapter_item_layout, p0, false)
+        return ViewHolder(v)
     }
 
     override fun getItemCount(): Int {
@@ -24,7 +25,7 @@ class RvAdapter(private val items: ArrayList<Item>) : RecyclerView.Adapter<RvAda
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.title.text = items[position].title
         holder.description.text = items[position].description
-        holder.bind(items[position]);
+        holder.bind(items[position])
 
     }
 

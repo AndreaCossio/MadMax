@@ -14,6 +14,7 @@ import kotlinx.android.synthetic.main.fragment_show_profile.*
 
 class ShowProfileFragment : Fragment() {
 
+    // User
     private var user: User? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,15 +36,17 @@ class ShowProfileFragment : Fragment() {
         updateFields()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) = inflater.inflate(R.menu.menu_edit_profile, menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_edit_profile, menu)
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.edit_profile -> {
+            R.id.menu_edit_profile_edit -> {
                 findNavController().navigate(ShowProfileFragmentDirections.actionEditProfile(user))
                 true
-            }
-            else -> super.onOptionsItemSelected(item)
+            } else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -56,7 +59,7 @@ class ShowProfileFragment : Fragment() {
             location_tv.text = user.location
             phone_tv.text = user.phone
             user.uri?.also { uri ->
-                profile_image.setImageBitmap(handleSamplingAndRotationBitmap(activity as Context, Uri.parse(uri))!!)
+                profile_image.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(uri))!!)
             }
         }
     }

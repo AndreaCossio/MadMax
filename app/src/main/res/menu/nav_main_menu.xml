@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <group android:checkableBehavior="single">
-
-
-        <!-- Item List -->
-        <item
-            android:id="@+id/nav_item_list"
-            android:icon="@drawable/ic_format_list_bulleted_24dp"
-            android:title="@string/menu_item_list" />
 
         <!-- User profile -->
         <item
@@ -17,5 +9,4 @@
             android:title="@string/menu_profile" />
 
     </group>
-
 </menu>
