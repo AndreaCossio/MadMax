@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.gson.Gson
 import it.polito.mad.madmax.lab02.R
 import it.polito.mad.madmax.lab02.data_models.User
@@ -17,9 +18,17 @@ class ShowProfileFragment : Fragment() {
     // User
     private var user: User? = null
 
+    // Destination arguments
+    private val args: ShowProfileFragmentArgs by navArgs()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        args.user?.also {
+            user = it
+        } ?: activity?.getSharedPreferences(getString(R.string.preferences_user_file), Context.MODE_PRIVATE)?.getString(getString(R.string.preference_user), null)?.also {
+            user = Gson().fromJson(it, User::class.java)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -28,11 +37,6 @@ class ShowProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Update user from shared preferences (put in here to load also after edit profile)
-        // TODO we could find a better solution to this (firebase)
-        activity?.getSharedPreferences(getString(R.string.preferences_user_file), Context.MODE_PRIVATE)?.getString(getString(R.string.preference_user), null)?.also {
-            user = Gson().fromJson(it, User::class.java)
-        }
         updateFields()
     }
 

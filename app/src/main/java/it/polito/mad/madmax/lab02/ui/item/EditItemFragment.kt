@@ -18,6 +18,7 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -63,6 +64,10 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (createMode) {
+            activity?.findViewById<MaterialToolbar>(R.id.main_toolbar)?.setTitle(R.string.title_create_item_fragment)
+        }
 
         val categories = resources.getStringArray(R.array.item_categories_main)
         val dataAdapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, categories)
@@ -127,11 +132,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                 // Close keyboard
                 (activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
-                if (createMode) {
-                    findNavController().navigate(EditItemFragmentDirections.actionItemCreated(item!!))
-                } else {
-                    findNavController().popBackStack()
-                }
+                findNavController().navigate(EditItemFragmentDirections.actionSaveItem(item))
                 true
             } else -> super.onOptionsItemSelected(menuitem)
         }

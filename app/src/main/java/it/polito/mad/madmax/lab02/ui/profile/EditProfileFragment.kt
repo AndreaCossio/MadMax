@@ -97,7 +97,7 @@ class EditProfileFragment : Fragment() {
                     }
 
                     (activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
-                    findNavController().popBackStack()
+                    findNavController().navigate(EditProfileFragmentDirections.actionSaveProfile(user))
                     true
                 //}
             } else -> return super.onOptionsItemSelected(item)

@@ -1,5 +1,4 @@
 <resources>
-
     <!-- APPLICATION -->
     <string name="app_name">MadMax</string>
     <string name="title_activity_main">MainActivity</string>
@@ -15,6 +14,7 @@
     <string name="title_edit_profile_fragment">Edit profile</string>
     <string name="title_details_item_fragment">Item</string>
     <string name="title_edit_item_fragment">Edit item</string>
+    <string name="title_create_item_fragment">Create item</string>
     <string name="title_list_item_fragment">Home</string>
 
     <!-- MENU -->
