@@ -22,7 +22,7 @@ class ItemListFragment : Fragment() {
     private lateinit var viewManager: RecyclerView.LayoutManager
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView: View = inflater.inflate(R.layout.item_list_fragment, container, false)
+        val rootView: View = inflater.inflate(R.layout.fragment_item_list, container, false)
 
         // 1. get a reference to recyclerView
         val recyclerView = rootView.findViewById(R.id.recyclerView) as RecyclerView

@@ -48,7 +48,7 @@
     <string name="item_description">Description</string>
     <string name="item_category_main">Category</string>
     <string name="item_category_sub">Sub-Category</string>
-    <string name="item_price">Location</string>
+    <string name="item_price">Price</string>
     <string name="item_location">Location</string>
     <string name="item_expiry">Expiry Date</string>
     <string name="item_change">Change</string>

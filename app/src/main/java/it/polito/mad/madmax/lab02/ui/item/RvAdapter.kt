@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.os.bundleOf
 import androidx.navigation.Navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
@@ -37,9 +36,7 @@ class RvAdapter(private val items: ArrayList<Item>) : RecyclerView.Adapter<RvAda
             title.text = item.title
             description.text = item.description
             cardView.setOnClickListener {
-                val bundle = bundleOf("item" to item)
-                findNavController(itemView).navigate(R.id.action_nav_slideshow_to_nav_item, bundle)
-
+                findNavController(itemView).navigate(ItemListFragmentDirections.actionDetailsItem(item))
             }
         }
     }

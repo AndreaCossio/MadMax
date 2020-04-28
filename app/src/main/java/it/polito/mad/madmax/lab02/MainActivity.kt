@@ -12,9 +12,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import it.polito.mad.madmax.lab02.data_models.User
+import it.polito.mad.madmax.lab02.ui.item.ItemListFragmentDirections
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -29,11 +29,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
-
         // Set custom app bar
         setSupportActionBar(main_toolbar)
         appBarConfig = AppBarConfiguration(setOf(R.id.nav_item_list_fragment), main_drawer_layout)
@@ -43,8 +38,12 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfig)
         nav_view.setupWithNavController(navController)
 
+        fab.setOnClickListener { view ->
+            navController.navigate(ItemListFragmentDirections.actionCreateItem(null))
+        }
+
         // Load user data
-        getSharedPreferences(getString(R.string.preferences_user_file), Context.MODE_PRIVATE)?.getString(getString(R.string.preference_user), null)?.let {
+        getSharedPreferences(getString(R.string.preferences_user_file), Context.MODE_PRIVATE)?.getString(getString(R.string.preference_user), null)?.also {
             user = Gson().fromJson(it, User::class.java)
         }
 

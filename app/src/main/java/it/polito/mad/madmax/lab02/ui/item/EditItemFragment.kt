@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.core.app.ActivityCompat
@@ -38,6 +39,9 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
     // Destination arguments
     private val args: EditItemFragmentArgs by navArgs()
 
+    // Create / Edit
+    private var createMode: Boolean = false
+
     // Intent codes
     private val capturePermissionRequest = 0
     private val galleryPermissionRequest = 1
@@ -47,7 +51,10 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        item = args.item
+        createMode = args.item?.let {
+            item = it
+            false
+        } ?: true
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -118,7 +125,13 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     }
                 }
 
-                findNavController().navigate(EditItemFragmentDirections.actionSaveItem(item))
+                // Close keyboard
+                (activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
+                if (createMode) {
+                    findNavController().navigate(EditItemFragmentDirections.actionItemCreated(item!!))
+                } else {
+                    findNavController().popBackStack()
+                }
                 true
             } else -> super.onOptionsItemSelected(menuitem)
         }
@@ -266,14 +279,14 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
             title = title_tv.text.toString()
             description = description_tv.text.toString()
             category = spinner1.selectedItem.toString() // 1 or 2?
-            price = price_tv.text.toString().toDouble()
+            price = price_tv.text.toString().toDoubleOrNull() ?: 0.0
             location = profile_location.text.toString()
             expiry = expiry_tv.text.toString()
         } ?: Item (
             title = title_tv.text.toString(),
             description = description_tv.text.toString(),
             category = spinner1.selectedItem.toString(), // 1 or 2?
-            price = price_tv.text.toString().toDouble(),
+            price = price_tv.text.toString().toDoubleOrNull() ?: 0.0,
             location = profile_location.text.toString(),
             expiry = expiry_tv.text.toString()
         )
