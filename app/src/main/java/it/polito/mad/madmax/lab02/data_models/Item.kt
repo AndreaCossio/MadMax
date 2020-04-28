@@ -12,5 +12,6 @@ class Item(
     val category: String?,
     val location: String?,
     val expiry: String?,
-    val stars:Float?
+    val stars:Float?,
+    val id:Int?
 ) : Serializable

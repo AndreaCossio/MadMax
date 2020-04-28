@@ -1,5 +1,6 @@
 package it.polito.mad.madmax.lab02.ui.itemdetails
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import it.polito.mad.madmax.lab02.R
 import it.polito.mad.madmax.lab02.data_models.Item
 import kotlinx.android.synthetic.main.item_list_fragment.*
@@ -32,68 +35,14 @@ class ItemListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
         // this is data fro recycler view
-        val itemsData: ArrayList<Item> = arrayListOf<Item>(
-            Item(
-                null,
-                getString(R.string.item_name),
-                getString(R.string.item_description),
-                getString(R.string.item_price).toDouble(),
-                getString(R.string.item_category),
-                getString(R.string.item_location),
-                getString(R.string.item_expiry),
-                3.75.toFloat()
-            ),
-            Item(
-                null,
-                "Item 2",
-                getString(R.string.item_description),
-                getString(R.string.item_price).toDouble(),
-                getString(R.string.item_category),
-                getString(R.string.item_location),
-                getString(R.string.item_expiry),
-                3.75.toFloat()
-            ),
-            Item(
-                null,
-                getString(R.string.item_name),
-                "Item 3",
-                getString(R.string.item_price).toDouble(),
-                getString(R.string.item_category),
-                getString(R.string.item_location),
-                getString(R.string.item_expiry),
-                3.75.toFloat()
-            ),
-            Item(
-                null,
-                "Item 4",
-                getString(R.string.item_description),
-                getString(R.string.item_price).toDouble(),
-                getString(R.string.item_category),
-                getString(R.string.item_location),
-                getString(R.string.item_expiry),
-                3.75.toFloat()
-            ),
-            Item(
-                null,
-                getString(R.string.item_name),
-                getString(R.string.item_description),
-                getString(R.string.item_price).toDouble(),
-                getString(R.string.item_category),
-                getString(R.string.item_location),
-                getString(R.string.item_expiry),
-                3.75.toFloat()
-            ),
-            Item(
-                null,
-                getString(R.string.item_name),
-                getString(R.string.item_description),
-                getString(R.string.item_price).toDouble(),
-                getString(R.string.item_category),
-                getString(R.string.item_location),
-                getString(R.string.item_expiry),
-                3.75.toFloat()
-            )
-        )
+        val prefs = activity?.getSharedPreferences(getString(R.string.preference_file_user), Context.MODE_PRIVATE)
+        var itemsData:ArrayList<Item>
+
+        if (prefs!!.contains("itemList")){
+            val listType = object : TypeToken<ArrayList<Item>>() {}.type
+            itemsData = Gson().fromJson<ArrayList<Item>>(prefs.getString("itemList","[]"),listType)
+
+        }else itemsData = ArrayList<Item>()
 
         // 3. create an adapter
         val mAdapter = RvAdapter(itemsData)

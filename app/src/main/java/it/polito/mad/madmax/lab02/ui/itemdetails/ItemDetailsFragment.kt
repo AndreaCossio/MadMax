@@ -48,7 +48,8 @@ class ItemDetailsFragment : Fragment() {
                 getString(R.string.item_category),
                 getString(R.string.item_location),
                 getString(R.string.item_expiry),
-                3.75.toFloat()
+                3.75.toFloat(),
+                null
             )
 
         }

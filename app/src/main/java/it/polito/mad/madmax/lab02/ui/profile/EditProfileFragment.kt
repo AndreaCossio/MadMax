@@ -41,12 +41,10 @@ class EditProfileFragment : Fragment() {
     private val GALLERY_IMAGE_REQUEST = 3
 
     // Destination arguments
-    private val args: EditProfileFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        user = args.user
         uri = user?.uri?.let { Uri.parse(it) }
     }
 

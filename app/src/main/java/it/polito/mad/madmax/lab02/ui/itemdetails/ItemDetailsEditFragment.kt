@@ -26,6 +26,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import it.polito.mad.madmax.lab02.R
 import it.polito.mad.madmax.lab02.createImageFile
 import it.polito.mad.madmax.lab02.data_models.Item
@@ -113,12 +115,36 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
 
+
+
     override fun onOptionsItemSelected(menuitem: MenuItem): Boolean {
 
         return when (menuitem.itemId) {
             R.id.nav_save_fragment -> {
+
                 updateItem()
+                val prefs = activity?.getSharedPreferences(getString(R.string.preference_file_user), Context.MODE_PRIVATE)
+                if (prefs!!.contains("itemList")){
+                    val listType = object : TypeToken<MutableList<Item>>() {}.type
+                    val itemList = Gson().fromJson<MutableList<Item>>(prefs.getString("itemList","[]"),listType)
+                    if(itemList.any{it.id == item.value!!.id}){
+                       val index =  itemList.indexOfFirst { it.id == item.value!!.id }
+                        itemList[index] = item.value!!
+                    }else{
+                        itemList.add(item.value!!)
+                        println(itemList.size)
+                    }
+
+                    prefs.edit().remove("itemList").putString("itemList",Gson().toJson(itemList)).apply()
+
+                }else{
+                    val itemList = listOf<Item>(item.value!!)
+                    prefs.edit().putString("itemList",Gson().toJson(itemList)).apply()
+                }
+
+
                 val bundle = bundleOf("item" to item.value)
+
                 findNavController().navigate(R.id.action_nav_edit_fragment_to_nav_item, bundle)
                 return true
             }
@@ -160,7 +186,8 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 spinner2.selectedItem.toString(),
                 location_tv.text.toString(),
             expiry_tv.text.toString(),
-            item.value?.stars
+            item.value?.stars,
+            item.value!!.id
         )
         return true;
     }
@@ -332,7 +359,6 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
         // Gallery intent
         else if (requestCode == GALLERY_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             uri = data.data
-            updateItem()
             displayMessage(this.requireContext(), "Picture loaded correctly")
         } else {
             displayMessage(requireContext(), "Request cancelled or something went wrong.")

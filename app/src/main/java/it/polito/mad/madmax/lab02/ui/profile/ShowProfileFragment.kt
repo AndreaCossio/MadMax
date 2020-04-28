@@ -54,9 +54,6 @@ class ShowProfileFragment : Fragment() {
         return when (item.itemId) {
             // Pencil button -> edit profile
             R.id.edit_profile -> {
-                val action = ShowProfileFragmentDirections.actionEditProfile(user)
-                // TODO add animations
-                findNavController().navigate(action)
                 true
             }
             else -> super.onOptionsItemSelected(item)
