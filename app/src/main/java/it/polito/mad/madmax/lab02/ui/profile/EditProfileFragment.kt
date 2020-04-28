@@ -25,27 +25,25 @@ import it.polito.mad.madmax.lab02.handleSamplingAndRotationBitmap
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import java.io.File
 import java.io.IOException
-import java.io.Serializable
 
 class EditProfileFragment : Fragment() {
 
-    // User variable to hold user information
-    // TODO check live data or viewmodel
+    // User
     private var user: User? = null
-    private var uri: Uri? = null
-
-    // Intents
-    private val CAPTURE_PERMISSIONS_REQUEST = 0
-    private val GALLERY_PERMISSIONS_REQUEST = 1
-    private val CAPTURE_IMAGE_REQUEST = 2
-    private val GALLERY_IMAGE_REQUEST = 3
 
     // Destination arguments
+    private val args: EditProfileFragmentArgs by navArgs()
+
+    // Intent codes
+    private val capturePermissionRequest = 0
+    private val galleryPermissionRequest = 1
+    private val captureIntentRequest = 2
+    private val galleryIntentRequest = 3
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        uri = user?.uri?.let { Uri.parse(it) }
+        user = args.user
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -58,40 +56,36 @@ class EditProfileFragment : Fragment() {
         updateFields()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_save_profile, menu)
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         updateUser()
-        outState.putSerializable("user", user as Serializable?)
+        outState.putSerializable("user", user)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        user = savedInstanceState?.getSerializable("user") as User?
-        user?.uri?.let { uri = Uri.parse(it) }
-        updateFields()
+        savedInstanceState?.getSerializable("user")?.also {
+            user = it as User
+            updateFields()
+        }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) = inflater.inflate(R.menu.menu_save_profile, menu)
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            // Save button -> save profile
-            // TODO close keyboard
             R.id.save_profile -> {
-                // Get user data
                 updateUser()
-
                 // TODO handle errors
                 // TODO pan fields up with keyboard (like whatsapp)
-                if (user!!.name == "" || user!!.email == "" || user!!.nickname == "" || user!!.location == "" || user!!.phone == "") {
+                /*if (user!!.name == "" || user!!.email == "" || user!!.nickname == "" || user!!.location == "" || user!!.phone == "") {
                     if (user!!.name == "") {
                         name_tiet.error = getString(R.string.error_required)
                     }
                     //displayMessage(requireContext(), "Fill every field to continue")
                     false
-                } else {
+                } else {*/
+                    // TODO better notifications here
                     // Save user data to shared pref
                     val prefs = activity?.getSharedPreferences(getString(R.string.preference_file_user), Context.MODE_PRIVATE) ?: return false
                     with (prefs.edit()) {
@@ -102,32 +96,24 @@ class EditProfileFragment : Fragment() {
                     (activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
                     findNavController().popBackStack()
                     true
-                }
+                //}
             }
             else -> return super.onOptionsItemSelected(item)
         }
     }
 
-    // Receive result from intents (take photo or pick from gallery)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        // Capture image intent
-        if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
-            updateUser()
+        if (requestCode == captureIntentRequest && resultCode == Activity.RESULT_OK) {
             updateFields()
             displayMessage(requireContext(), "Picture taken correctly")
         }
-        // Capture image bad
-        else if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode != Activity.RESULT_OK) {
-            displayMessage(requireContext(), "Request cancelled or something went wrong.")
-            // Delete created file
-            File(uri!!.path!!).delete()
+        else if (requestCode == captureIntentRequest && resultCode != Activity.RESULT_OK) {
+            user?.uri?.also { File(it).delete() }
             displayMessage(requireContext(), "There was an error taking the picture")
         }
-        // Gallery intent
-        else if (requestCode == GALLERY_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            uri = data.data!!
-            updateUser()
+        else if (requestCode == galleryIntentRequest && resultCode == Activity.RESULT_OK && data != null) {
+            user = user?.apply { uri = data.data!!.toString() } ?: User(uri = data.data!!.toString())
             updateFields()
             displayMessage(requireContext(), "Picture loaded correctly")
         } else {
@@ -135,15 +121,14 @@ class EditProfileFragment : Fragment() {
         }
     }
 
-    // Receive result from request permissions
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
-            CAPTURE_PERMISSIONS_REQUEST -> {
+            capturePermissionRequest -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     captureImage()
                 }
             }
-            GALLERY_PERMISSIONS_REQUEST -> {
+            galleryPermissionRequest -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getImageFromGallery()
                 }
@@ -151,33 +136,51 @@ class EditProfileFragment : Fragment() {
         }
     }
 
-    // Update user variable using views
-    private fun updateUser() {
-        user = User(
-            name_tiet.text.toString(),
-            nickname_tiet.text.toString(),
-            email_tiet.text.toString(),
-            location_tiet.text.toString(),
-            phone_tiet.text.toString(),
-            uri?.toString()
-        )
+    // Handle capturing the Image
+    private fun captureImage() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.CAMERA), capturePermissionRequest)
+        } else {
+            Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+                activity?.packageManager?.also { pm ->
+                    takePictureIntent.resolveActivity(pm)?.also {
+                        // Create the File where the photo should go
+                        val photoFile: File? = try {
+                            createImageFile(requireContext())
+                        } catch (ex: IOException) {
+                            ex.printStackTrace()
+                            null
+                        }
+
+                        // If file generated correctly, generate intent
+                        photoFile?.also {
+                            val photoUri = FileProvider.getUriForFile(requireContext(), getString(R.string.photo_file_authority), it)
+                            user = user?.apply { uri = photoUri.toString() } ?: User(uri = photoUri.toString())
+                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+                            startActivityForResult(takePictureIntent, captureIntentRequest)
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    // Update views using the local variable user
-    private fun updateFields() {
-        user?.also { user ->
-            name_tiet.setText(user.name)
-            nickname_tiet.setText(user.nickname)
-            email_tiet.setText(user.email)
-            location_tiet.setText(user.location)
-            phone_tiet.setText(user.phone)
-            user.uri?.also { uri ->
-                profile_image.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(uri))!!)
+    // Handle selecting the image from the gallery
+    private fun getImageFromGallery() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), galleryPermissionRequest)
+        } else {
+            Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also { pickPhoto ->
+                pickPhoto.type = "image/*"
+                if (activity?.packageManager?.queryIntentActivities(pickPhoto, 0)?.isNotEmpty() == true) {
+                    startActivityForResult(pickPhoto, galleryIntentRequest)
+                }
             }
         }
     }
 
     // Click listener for changing the user profile photo
+    // Shows a dialog
     private fun selectImage() {
         val builder = AlertDialog.Builder(requireActivity())
         requireActivity().packageManager?.also { pm ->
@@ -199,49 +202,34 @@ class EditProfileFragment : Fragment() {
         }
     }
 
-    // Handle capturing the Image
-    private fun captureImage() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.CAMERA), CAPTURE_PERMISSIONS_REQUEST)
-        } else {
-            Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-                activity?.packageManager?.also { pm ->
-                    takePictureIntent.resolveActivity(pm)?.also {
-                        // Create the File where the photo should go
-                        val photoFile: File? = try {
-                            createImageFile(requireContext())
-                        } catch (ex: IOException) {
-                            ex.printStackTrace()
-                            null
-                        }
+    // Update user variable using views
+    private fun updateUser() {
+        user = user?.apply {
+            name = name_tiet.text.toString()
+            nickname = nickname_tiet.text.toString()
+            email = email_tiet.text.toString()
+            location = location_tiet.text.toString()
+            phone = phone_tiet.text.toString()
+        } ?: User(
+            name = name_tiet.text.toString(),
+            nickname = nickname_tiet.text.toString(),
+            email = email_tiet.text.toString(),
+            location = location_tiet.text.toString(),
+            phone = phone_tiet.text.toString()
+        )
+    }
 
-                        // If file generated correctly, generate intent
-                        photoFile?.also {
-                            uri = FileProvider.getUriForFile(requireContext(), getString(R.string.photo_file_authority), it)
-                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-                            startActivityForResult(takePictureIntent, CAPTURE_IMAGE_REQUEST)
-                        }
-                    }
-                }
+    // Update views using the local variable user
+    private fun updateFields() {
+        user?.also { user ->
+            name_tiet.setText(user.name)
+            nickname_tiet.setText(user.nickname)
+            email_tiet.setText(user.email)
+            location_tiet.setText(user.location)
+            phone_tiet.setText(user.phone)
+            user.uri?.also { uri ->
+                profile_image.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(uri))!!)
             }
         }
     }
-
-    // Handle selecting the image from the gallery
-    private fun getImageFromGallery() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), GALLERY_PERMISSIONS_REQUEST)
-        } else {
-            Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also { pickPhoto ->
-                if (checkActivities(pickPhoto))
-                    startActivityForResult(pickPhoto, GALLERY_IMAGE_REQUEST)
-                // TODO notify
-            }
-        }
-    }
-
-    private fun checkActivities(intent: Intent) : Boolean {
-        return activity?.packageManager?.queryIntentActivities(intent, 0)?.isNotEmpty() ?: false
-    }
-
 }

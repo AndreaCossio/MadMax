@@ -189,7 +189,7 @@ class ItemDetailsEditFragment : Fragment(), AdapterView.OnItemSelectedListener {
             item.value?.stars,
             item.value!!.id
         )
-        return true;
+        return true
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
