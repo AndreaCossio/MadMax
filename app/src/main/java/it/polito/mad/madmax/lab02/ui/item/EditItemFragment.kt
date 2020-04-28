@@ -2,6 +2,7 @@ package it.polito.mad.madmax.lab02.ui.item
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -17,6 +18,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import it.polito.mad.madmax.lab02.R
 import it.polito.mad.madmax.lab02.createImageFile
 import it.polito.mad.madmax.lab02.data_models.Item
@@ -89,8 +92,32 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
     override fun onOptionsItemSelected(menuitem: MenuItem): Boolean {
         return when (menuitem.itemId) {
             R.id.menu_save_item_save -> {
-                // TODO save to shared pref or database and handle missing entries
                 updateItem()
+
+                // Save to shared pref
+                val prefs = activity?.getSharedPreferences(getString(R.string.preferences_user_file), Context.MODE_PRIVATE)
+                prefs?.also { pref ->
+                    if (pref.contains("itemList")) {
+                        val listType = object : TypeToken<MutableList<Item>>() {}.type
+                        val itemList = Gson().fromJson<MutableList<Item>> (
+                            pref.getString("itemList", "[]"),
+                            listType
+                        )
+                        if (itemList.any { it.id == item?.id }) {
+                            val index = itemList.indexOfFirst { it.id == item?.id }
+                            itemList[index] = item!!
+                        } else {
+                            itemList.add(item!!)
+                            println(itemList.size)
+                        }
+
+                        prefs.edit().remove("itemList").putString("itemList", Gson().toJson(itemList)).apply()
+                    } else {
+                        val itemList = listOf<Item>(item!!)
+                        prefs.edit().putString("itemList", Gson().toJson(itemList)).apply()
+                    }
+                }
+
                 findNavController().navigate(EditItemFragmentDirections.actionSaveItem(item))
                 true
             } else -> super.onOptionsItemSelected(menuitem)

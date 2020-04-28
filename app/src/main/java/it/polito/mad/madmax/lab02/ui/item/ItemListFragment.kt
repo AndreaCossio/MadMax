@@ -1,5 +1,6 @@
 package it.polito.mad.madmax.lab02.ui.item
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,8 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import it.polito.mad.madmax.lab02.R
 import it.polito.mad.madmax.lab02.data_models.Item
 
@@ -28,7 +31,17 @@ class ItemListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
         // this is data fro recycler view
-        val itemsData: ArrayList<Item> = arrayListOf<Item>(Item ())
+        val prefs = activity?.getSharedPreferences(getString(R.string.preferences_user_file), Context.MODE_PRIVATE)
+        var itemsData: ArrayList<Item> = ArrayList()
+
+        prefs?.also {
+            if (it.contains("itemList")) {
+                val listType = object : TypeToken<ArrayList<Item>>() {}.type
+                itemsData = Gson().fromJson(it.getString("itemList","[]"), listType)
+            } else {
+                itemsData.add(Item())
+            }
+        }
 
         // 3. create an adapter
         val mAdapter = RvAdapter(itemsData)
@@ -48,6 +61,5 @@ class ItemListFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         activity?.findViewById<FloatingActionButton>(R.id.fab)?.visibility = View.GONE
-
     }
 }
