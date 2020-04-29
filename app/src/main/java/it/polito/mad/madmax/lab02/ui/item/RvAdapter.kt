@@ -35,11 +35,11 @@ class RvAdapter(private val items: ArrayList<Item>) : RecyclerView.Adapter<RvAda
         private val price: TextView = itemView.findViewById(R.id.price_tv)
         private val cardView: MaterialCardView = itemView.findViewById(R.id.card_view)
         private val button: Button =itemView.findViewById(R.id.edit_button)
-        @SuppressLint("SetTextI18n")
+
         fun bind(item: Item) {
-            price.text = "Price: "+String.format("%.2f", item.price)
+            price.text = String.format("%.2f", item.price)
             title.text = item.title
-            category.text = "Category: "+item.category
+            category.text = item.category
             rating.text = String.format("%.2f", item.stars)
             cardView.setOnClickListener {
                 findNavController(itemView).navigate(
