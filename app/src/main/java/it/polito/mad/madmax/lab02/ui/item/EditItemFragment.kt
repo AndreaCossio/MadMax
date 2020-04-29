@@ -109,24 +109,29 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 // Save to shared pref
                 val prefs = activity?.getSharedPreferences(getString(R.string.preferences_user_file), Context.MODE_PRIVATE)
                 prefs?.also { pref ->
+                    var itemId:Int
                     if (pref.contains("itemList")) {
                         val listType = object : TypeToken<MutableList<Item>>() {}.type
                         val itemList = Gson().fromJson<MutableList<Item>> (
                             pref.getString("itemList", "[]"),
                             listType
                         )
-                        if (itemList.any { it.id == item?.id }) {
+                        if (itemList.any { it.id == item?.id && it.id != null}) {
                             val index = itemList.indexOfFirst { it.id == item?.id }
                             itemList[index] = item!!
                         } else {
+                            itemId = pref.getInt("nextId",1)
+                            item!!.id = itemId
+                            itemId++
+                            pref.edit().putInt("nextId",itemId).apply()
                             itemList.add(item!!)
-                            println(itemList.size)
                         }
 
                         prefs.edit().remove("itemList").putString("itemList", Gson().toJson(itemList)).apply()
                     } else {
+                        item!!.id = 1
                         val itemList = listOf<Item>(item!!)
-                        prefs.edit().putString("itemList", Gson().toJson(itemList)).apply()
+                        prefs.edit().putString("itemList", Gson().toJson(itemList)).putInt("nextId",2).apply()
                     }
                 }
 
@@ -200,7 +205,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private fun captureImage() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this.requireActivity(), arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE), capturePermissionRequest)
-        } else {
+        }else{
             Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
                 activity?.packageManager?.also { pm ->
                     takePictureIntent.resolveActivity(pm)?.also {
