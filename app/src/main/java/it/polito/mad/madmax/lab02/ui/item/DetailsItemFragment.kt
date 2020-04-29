@@ -61,7 +61,11 @@ class DetailsItemFragment : Fragment() {
             expiry_tv.text = item.expiry
             rating_bar.rating = item.stars.toFloat()
             item.photo?.also { photo ->
-                item_image.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(photo)))
+                handleSamplingAndRotationBitmap(requireContext(), Uri.parse(photo))?.let {
+                    item_image.setImageBitmap(
+                        it
+                    )
+                }
             }
         }
     }

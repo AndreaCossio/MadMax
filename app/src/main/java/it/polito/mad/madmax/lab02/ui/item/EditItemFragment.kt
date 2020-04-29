@@ -77,7 +77,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
         spinner1.onItemSelectedListener = this
 
         change_date.setOnClickListener { showDatePicker() }
-        camera_button.setOnClickListener { selectImage() }
+        item_image.setOnClickListener { selectImage() }
 
         updateFields()
     }
@@ -307,7 +307,11 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
             profile_location.setText(item.location)
             expiry_tv.text = (item.expiry)
             item.photo?.also { photo ->
-                item_image.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(photo)))
+                handleSamplingAndRotationBitmap(requireContext(), Uri.parse(photo))?.let {
+                    item_image.setImageBitmap(
+                        it
+                    )
+                }
             }
         }
     }

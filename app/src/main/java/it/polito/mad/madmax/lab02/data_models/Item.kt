@@ -10,6 +10,6 @@ data class Item (
     var price: Double = 0.0,
     var location: String = "",
     var expiry: String = "",
-    var stars:Double = 0.0,
+    var stars:Double = Math.random()%3+2, //Random number for now, because the rating can't be set by the user itself
     var photo: String? = null
 ) : Serializable
