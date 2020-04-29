@@ -1,6 +1,6 @@
 package it.polito.mad.madmax.lab02.ui.item
 
-import android.annotation.SuppressLint
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,11 +11,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import it.polito.mad.madmax.lab02.R
 import it.polito.mad.madmax.lab02.data_models.Item
+import it.polito.mad.madmax.lab02.handleSamplingAndRotationBitmap
+import it.polito.mad.madmax.lab02.ui.profile.CircleImage
+import kotlinx.android.synthetic.main.fragment_details_item.*
 
 class RvAdapter(private val items: ArrayList<Item>) : RecyclerView.Adapter<RvAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(holder: ViewGroup, position: Int): ViewHolder {
-        val v = LayoutInflater.from(holder.context).inflate(R.layout.adapter_item_layout, holder, false)
+        val v =
+            LayoutInflater.from(holder.context).inflate(R.layout.adapter_item_layout, holder, false)
         return ViewHolder(v)
     }
 
@@ -34,9 +38,17 @@ class RvAdapter(private val items: ArrayList<Item>) : RecyclerView.Adapter<RvAda
         private val rating: TextView = itemView.findViewById(R.id.rating_tv)
         private val price: TextView = itemView.findViewById(R.id.price_tv)
         private val cardView: MaterialCardView = itemView.findViewById(R.id.card_view)
-        private val button: Button =itemView.findViewById(R.id.edit_button)
+        private val button: Button = itemView.findViewById(R.id.edit_button)
+        private val image: CircleImage = itemView.findViewById(R.id.circleImage)
 
         fun bind(item: Item) {
+            item.photo?.also { photo ->
+                handleSamplingAndRotationBitmap(itemView.context, Uri.parse(photo))?.let {
+                    image.setImageBitmap(
+                        it
+                    )
+                }
+            }
             price.text = String.format("%.2f", item.price)
             title.text = item.title
             category.text = item.category

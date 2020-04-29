@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.40218878" />
+        app:layout_constraintGuide_percent="0.40" />
 
     <FrameLayout
         android:id="@+id/frameLayout"
@@ -17,17 +17,19 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
+        <it.polito.mad.madmax.lab02.ui.profile.CircleImage
             android:id="@+id/item_image"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginBottom="35dp"
-            android:src="@drawable/velvet" />
+            android:padding="8dp"
+            android:src="@drawable/camera"
+            app:civ_border_width="3dp"
+            app:civ_border_color="@color/colorSecondary"
+            android:layout_gravity="center"
+            android:layout_marginVertical="5dp"/>
 
         <androidx.cardview.widget.CardView
             android:layout_width="200dp"
