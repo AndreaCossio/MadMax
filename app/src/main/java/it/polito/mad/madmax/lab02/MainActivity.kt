@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfig)
         nav_view.setupWithNavController(navController)
 
-        fab.setOnClickListener { view ->
+        fab.setOnClickListener {
             navController.navigate(ItemListFragmentDirections.actionCreateItem(null))
         }
 

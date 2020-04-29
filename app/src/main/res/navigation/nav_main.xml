@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_nav_item_list_to_nav_profile"
             app:destination="@id/nav_show_profile_fragment" />
+        <action
+            android:id="@+id/action_nav_item_list_fragment_to_nav_edit_item_fragment"
+            app:destination="@id/nav_edit_item_fragment" />
     </fragment>
 
     <!-- Details item -->
