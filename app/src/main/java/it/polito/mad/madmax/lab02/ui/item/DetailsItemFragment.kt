@@ -34,11 +34,12 @@ class DetailsItemFragment : Fragment() {
             item = it
         }
         updateFields()
-
-        item_details_card.post {
-            item_details_card.radius = (item_details_card.height * 0.5).toFloat()
-        }
         args.item ?: findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(null))
+        item_details_card?.also {
+            it.post {
+                it.radius = (it.height * 0.5).toFloat()
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
