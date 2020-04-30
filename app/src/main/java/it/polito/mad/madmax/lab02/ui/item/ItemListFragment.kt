@@ -55,11 +55,11 @@ class ItemListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        activity?.findViewById<FloatingActionButton>(R.id.fab)?.visibility = View.VISIBLE
+        activity?.findViewById<FloatingActionButton>(R.id.main_fab_add_item)?.visibility = View.VISIBLE
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        activity?.findViewById<FloatingActionButton>(R.id.fab)?.visibility = View.GONE
+        activity?.findViewById<FloatingActionButton>(R.id.main_fab_add_item)?.visibility = View.GONE
     }
 }

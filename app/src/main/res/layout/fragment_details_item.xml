@@ -83,7 +83,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:hint="@string/item_price"
-                    android:textColor="@color/colorTextOnSecondary"
                     android:textSize="24sp" />
 
                 <TextView
@@ -95,7 +94,6 @@
                     android:layout_marginEnd="16dp"
                     android:gravity="end"
                     android:hint="@string/item_title"
-                    android:textColor="@color/colorTextOnSecondary"
                     android:textSize="18sp" />
 
             </LinearLayout>
@@ -163,24 +161,21 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="8dp"
-                        android:hint="@string/item_category_main"
-                        android:textColor="@color/colorTextOnSecondary" />
+                        android:hint="@string/item_category_main"/>
 
                     <TextView
                         android:id="@+id/profile_location"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="8dp"
-                        android:hint="@string/item_location"
-                        android:textColor="@color/colorTextOnSecondary" />
+                        android:hint="@string/item_location"/>
 
                     <TextView
                         android:id="@+id/expiry_tv"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="8dp"
-                        android:hint="@string/item_expiry"
-                        android:textColor="@color/colorTextOnSecondary" />
+                        android:hint="@string/item_expiry" />
 
                 </LinearLayout>
 

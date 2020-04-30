@@ -30,6 +30,7 @@ class EditProfileFragment : Fragment() {
 
     // User
     private var user: User? = null
+    private var newPhotoUri: String? = null
 
     // Destination arguments
     private val args: EditProfileFragmentArgs by navArgs()
@@ -52,19 +53,20 @@ class EditProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        profile_edit_photo.setOnClickListener { selectImage() }
         updateFields()
+        // Fab listener
+        profile_edit_change_photo.setOnClickListener { selectImage() }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         updateUser()
-        outState.putSerializable("user", user)
+        outState.putSerializable("profile_edit_user_state", user)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        savedInstanceState?.getSerializable("user")?.also {
+        savedInstanceState?.getSerializable("profile_edit_user_state")?.also {
             user = it as User
             updateFields()
         }
@@ -79,16 +81,14 @@ class EditProfileFragment : Fragment() {
         return when (item.itemId) {
             R.id.menu_save_profile_save -> {
                 updateUser()
-                // TODO handle errors
-                // TODO pan fields up with keyboard (like whatsapp)
-                /*if (user!!.name == "" || user!!.email == "" || user!!.nickname == "" || user!!.location == "" || user!!.phone == "") {
-                    if (user!!.name == "") {
-                        name_tiet.error = getString(R.string.error_required)
+                if (user!!.name == "" || user!!.email == "" || user!!.nickname == "" || user!!.location == "" || user!!.phone == "") {
+                    for (field in setOf(profile_edit_name, profile_edit_email, profile_edit_nickname, profile_edit_location, profile_edit_phone)) {
+                        if (field.text.toString() == "") {
+                            field.error = getString(R.string.message_error_field_required)
+                        }
                     }
-                    //displayMessage(requireContext(), "Fill every field to continue")
                     false
-                } else {*/
-                    // TODO better notifications here
+                } else {
                     // Save user data to shared pref
                     val prefs = activity?.getSharedPreferences(getString(R.string.preferences_user_file), Context.MODE_PRIVATE) ?: return false
                     with (prefs.edit()) {
@@ -99,7 +99,7 @@ class EditProfileFragment : Fragment() {
                     (activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
                     findNavController().navigate(EditProfileFragmentDirections.actionSaveProfile(user))
                     true
-                //}
+                }
             } else -> return super.onOptionsItemSelected(item)
         }
     }
@@ -107,11 +107,14 @@ class EditProfileFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == captureIntentRequest && resultCode == Activity.RESULT_OK) {
+            user = user?.apply { photo = newPhotoUri } ?: User(photo = newPhotoUri)
             updateFields()
             displayMessage(requireContext(), "Picture taken correctly")
         }
         else if (requestCode == captureIntentRequest && resultCode != Activity.RESULT_OK) {
-            user?.photo?.also { File(it).delete() }
+            newPhotoUri?.also {
+                File(it).delete()
+            }
             displayMessage(requireContext(), "There was an error taking the picture")
         }
         else if (requestCode == galleryIntentRequest && resultCode == Activity.RESULT_OK && data != null) {
@@ -181,7 +184,7 @@ class EditProfileFragment : Fragment() {
                         // If file generated correctly, generate intent
                         photoFile?.also {
                             val photoUri = FileProvider.getUriForFile(requireContext(), getString(R.string.file_provider), it)
-                            user = user?.apply { photo = photoUri.toString() } ?: User(photo = photoUri.toString())
+                            newPhotoUri = photoUri.toString()
                             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
                             startActivityForResult(takePictureIntent, captureIntentRequest)
                         }
