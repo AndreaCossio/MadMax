@@ -15,14 +15,11 @@
             android:id="@+id/action_details_item"
             app:destination="@id/nav_details_item_fragment" />
         <action
+            android:id="@+id/action_edit_item"
+            app:destination="@id/nav_edit_item_fragment" />
+        <action
             android:id="@+id/action_create_item"
             app:destination="@id/nav_details_item_fragment" />
-        <action
-            android:id="@+id/action_nav_item_list_to_nav_profile"
-            app:destination="@id/nav_show_profile_fragment" />
-        <action
-            android:id="@+id/action_nav_item_list_fragment_to_nav_edit_item_fragment"
-            app:destination="@id/nav_edit_item_fragment" />
     </fragment>
 
     <!-- Details item -->
@@ -50,8 +47,8 @@
         <action
             android:id="@+id/action_save_item"
             app:destination="@id/nav_details_item_fragment"
-            app:popUpTo="@id/nav_item_list_fragment"
-           />
+            app:popUpTo="@id/nav_details_item_fragment"
+            app:popUpToInclusive="true"/>
         <argument
             android:name="item"
             app:argType="it.polito.mad.madmax.lab02.data_models.Item"

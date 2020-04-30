@@ -36,12 +36,10 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     // Item
     private var item: Item? = null
+    private var newPhotoUri: String? = null
 
     // Destination arguments
     private val args: EditItemFragmentArgs by navArgs()
-
-    // Create / Edit
-    private var createMode: Boolean = false
 
     // Intent codes
     private val capturePermissionRequest = 0
@@ -52,10 +50,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        createMode = args.item?.let {
-            item = it
-            false
-        } ?: true
+        item = args.item
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -64,33 +59,33 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        if (createMode) {
+        args.item?.also {
             activity?.findViewById<MaterialToolbar>(R.id.main_toolbar)?.setTitle(R.string.title_create_item_fragment)
         }
-
         val categories = resources.getStringArray(R.array.item_categories_main)
         val dataAdapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, categories)
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         dataAdapter.notifyDataSetChanged()
-        spinner1.adapter = dataAdapter
-        spinner1.onItemSelectedListener = this
-
-        change_date.setOnClickListener { showDatePicker() }
-        item_image.setOnClickListener { selectImage() }
-
+        item_edit_category_main.adapter = dataAdapter
+        item_edit_category_main.onItemSelectedListener = this
+        item_edit_expiry_button.setOnClickListener { showDatePicker() }
+        item_edit_change_photo.setOnClickListener { selectImage() }
         updateFields()
+
+        item_edit_card.post {
+            item_edit_card.radius = (item_edit_card.height * 0.5).toFloat()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         updateItem()
-        outState.putSerializable("item", item)
+        outState.putSerializable("item_edit_item_state", item)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        savedInstanceState?.getSerializable("item")?.also {
+        savedInstanceState?.getSerializable("item_edit_item_state")?.also {
             item = it as Item
             updateFields()
         }
@@ -105,40 +100,48 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
         return when (menuitem.itemId) {
             R.id.menu_save_item_save -> {
                 updateItem()
-
-                // Save to shared pref
-                val prefs = activity?.getSharedPreferences(getString(R.string.preferences_user_file), Context.MODE_PRIVATE)
-                prefs?.also { pref ->
-                    var itemId:Int
-                    if (pref.contains("itemList")) {
-                        val listType = object : TypeToken<MutableList<Item>>() {}.type
-                        val itemList = Gson().fromJson<MutableList<Item>> (
-                            pref.getString("itemList", "[]"),
-                            listType
-                        )
-                        if (itemList.any { it.id == item?.id && it.id != null}) {
-                            val index = itemList.indexOfFirst { it.id == item?.id }
-                            itemList[index] = item!!
-                        } else {
-                            itemId = pref.getInt("nextId",1)
-                            item!!.id = itemId
-                            itemId++
-                            pref.edit().putInt("nextId",itemId).apply()
-                            itemList.add(item!!)
+                if (item!!.title == "" || item!!.description == "" || item!!.price.toString() == "" || item!!.location == "" || item!!.expiry == "") {
+                    for (field in setOf(item_edit_title, item_edit_description, item_edit_price, item_edit_location)) {
+                        if (field.text.toString() == "") {
+                            field.error = getString(R.string.message_error_field_required)
                         }
-
-                        prefs.edit().remove("itemList").putString("itemList", Gson().toJson(itemList)).apply()
-                    } else {
-                        item!!.id = 1
-                        val itemList = listOf<Item>(item!!)
-                        prefs.edit().putString("itemList", Gson().toJson(itemList)).putInt("nextId",2).apply()
                     }
-                }
+                    false
+                } else {
+                    // Save to shared pref
+                    val prefs = activity?.getSharedPreferences(getString(R.string.preferences_user_file), Context.MODE_PRIVATE)
+                    prefs?.also { pref ->
+                        var itemId:Int
+                        if (pref.contains("itemList")) {
+                            val listType = object : TypeToken<MutableList<Item>>() {}.type
+                            val itemList = Gson().fromJson<MutableList<Item>> (
+                                pref.getString("itemList", "[]"),
+                                listType
+                            )
+                            if (itemList.any { it.id == item?.id && it.id != null}) {
+                                val index = itemList.indexOfFirst { it.id == item?.id }
+                                itemList[index] = item!!
+                            } else {
+                                itemId = pref.getInt("nextId",1)
+                                item!!.id = itemId
+                                itemId++
+                                pref.edit().putInt("nextId",itemId).apply()
+                                itemList.add(item!!)
+                            }
 
-                // Close keyboard
-                (activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
-                findNavController().navigate(EditItemFragmentDirections.actionSaveItem(item))
-                true
+                            prefs.edit().remove("itemList").putString("itemList", Gson().toJson(itemList)).apply()
+                        } else {
+                            item!!.id = 1
+                            val itemList = listOf<Item>(item!!)
+                            prefs.edit().putString("itemList", Gson().toJson(itemList)).putInt("nextId",2).apply()
+                        }
+                    }
+
+                    // Close keyboard
+                    (activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
+                    findNavController().navigate(EditItemFragmentDirections.actionSaveItem(item))
+                    true
+                }
             } else -> super.onOptionsItemSelected(menuitem)
         }
     }
@@ -146,11 +149,14 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == captureIntentRequest && resultCode == Activity.RESULT_OK) {
+            item = item?.apply { photo = newPhotoUri } ?: Item(photo = newPhotoUri)
             updateFields()
             displayMessage(this.requireContext(), "Picture taken correctly")
         }
         else if (requestCode == captureIntentRequest && resultCode != Activity.RESULT_OK) {
-            item?.photo?.also { File(it).delete() }
+            newPhotoUri?.also {
+                File(it).delete()
+            }
             displayMessage(this.requireContext(), "There was an error taking the picture")
         }
         else if (requestCode == galleryIntentRequest && resultCode == Activity.RESULT_OK && data != null) {
@@ -220,7 +226,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         // If file generated correctly, generate intent
                         photoFile?.also {
                             val photoUri = FileProvider.getUriForFile(requireContext(), getString(R.string.file_provider), it)
-                            item = item?.apply { photo = photoUri.toString() } ?: Item(photo = photoUri.toString())
+                            newPhotoUri = photoUri.toString()
                             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
                             startActivityForResult(takePictureIntent, captureIntentRequest)
                         }
@@ -248,7 +254,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private fun showDatePicker() {
         val builder = MaterialDatePicker.Builder.datePicker()
         val picker = builder.build()
-        picker.addOnPositiveButtonClickListener { expiry_tv.text = picker.headerText }
+        picker.addOnPositiveButtonClickListener { item_edit_expiry.text = picker.headerText }
         picker.show(childFragmentManager, picker.toString())
     }
 
@@ -257,9 +263,53 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        val text: String = parent?.getItemAtPosition(position).toString()
+        if (parent?.id == R.id.item_edit_category_main) {
+            val text: String = parent.getItemAtPosition(position).toString()
+            val secondList: Int = when (text) {
+                "Arts & Crafts" -> { R.array.item_categories_sub_art_and_crafts }
+                "Sports & Hobby" -> { R.array.item_categories_sub_sports_and_hobby }
+                "Baby" -> { R.array.item_categories_sub_baby }
+                "Women\'s fashion" -> { R.array.item_categories_sub_womens_fashion }
+                "Men\'s fashion" -> { R.array.item_categories_sub_mens_fashion }
+                "Electronics" -> { R.array.item_categories_sub_electronics }
+                "Games & Videogames" -> { R.array.item_categories_sub_games_and_videogames }
+                "Automotive" -> { R.array.item_categories_sub_automotive }
 
-        val secondList: Int = when (text) {
+                else -> throw Exception()
+            }
+
+            val elements = resources.getStringArray(secondList)
+            val dataAdapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, elements)
+            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            dataAdapter.notifyDataSetChanged()
+            item_edit_category_sub.adapter = dataAdapter
+        }
+    }
+
+    // Update user variable using views
+    private fun updateItem() {
+        item = item?.apply {
+            title = item_edit_title.text.toString()
+            description = item_edit_description.text.toString()
+            category_main = item_edit_category_main.selectedItem.toString()
+            category_sub = item_edit_category_sub.selectedItem.toString()
+            price = item_edit_price.text.toString().toDoubleOrNull() ?: 0.0
+            location = item_edit_location.text.toString()
+            expiry = item_edit_expiry.text.toString()
+        } ?: Item (
+            title = item_edit_title.text.toString(),
+            description = item_edit_description.text.toString(),
+            category_main = item_edit_category_main.selectedItem.toString(),
+            category_sub = item_edit_category_sub.selectedItem.toString(),
+            price = item_edit_price.text.toString().toDoubleOrNull() ?: 0.0,
+            location = item_edit_location.text.toString(),
+            expiry = item_edit_expiry.text.toString()
+        )
+    }
+
+    // Update views using the local variable item
+    private fun updateFields() {
+        val secondList: Int? = when (item?.category_main) {
             "Arts & Crafts" -> { R.array.item_categories_sub_art_and_crafts }
             "Sports & Hobby" -> { R.array.item_categories_sub_sports_and_hobby }
             "Baby" -> { R.array.item_categories_sub_baby }
@@ -268,50 +318,20 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
             "Electronics" -> { R.array.item_categories_sub_electronics }
             "Games & Videogames" -> { R.array.item_categories_sub_games_and_videogames }
             "Automotive" -> { R.array.item_categories_sub_automotive }
-
-            else -> throw Exception()
+            else -> null
         }
-
-        val elements = resources.getStringArray(secondList)
-        val dataAdapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, elements)
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        dataAdapter.notifyDataSetChanged()
-        spinner2.adapter = dataAdapter
-    }
-
-    // Update user variable using views
-    private fun updateItem() {
-        item = item?.apply {
-            title = title_tv.text.toString()
-            description = description_tv.text.toString()
-            category = spinner1.selectedItem.toString() // 1 or 2?
-            price = price_tv.text.toString().toDoubleOrNull() ?: 0.0
-            location = profile_location.text.toString()
-            expiry = expiry_tv.text.toString()
-        } ?: Item (
-            title = title_tv.text.toString(),
-            description = description_tv.text.toString(),
-            category = spinner1.selectedItem.toString(), // 1 or 2?
-            price = price_tv.text.toString().toDoubleOrNull() ?: 0.0,
-            location = profile_location.text.toString(),
-            expiry = expiry_tv.text.toString()
-        )
-    }
-
-    // Update views using the local variable item
-    private fun updateFields() {
         item?.also { item ->
-            title_tv.setText(item.title)
-            description_tv.setText(item.description)
-            price_tv.setText(item.price.toString())
-            profile_location.setText(item.location)
-            expiry_tv.text = (item.expiry)
+            item_edit_title.setText(item.title)
+            item_edit_description.setText(item.description)
+            item_edit_category_main.setSelection(resources.getStringArray(R.array.item_categories_main).indexOf(item.category_main))
+            secondList?.also {
+                item_edit_category_sub.setSelection(resources.getStringArray(it).indexOf(item.category_sub))
+            }
+            item_edit_price.setText(item.price.toString())
+            item_edit_location.setText(item.location)
+            item_edit_expiry.text = item.expiry
             item.photo?.also { photo ->
-                handleSamplingAndRotationBitmap(requireContext(), Uri.parse(photo))?.let {
-                    item_image.setImageBitmap(
-                        it
-                    )
-                }
+                item_edit_photo.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(photo))!!)
             }
         }
     }

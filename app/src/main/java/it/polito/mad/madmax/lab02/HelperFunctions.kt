@@ -2,6 +2,7 @@ package it.polito.mad.madmax.lab02
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -106,3 +107,5 @@ fun rotateImage(img: Bitmap, degree: Int): Bitmap? {
 fun displayMessage(context: Context, message: String) {
     Toast.makeText(context, message, Toast.LENGTH_LONG).show()
 }
+
+fun Int.toPx(): Int = (this * Resources.getSystem().displayMetrics.density).toInt()

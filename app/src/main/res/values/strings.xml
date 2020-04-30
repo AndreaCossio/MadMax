@@ -25,6 +25,9 @@
     <string name="menu_settings">Settings</string>
     <string name="preference_user">user_profile</string>
 
+    <!-- BUTTONS -->
+    <string name="button_edit_item">Edit</string>
+
     <!-- MESSAGES -->
     <!-- Normal -->
     <!-- Error -->
@@ -35,6 +38,13 @@
     <string name="photo_dialog_take_photo">Take a picture</string>
     <string name="photo_dialog_gallery_photo">Choose from gallery</string>
     <string name="photo_dialog_cancel">Cancel</string>
+
+    <!-- CONTENT DESCRIPTIONS -->
+    <string name="content_description_settings">Settings</string>
+    <string name="content_description_edit">Edit</string>
+    <string name="content_description_save">Save</string>
+    <string name="content_description_profile_photo">Photo profile</string>
+    <string name="content_description_item_photo">Photo item</string>
 
     <!-- PROFILE -->
     <string name="profile_name">Full Name</string>
@@ -51,11 +61,9 @@
     <string name="item_price">Price</string>
     <string name="item_location">Location</string>
     <string name="item_expiry">Expiry Date</string>
-    <string name="item_change">Change</string>
+    <string name="item_expiry_change">Change</string>
     <string name="item_details">Item details</string>
     <string name="item_stars">Rate</string>
-
-    <string name="item_list_edit">Edit</string>
     <!-- Categories -->
     <string-array name="item_categories_main">
         <item>Arts &amp; Crafts</item>

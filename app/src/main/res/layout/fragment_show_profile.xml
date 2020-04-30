@@ -1,95 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:gravity="center"
-        android:background="@drawable/gradientbackground">
+        android:background="@color/colorPrimary"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/profile_guideline">
 
-        <it.polito.mad.madmax.lab02.ui.profile.CircleImage
-            android:id="@+id/profile_photo"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="9"
-            android:src="@drawable/person"
-            app:civ_border_color="@color/colorTextOnPrimary"
-            app:civ_border_width="3dp" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/profile_nickname"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/profile_card"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_weight="3"
-            android:layout_marginTop="10dp"
-            android:textColor="@color/colorTextOnPrimary"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:gravity="center_vertical"/>
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="32dp"
+            app:cardElevation="0dp"
+            app:cardCornerRadius="500dp"
+            app:cardPreventCornerOverlap="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-    </LinearLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#e0e0e0">
+
+                <ImageView
+                    android:id="@+id/profile_photo"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@color/transparent"
+                    android:contentDescription="@string/content_description_profile_photo"
+                    android:src="@drawable/ic_profile_white"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintDimensionRatio="H,1:1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/profile_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".33"/>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
         android:orientation="vertical"
-        android:padding="16dp"
-        android:layout_marginTop="16dp">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_guideline"
+        app:layout_constraintVertical_bias="0.2"
+        app:layout_constraintWidth_max="500dp">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/profile_name"
+            style="@style/TextAppearance.MaterialComponents.Headline6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/profile_name" />
+
+        <include layout="@layout/divider" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/profile_nickname"
+            style="@style/TextAppearance.MaterialComponents.Body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_person_black_24dp"
-            android:drawablePadding="20dp"
-            android:hint="@string/profile_name"
-            android:textColor="@color/colorPrimary"
-            android:textSize="16sp" />
-
-        <include layout="@xml/divider" />
+            android:layout_marginTop="32dp"
+            android:drawableStart="@drawable/ic_nickname_primary"
+            android:drawablePadding="36dp"
+            android:hint="@string/profile_nickname" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/profile_email"
+            style="@style/TextAppearance.MaterialComponents.Body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_local_post_office_black_24dp"
-            android:drawablePadding="20dp"
-            android:hint="@string/profile_email"
-            android:textColor="@color/colorPrimary"
-            android:textSize="16sp" />
-
-        <include layout="@xml/divider" />
+            android:layout_marginTop="32dp"
+            android:drawableStart="@drawable/ic_email_primary"
+            android:drawablePadding="36dp"
+            android:hint="@string/profile_email" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/profile_location"
+            android:id="@+id/item_location"
+            style="@style/TextAppearance.MaterialComponents.Body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_location_city_black_24dp"
-            android:drawablePadding="20dp"
-            android:hint="@string/profile_location"
-            android:textColor="@color/colorPrimary"
-            android:textSize="16sp" />
-
-        <include layout="@xml/divider" />
+            android:layout_marginTop="32dp"
+            android:drawableStart="@drawable/ic_location_primary"
+            android:drawablePadding="36dp"
+            android:hint="@string/profile_location" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/profile_phone"
+            style="@style/TextAppearance.MaterialComponents.Body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_phone_black_24dp"
-            android:drawablePadding="20dp"
-            android:hint="@string/profile_phone"
-            android:textColor="@color/colorPrimary"
-            android:textSize="16sp" />
+            android:layout_marginTop="32dp"
+            android:drawableStart="@drawable/ic_phone_primary"
+            android:drawablePadding="36dp"
+            android:hint="@string/profile_phone" />
 
     </LinearLayout>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

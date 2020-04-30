@@ -22,9 +22,6 @@ class DetailsItemFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        args.item?.also {
-            item = it
-        } ?: findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(null))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -33,7 +30,15 @@ class DetailsItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        args.item?.also {
+            item = it
+        }
         updateFields()
+
+        item_details_card.post {
+            item_details_card.radius = (item_details_card.height * 0.5).toFloat()
+        }
+        args.item ?: findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(null))
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -41,31 +46,28 @@ class DetailsItemFragment : Fragment() {
         inflater.inflate(R.menu.menu_edit_item, menu)
     }
 
-    override fun onOptionsItemSelected(menuItem: MenuItem): Boolean {
-        return when (menuItem.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.menu_edit_item_edit -> {
-                findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(item))
+                findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(this.item))
                 true
-            } else -> super.onOptionsItemSelected(menuItem)
+            } else -> super.onOptionsItemSelected(item)
         }
     }
 
     // Update views using the local variable item
     private fun updateFields() {
         item?.also { item ->
-            price_tv.text = item.price.toString()
-            title_tv.text = item.title
-            description_tv.text = item.description
-            category_tv.text = item.category
-            profile_location.text = item.location
-            expiry_tv.text = item.expiry
-            rating_bar.rating = item.stars.toFloat()
+            item_details_title.text = item.title
+            item_details_description.text = item.description
+            item_details_category_main.text = item.category_main
+            item_details_category_sub.text = item.category_sub
+            item_details_price.text = item.price.toString()
+            item_details_location.text = item.location
+            item_details_expiry.text = item.expiry
+            item_details_stars.rating = item.stars.toFloat()
             item.photo?.also { photo ->
-                handleSamplingAndRotationBitmap(requireContext(), Uri.parse(photo))?.let {
-                    item_image.setImageBitmap(
-                        it
-                    )
-                }
+                item_details_photo.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(photo))!!)
             }
         }
     }
