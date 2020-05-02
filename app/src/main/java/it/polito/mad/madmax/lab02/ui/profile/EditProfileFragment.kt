@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -23,17 +24,19 @@ import it.polito.mad.madmax.lab02.data_models.User
 import it.polito.mad.madmax.lab02.displayMessage
 import it.polito.mad.madmax.lab02.handleSamplingAndRotationBitmap
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
-import java.io.File
 import java.io.IOException
 
 class EditProfileFragment : Fragment() {
 
     // User
     private var user: User? = null
-    private var newPhotoUri: String? = null
+    private var tempUri: String? = null
 
     // Destination arguments
     private val args: EditProfileFragmentArgs by navArgs()
+
+    // Listeners
+    private lateinit var cardListener: View.OnLayoutChangeListener
 
     // Intent codes
     private val capturePermissionRequest = 0
@@ -44,6 +47,7 @@ class EditProfileFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        initListeners()
         user = args.user
     }
 
@@ -54,23 +58,27 @@ class EditProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         updateFields()
-        profile_edit_card.post {
-            profile_edit_card.radius = (profile_edit_card.height * 0.5).toFloat()
-        }
-        // Fab listener
+        profile_edit_card.addOnLayoutChangeListener(cardListener)
         profile_edit_change_photo.setOnClickListener { selectImage() }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        profile_edit_card.removeOnLayoutChangeListener(cardListener)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         updateUser()
         outState.putSerializable("profile_edit_user_state", user)
+        outState.putString("profile_edit_newPhotoUri_state", tempUri)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        savedInstanceState?.getSerializable("profile_edit_user_state")?.also {
-            user = it as User
+        savedInstanceState?.also { state ->
+            state.getSerializable("profile_edit_user_state")?.also { user = it as User }
+            state.getString("profile_edit_newPhotoUri_state")?.also { tempUri = it }
             updateFields()
         }
     }
@@ -100,7 +108,7 @@ class EditProfileFragment : Fragment() {
                     }
 
                     (activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
-                    findNavController().navigate(EditProfileFragmentDirections.actionSaveProfile(user))
+                    findNavController().navigate(EditProfileFragmentDirections.actionSaveProfile(user?.copy()))
                     true
                 }
             } else -> return super.onOptionsItemSelected(item)
@@ -109,24 +117,31 @@ class EditProfileFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == captureIntentRequest && resultCode == Activity.RESULT_OK) {
-            user = user?.apply { photo = newPhotoUri } ?: User(photo = newPhotoUri)
-            updateFields()
-            displayMessage(requireContext(), "Picture taken correctly")
-        }
-        else if (requestCode == captureIntentRequest && resultCode != Activity.RESULT_OK) {
-            newPhotoUri?.also {
-                File(it).delete()
+        when (requestCode) {
+            captureIntentRequest -> {
+                when (resultCode) {
+                    Activity.RESULT_OK -> {
+                        user = user?.apply { photo = tempUri } ?: User(photo = tempUri)
+                        tempUri = null
+                        updateFields()
+                        displayMessage(requireContext(), "Picture taken correctly")
+                    }
+                    else -> displayMessage(requireContext(), "Request cancelled or something went wrong.")
+                }
             }
-            displayMessage(requireContext(), "There was an error taking the picture")
-        }
-        else if (requestCode == galleryIntentRequest && resultCode == Activity.RESULT_OK && data != null) {
-            val photoUri = data.data!!.toString()
-            user = user?.apply { photo = photoUri } ?: User(photo = photoUri)
-            updateFields()
-            displayMessage(requireContext(), "Picture loaded correctly")
-        } else {
-            displayMessage(requireContext(), "Request cancelled or something went wrong.")
+            galleryIntentRequest -> {
+                when (resultCode) {
+                    Activity.RESULT_OK -> {
+                        data?.data?.also {
+                            user = user?.apply { photo = it.toString() } ?: User(photo = it.toString())
+                            updateFields()
+                            displayMessage(requireContext(), "Picture loaded correctly")
+                        } ?: displayMessage(requireContext(), "Request cancelled or something went wrong.")
+                    }
+                    else -> displayMessage(requireContext(), "Request cancelled or something went wrong.")
+                }
+            }
+            else -> displayMessage(requireContext(), "Request cancelled or something went wrong.")
         }
     }
 
@@ -146,25 +161,22 @@ class EditProfileFragment : Fragment() {
     }
 
     // Click listener for changing the user profile photo
-    // Shows a dialog
     private fun selectImage() {
         val builder = AlertDialog.Builder(requireActivity())
         requireActivity().packageManager?.also { pm ->
-            pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY).also { hasCamera ->
-                if (hasCamera) {
-                    builder.setTitle(R.string.photo_dialog_choose_photo)
-                        .setItems(arrayOf<CharSequence>(getString(R.string.photo_dialog_take_photo), getString(R.string.photo_dialog_gallery_photo))) { _, item ->
-                            if (item == 0) captureImage()
-                            else getImageFromGallery()
-                        }
-                        .setNegativeButton(R.string.photo_dialog_cancel) { dialog, _ -> dialog.cancel() }
-                } else {
-                    builder.setTitle(R.string.photo_dialog_choose_photo)
-                        .setItems(arrayOf<CharSequence>(getString(R.string.photo_dialog_gallery_photo))) { _, _ -> getImageFromGallery() }
-                        .setNegativeButton(R.string.photo_dialog_cancel) { dialog, _ -> dialog.cancel() }
-                }
-                builder.show()
+            if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+                builder.setTitle(R.string.photo_dialog_choose_photo)
+                    .setItems(arrayOf<CharSequence>(getString(R.string.photo_dialog_take_photo), getString(R.string.photo_dialog_gallery_photo))) { _, item ->
+                        if (item == 0) captureImage()
+                        else getImageFromGallery()
+                    }
+                    .setNegativeButton(R.string.photo_dialog_cancel) { dialog, _ -> dialog.cancel() }
+            } else {
+                builder.setTitle(R.string.photo_dialog_choose_photo)
+                    .setItems(arrayOf<CharSequence>(getString(R.string.photo_dialog_gallery_photo))) { _, _ -> getImageFromGallery() }
+                    .setNegativeButton(R.string.photo_dialog_cancel) { dialog, _ -> dialog.cancel() }
             }
+            builder.show()
         }
     }
 
@@ -177,19 +189,15 @@ class EditProfileFragment : Fragment() {
                 activity?.packageManager?.also { pm ->
                     takePictureIntent.resolveActivity(pm)?.also {
                         // Create the File where the photo should go
-                        val photoFile: File? = try {
-                            createImageFile(requireContext())
+                        try {
+                            createImageFile(requireContext()).also { file ->
+                                val photoUri = FileProvider.getUriForFile(requireContext(), getString(R.string.file_provider), file)
+                                tempUri = photoUri.toString()
+                                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+                                startActivityForResult(takePictureIntent, captureIntentRequest)
+                            }
                         } catch (ex: IOException) {
                             ex.printStackTrace()
-                            null
-                        }
-
-                        // If file generated correctly, generate intent
-                        photoFile?.also {
-                            val photoUri = FileProvider.getUriForFile(requireContext(), getString(R.string.file_provider), it)
-                            newPhotoUri = photoUri.toString()
-                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-                            startActivityForResult(takePictureIntent, captureIntentRequest)
                         }
                     }
                 }
@@ -206,6 +214,8 @@ class EditProfileFragment : Fragment() {
                 pickPhoto.type = "image/*"
                 if (activity?.packageManager?.queryIntentActivities(pickPhoto, 0)?.isNotEmpty() == true) {
                     startActivityForResult(pickPhoto, galleryIntentRequest)
+                } else {
+                    displayMessage(requireContext(), "Sorry, no gallery applications")
                 }
             }
         }
@@ -230,14 +240,34 @@ class EditProfileFragment : Fragment() {
 
     // Update views using the local variable user
     private fun updateFields() {
-        user?.also { user ->
-            profile_edit_name.setText(user.name)
-            profile_edit_nickname.setText(user.nickname)
-            profile_edit_email.setText(user.email)
-            profile_edit_location.setText(user.location)
-            profile_edit_phone.setText(user.phone)
-            user.photo?.also { uri ->
+        user?.also {
+            profile_edit_name.setText(it.name)
+            profile_edit_nickname.setText(it.nickname)
+            profile_edit_email.setText(it.email)
+            profile_edit_location.setText(it.location)
+            profile_edit_phone.setText(it.phone)
+            it.photo?.also { uri ->
                 profile_edit_photo.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(uri))!!)
+            }
+        }
+    }
+
+    // Initialize listeners
+    private fun initListeners() {
+        // This listener is necessary to make sure that the cardView has always 50% radius (circle)
+        // and that if the image is the icon, it is translated down
+        cardListener = View.OnLayoutChangeListener {v, _, _, _, _, _, _, _, _ ->
+            (v as CardView).apply {
+                radius = measuredHeight / 2F
+            }
+            v.visibility = View.VISIBLE
+            val photoView = (v.getChildAt(0) as ViewGroup).getChildAt(0)
+            user?.photo.also {
+                photoView.apply {
+                    translationY = 0F
+                }
+            } ?: photoView.apply {
+                translationY = v.measuredHeight / 6F
             }
         }
     }

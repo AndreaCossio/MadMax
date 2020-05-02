@@ -16,7 +16,6 @@ import com.google.gson.Gson
 import it.polito.mad.madmax.lab02.data_models.User
 import it.polito.mad.madmax.lab02.ui.item.ItemListFragmentDirections
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.nav_header_main.*
 import kotlinx.android.synthetic.main.nav_header_main.view.*
 
 class MainActivity : AppCompatActivity() {
@@ -49,18 +48,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Update drawer header
-        user?.also { user ->
-            nav_view.getHeaderView(0).nav_header_nickname.text = user.name
-            nav_view.getHeaderView(0).nav_header_email.text = user.email
-            user.photo?.also { photo ->
-                nav_view.getHeaderView(0).nav_header_profile_photo.setImageBitmap(
-                    handleSamplingAndRotationBitmap(this, Uri.parse(photo))!!
-                )
+        user?.also { it ->
+            nav_view.getHeaderView(0).also { navView ->
+                navView.nav_header_nickname.text = it.name
+                navView.nav_header_email.text = it.email
+                it.photo?.also { photo ->
+                    navView.nav_header_profile_photo.apply {
+                        translationY = 0F
+                        setImageBitmap(handleSamplingAndRotationBitmap(context, Uri.parse(photo))!!)
+                    }
+                }
             }
-        }
-
-        nav_view.getHeaderView(0).nav_header_card.post {
-            nav_header_card.radius = (nav_header_card.height * 0.5).toFloat()
         }
     }
 

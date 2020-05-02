@@ -14,12 +14,11 @@
         app:layout_constraintBottom_toTopOf="@id/profile_edit_guideline">
 
         <FrameLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -29,30 +28,25 @@
                 android:id="@+id/profile_edit_card"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:cardPreventCornerOverlap="true"
-                app:cardCornerRadius="500dp"
-                app:cardElevation="0dp">
+                android:layout_margin="16dp"
+                android:visibility="invisible"
+                app:cardPreventCornerOverlap="true">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="#e0e0e0">
 
                     <ImageView
                         android:id="@+id/profile_edit_photo"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:background="@color/transparent"
                         android:contentDescription="@string/content_description_profile_photo"
                         android:src="@drawable/ic_profile_white"
-                        android:scaleType="centerCrop"
-                        app:layout_constraintDimensionRatio="H,1:1"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:scaleType="centerCrop"/>
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
@@ -61,6 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="bottom|end"
+                android:layout_margin="16dp"
                 android:src="@drawable/ic_menu_camera" />
 
         </FrameLayout>

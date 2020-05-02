@@ -15,40 +15,35 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/profile_card"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="32dp"
-            app:cardElevation="0dp"
-            app:cardCornerRadius="500dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="invisible"
             app:cardPreventCornerOverlap="true"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#e0e0e0">
 
                 <ImageView
                     android:id="@+id/profile_photo"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:background="@color/transparent"
                     android:contentDescription="@string/content_description_profile_photo"
                     android:src="@drawable/ic_profile_white"
-                    android:scaleType="centerCrop"
-                    app:layout_constraintDimensionRatio="H,1:1"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:scaleType="centerCrop"/>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
 
