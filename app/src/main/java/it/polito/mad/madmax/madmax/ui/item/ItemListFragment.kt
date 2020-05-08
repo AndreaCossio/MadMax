@@ -1,4 +1,4 @@
-package it.polito.mad.madmax.lab02.ui.item
+package it.polito.mad.madmax.madmax.ui.item
 
 import android.content.Context
 import android.os.Bundle
@@ -14,9 +14,9 @@ import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import it.polito.mad.madmax.lab02.R
-import it.polito.mad.madmax.lab02.data_models.Item
-import it.polito.mad.madmax.lab02.toPx
+import it.polito.mad.madmax.madmax.R
+import it.polito.mad.madmax.madmax.data.model.Item
+import it.polito.mad.madmax.madmax.toPx
 import kotlinx.android.synthetic.main.fragment_item_list.*
 
 class ItemListFragment : Fragment() {

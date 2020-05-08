@@ -8,7 +8,7 @@
     <!-- Home -->
     <fragment
         android:id="@+id/nav_item_list_fragment"
-        android:name="it.polito.mad.madmax.lab02.ui.item.ItemListFragment"
+        android:name="it.polito.mad.madmax.madmax.ui.item.ItemListFragment"
         android:label="@string/title_list_item_fragment"
         tools:layout="@layout/fragment_item_list" >
         <action
@@ -25,7 +25,7 @@
     <!-- Details item -->
     <fragment
         android:id="@+id/nav_details_item_fragment"
-        android:name="it.polito.mad.madmax.lab02.ui.item.DetailsItemFragment"
+        android:name="it.polito.mad.madmax.madmax.ui.item.DetailsItemFragment"
         android:label="@string/title_details_item_fragment"
         tools:layout="@layout/fragment_details_item" >
         <action
@@ -33,7 +33,7 @@
             app:destination="@id/nav_edit_item_fragment" />
         <argument
             android:name="item"
-            app:argType="it.polito.mad.madmax.lab02.data_models.Item"
+            app:argType="it.polito.mad.madmax.madmax.data.model.Item"
             app:nullable="true"
             android:defaultValue="@null"/>
     </fragment>
@@ -41,7 +41,7 @@
     <!-- Edit item -->
     <fragment
         android:id="@+id/nav_edit_item_fragment"
-        android:name="it.polito.mad.madmax.lab02.ui.item.EditItemFragment"
+        android:name="it.polito.mad.madmax.madmax.ui.item.EditItemFragment"
         android:label="@string/title_edit_item_fragment"
         tools:layout="@layout/fragment_edit_item" >
         <action
@@ -51,7 +51,7 @@
             app:popUpToInclusive="true"/>
         <argument
             android:name="item"
-            app:argType="it.polito.mad.madmax.lab02.data_models.Item"
+            app:argType="it.polito.mad.madmax.madmax.data.model.Item"
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>
@@ -59,7 +59,7 @@
     <!-- Show profile -->
     <fragment
         android:id="@+id/nav_show_profile_fragment"
-        android:name="it.polito.mad.madmax.lab02.ui.profile.ShowProfileFragment"
+        android:name="it.polito.mad.madmax.madmax.ui.profile.ShowProfileFragment"
         android:label="@string/title_show_profile_fragment"
         tools:layout="@layout/fragment_show_profile" >
         <action
@@ -67,7 +67,7 @@
             app:destination="@id/nav_edit_profile_fragment" />
         <argument
             android:name="user"
-            app:argType="it.polito.mad.madmax.lab02.data_models.User"
+            app:argType="it.polito.mad.madmax.madmax.data.model.User"
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>
@@ -75,7 +75,7 @@
     <!-- Edit profile -->
     <fragment
         android:id="@+id/nav_edit_profile_fragment"
-        android:name="it.polito.mad.madmax.lab02.ui.profile.EditProfileFragment"
+        android:name="it.polito.mad.madmax.madmax.ui.profile.EditProfileFragment"
         android:label="@string/title_edit_profile_fragment"
         tools:layout="@layout/fragment_edit_profile">
         <action
@@ -83,11 +83,6 @@
             app:destination="@id/nav_show_profile_fragment"
             app:popUpTo="@id/nav_show_profile_fragment"
             app:popUpToInclusive="true" />
-        <argument
-            android:name="user"
-            app:argType="it.polito.mad.madmax.lab02.data_models.User"
-            app:nullable="true"
-            android:defaultValue="@null" />
     </fragment>
 
 </navigation>

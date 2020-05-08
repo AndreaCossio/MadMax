@@ -1,4 +1,4 @@
-package it.polito.mad.madmax.lab02.ui.item
+package it.polito.mad.madmax.madmax.ui.item
 
 import android.net.Uri
 import android.os.Bundle
@@ -6,9 +6,9 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import it.polito.mad.madmax.lab02.R
-import it.polito.mad.madmax.lab02.data_models.Item
-import it.polito.mad.madmax.lab02.handleSamplingAndRotationBitmap
+import it.polito.mad.madmax.madmax.R
+import it.polito.mad.madmax.madmax.data.model.Item
+import it.polito.mad.madmax.madmax.handleSamplingAndRotationBitmap
 import kotlinx.android.synthetic.main.fragment_details_item.*
 
 class DetailsItemFragment : Fragment() {

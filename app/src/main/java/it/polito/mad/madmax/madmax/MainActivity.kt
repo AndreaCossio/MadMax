@@ -1,27 +1,36 @@
-package it.polito.mad.madmax.lab02
+package it.polito.mad.madmax.madmax
 
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.google.gson.Gson
-import it.polito.mad.madmax.lab02.data_models.User
-import it.polito.mad.madmax.lab02.ui.item.ItemListFragmentDirections
+import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
+import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModelFactory
+import it.polito.mad.madmax.madmax.ui.item.ItemListFragmentDirections
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.nav_header_main.view.*
 
 class MainActivity : AppCompatActivity() {
 
-    // User
-    private var user: User? = null
+    // User data (without login and user creation the id is fixed)
+    // TODO Google sign-in?
+    // TODO Images from different devices?
+    // TODO Beware that now we share the same db while testing,
+    //  so you should create a user for your testing purposes
+    private val userId: String = "user00"
+    private val userVM: UserViewModel by viewModels {
+        UserViewModelFactory(userId)
+    }
 
     // Appbar config
     private lateinit var appBarConfig: AppBarConfiguration
@@ -42,24 +51,19 @@ class MainActivity : AppCompatActivity() {
         // Init FAB
         main_fab_add_item.setOnClickListener { navController.navigate(ItemListFragmentDirections.actionCreateItem(null)) }
 
-        // Load user data
-        getSharedPreferences(getString(R.string.preferences_user_file), Context.MODE_PRIVATE)?.getString(getString(R.string.preference_user), null)?.also {
-            user = Gson().fromJson(it, User::class.java)
-        }
-
-        // Update drawer header
-        user?.also { it ->
+        // Observe user changes to update drawer
+        userVM.user.observe(this, Observer {
             nav_view.getHeaderView(0).also { navView ->
                 navView.nav_header_nickname.text = it.name
                 navView.nav_header_email.text = it.email
-                it.photo?.also { photo ->
+                if (it.photo != "") {
                     navView.nav_header_profile_photo.apply {
                         translationY = 0F
-                        setImageBitmap(handleSamplingAndRotationBitmap(context, Uri.parse(photo))!!)
+                        setImageBitmap(handleSamplingAndRotationBitmap(context, Uri.parse(it.photo))!!)
                     }
                 }
             }
-        }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

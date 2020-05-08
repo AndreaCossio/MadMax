@@ -1,4 +1,4 @@
-package it.polito.mad.madmax.lab02.ui.item
+package it.polito.mad.madmax.madmax.ui.item
 
 import android.Manifest
 import android.app.Activity
@@ -22,11 +22,11 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import it.polito.mad.madmax.lab02.R
-import it.polito.mad.madmax.lab02.createImageFile
-import it.polito.mad.madmax.lab02.data_models.Item
-import it.polito.mad.madmax.lab02.displayMessage
-import it.polito.mad.madmax.lab02.handleSamplingAndRotationBitmap
+import it.polito.mad.madmax.madmax.R
+import it.polito.mad.madmax.madmax.createImageFile
+import it.polito.mad.madmax.madmax.data.model.Item
+import it.polito.mad.madmax.madmax.displayMessage
+import it.polito.mad.madmax.madmax.handleSamplingAndRotationBitmap
 import kotlinx.android.synthetic.main.fragment_edit_item.*
 import java.io.File
 import java.io.IOException
@@ -149,7 +149,9 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == captureIntentRequest && resultCode == Activity.RESULT_OK) {
-            item = item?.apply { photo = newPhotoUri } ?: Item(photo = newPhotoUri)
+            item = item?.apply { photo = newPhotoUri } ?: Item(
+                photo = newPhotoUri
+            )
             updateFields()
             displayMessage(this.requireContext(), "Picture taken correctly")
         }
@@ -161,7 +163,9 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
         else if (requestCode == galleryIntentRequest && resultCode == Activity.RESULT_OK && data != null) {
             val photoUri = data.data!!.toString()
-            item = item?.apply { photo = photoUri } ?: Item(photo = photoUri)
+            item = item?.apply { photo = photoUri } ?: Item(
+                photo = photoUri
+            )
             updateFields()
             displayMessage(this.requireContext(), "Picture loaded correctly")
         } else {
@@ -296,7 +300,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
             price = item_edit_price.text.toString().toDoubleOrNull() ?: 0.0
             location = item_edit_location.text.toString()
             expiry = item_edit_expiry.text.toString()
-        } ?: Item (
+        } ?: Item(
             title = item_edit_title.text.toString(),
             description = item_edit_description.text.toString(),
             category_main = item_edit_category_main.selectedItem.toString(),

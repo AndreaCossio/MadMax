@@ -1,4 +1,4 @@
-package it.polito.mad.madmax.lab02.ui.profile
+package it.polito.mad.madmax.madmax.ui.profile
 
 import android.Manifest
 import android.app.Activity
@@ -15,25 +15,25 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
-import com.google.gson.Gson
-import it.polito.mad.madmax.lab02.R
-import it.polito.mad.madmax.lab02.createImageFile
-import it.polito.mad.madmax.lab02.data_models.User
-import it.polito.mad.madmax.lab02.displayMessage
-import it.polito.mad.madmax.lab02.handleSamplingAndRotationBitmap
+import it.polito.mad.madmax.madmax.R
+import it.polito.mad.madmax.madmax.createImageFile
+import it.polito.mad.madmax.madmax.data.model.User
+import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
+import it.polito.mad.madmax.madmax.displayMessage
+import it.polito.mad.madmax.madmax.handleSamplingAndRotationBitmap
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
+import java.io.File
 import java.io.IOException
 
 class EditProfileFragment : Fragment() {
 
-    // User
-    private var user: User? = null
-    private var tempUri: String? = null
+    // User view model of the activity
+    private val userVM: UserViewModel by activityViewModels()
 
-    // Destination arguments
-    private val args: EditProfileFragmentArgs by navArgs()
+    // User
+    private var tempUser: User? = null
 
     // Listeners
     private lateinit var cardListener: View.OnLayoutChangeListener
@@ -48,7 +48,7 @@ class EditProfileFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         initListeners()
-        user = args.user
+        tempUser = userVM.user.value?.copy()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -57,7 +57,7 @@ class EditProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        updateFields()
+        updateFields(tempUser)
         profile_edit_card.addOnLayoutChangeListener(cardListener)
         profile_edit_change_photo.setOnClickListener { selectImage() }
     }
@@ -69,17 +69,15 @@ class EditProfileFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        updateUser()
-        outState.putSerializable("profile_edit_user_state", user)
-        outState.putString("profile_edit_newPhotoUri_state", tempUri)
+        tempUser = updateUser()
+        outState.putSerializable("profile_edit_user_state", tempUser)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         savedInstanceState?.also { state ->
-            state.getSerializable("profile_edit_user_state")?.also { user = it as User }
-            state.getString("profile_edit_newPhotoUri_state")?.also { tempUri = it }
-            updateFields()
+            state.getSerializable("profile_edit_user_state")?.also { tempUser = it as User }
+            updateFields(tempUser)
         }
     }
 
@@ -92,7 +90,7 @@ class EditProfileFragment : Fragment() {
         return when (item.itemId) {
             R.id.menu_save_profile_save -> {
                 updateUser()
-                if (user!!.name == "" || user!!.email == "" || user!!.nickname == "" || user!!.location == "" || user!!.phone == "") {
+                if (tempUser!!.name == "" || tempUser!!.email == "" || tempUser!!.nickname == "" || tempUser!!.location == "" || tempUser!!.phone == "") {
                     for (field in setOf(profile_edit_name, profile_edit_email, profile_edit_nickname, profile_edit_location, profile_edit_phone)) {
                         if (field.text.toString() == "") {
                             field.error = getString(R.string.message_error_field_required)
@@ -100,15 +98,9 @@ class EditProfileFragment : Fragment() {
                     }
                     false
                 } else {
-                    // Save user data to shared pref
-                    val prefs = activity?.getSharedPreferences(getString(R.string.preferences_user_file), Context.MODE_PRIVATE) ?: return false
-                    with (prefs.edit()) {
-                        putString(getString(R.string.preference_user), Gson().toJson(user))
-                        apply()
-                    }
-
+                    userVM.updateUser(tempUser!!)
                     (activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
-                    findNavController().navigate(EditProfileFragmentDirections.actionSaveProfile(user?.copy()))
+                    findNavController().navigate(EditProfileFragmentDirections.actionSaveProfile())
                     true
                 }
             } else -> return super.onOptionsItemSelected(item)
@@ -121,20 +113,25 @@ class EditProfileFragment : Fragment() {
             captureIntentRequest -> {
                 when (resultCode) {
                     Activity.RESULT_OK -> {
-                        user = user?.apply { photo = tempUri } ?: User(photo = tempUri)
-                        tempUri = null
-                        updateFields()
+                        updateFields(tempUser)
                         displayMessage(requireContext(), "Picture taken correctly")
                     }
-                    else -> displayMessage(requireContext(), "Request cancelled or something went wrong.")
+                    else -> {
+                        tempUser?.also {
+                            File(it.photo).delete()
+                        }
+                        displayMessage(requireContext(), "Request cancelled or something went wrong.")
+                    }
                 }
             }
             galleryIntentRequest -> {
                 when (resultCode) {
                     Activity.RESULT_OK -> {
                         data?.data?.also {
-                            user = user?.apply { photo = it.toString() } ?: User(photo = it.toString())
-                            updateFields()
+                            tempUser = tempUser?.apply { photo = it.toString() } ?: User(
+                                photo = it.toString()
+                            )
+                            updateFields(tempUser)
                             displayMessage(requireContext(), "Picture loaded correctly")
                         } ?: displayMessage(requireContext(), "Request cancelled or something went wrong.")
                     }
@@ -192,7 +189,7 @@ class EditProfileFragment : Fragment() {
                         try {
                             createImageFile(requireContext()).also { file ->
                                 val photoUri = FileProvider.getUriForFile(requireContext(), getString(R.string.file_provider), file)
-                                tempUri = photoUri.toString()
+                                tempUser = tempUser?.apply { photo = photoUri.toString() } ?: User(photo = photoUri.toString())
                                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
                                 startActivityForResult(takePictureIntent, captureIntentRequest)
                             }
@@ -222,8 +219,8 @@ class EditProfileFragment : Fragment() {
     }
 
     // Update user variable using views
-    private fun updateUser() {
-        user = user?.apply {
+    private fun updateUser(): User {
+        return tempUser?.apply {
             name = profile_edit_name.text.toString()
             nickname = profile_edit_nickname.text.toString()
             email = profile_edit_email.text.toString()
@@ -239,15 +236,15 @@ class EditProfileFragment : Fragment() {
     }
 
     // Update views using the local variable user
-    private fun updateFields() {
+    private fun updateFields(user: User?) {
         user?.also {
             profile_edit_name.setText(it.name)
             profile_edit_nickname.setText(it.nickname)
             profile_edit_email.setText(it.email)
             profile_edit_location.setText(it.location)
             profile_edit_phone.setText(it.phone)
-            it.photo?.also { uri ->
-                profile_edit_photo.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(uri))!!)
+            if (it.photo != "") {
+                profile_edit_photo.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(it.photo))!!)
             }
         }
     }
@@ -257,18 +254,26 @@ class EditProfileFragment : Fragment() {
         // This listener is necessary to make sure that the cardView has always 50% radius (circle)
         // and that if the image is the icon, it is translated down
         cardListener = View.OnLayoutChangeListener {v, _, _, _, _, _, _, _, _ ->
-            (v as CardView).apply {
-                radius = measuredHeight / 2F
-            }
-            v.visibility = View.VISIBLE
-            val photoView = (v.getChildAt(0) as ViewGroup).getChildAt(0)
-            user?.photo.also {
-                photoView.apply {
-                    translationY = 0F
+            val cardView: CardView = v as CardView
+            val imageView = (cardView.getChildAt(0) as ViewGroup).getChildAt(0)
+
+            // Radius of the card
+            cardView.apply { radius = measuredHeight / 2F }
+
+            // Translation of the photo
+            imageView.apply {
+                if (tempUser?.photo == "") {
+                    translationY = measuredHeight / 6F
                 }
-            } ?: photoView.apply {
-                translationY = v.measuredHeight / 6F
+                /*translationY = if (tempUser?.photo != "") {
+                    0F
+                } else {
+                    v.measuredHeight / 6F
+                }*/
             }
+
+            // Visibility
+            cardView.visibility = View.VISIBLE
         }
     }
 }

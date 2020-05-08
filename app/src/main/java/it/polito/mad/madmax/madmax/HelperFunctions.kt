@@ -1,4 +1,4 @@
-package it.polito.mad.madmax.lab02
+package it.polito.mad.madmax.madmax
 
 import android.annotation.SuppressLint
 import android.content.Context
