@@ -15,6 +15,7 @@ import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
 import it.polito.mad.madmax.madmax.handleSamplingAndRotationBitmap
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 
+// TODO bug rotating delete info user
 class ShowProfileFragment : Fragment() {
 
     // User
@@ -22,6 +23,7 @@ class ShowProfileFragment : Fragment() {
 
     // Destination arguments
     private val args: ShowProfileFragmentArgs by navArgs()
+    private var otherUser: Boolean = false
 
     // Listeners
     private lateinit var cardListener: View.OnLayoutChangeListener
@@ -39,6 +41,7 @@ class ShowProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         args.user?.also {
+            otherUser = true
             updateFields(it)
         } ?: userVM.user.observe(viewLifecycleOwner, Observer { updateFields(it) })
         profile_card.addOnLayoutChangeListener(cardListener)
@@ -51,7 +54,9 @@ class ShowProfileFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_edit_profile, menu)
+        if (!otherUser) {
+            inflater.inflate(R.menu.menu_edit_profile, menu)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -64,17 +69,19 @@ class ShowProfileFragment : Fragment() {
     }
 
     // Update views using the local variable user
-    private fun updateFields(user: User?) {
-        // TODO show only non private data if other user
-        user?.also {
-            profile_name.text = it.name
-            profile_nickname.text = it.nickname
-            profile_email.text = it.email
-            item_location.text = it.location
-            profile_phone.text = it.phone
-            if (it.photo != "") {
-                profile_photo.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(it.photo))!!)
-            }
+    private fun updateFields(user: User) {
+        profile_name.text = user.name
+        profile_nickname.text = user.nickname
+        profile_email.text = user.email
+        profile_location.text = user.location
+        profile_phone.text = user.phone
+        if (user.photo != "") {
+            profile_photo.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(user.photo))!!)
+        }
+
+        if (otherUser) {
+            profile_location.visibility = View.GONE
+            profile_phone.visibility = View.GONE
         }
     }
 
@@ -94,12 +101,9 @@ class ShowProfileFragment : Fragment() {
             imageView.apply {
                 if (user?.photo == "") {
                     translationY = measuredHeight / 6F
-                }
-                /*translationY = if (user?.photo != "") {
-                    0F
                 } else {
-                    v.measuredHeight / 6F
-                }*/
+                    translationY = 0F
+                }
             }
 
             // Visibility

@@ -19,27 +19,19 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
-import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModelFactory
 import it.polito.mad.madmax.madmax.ui.item.ItemListFragmentDirections
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.nav_header_main.view.*
 
 class MainActivity : AppCompatActivity() {
 
-    // User data (without login and user creation the id is fixed)
-    // TODO Images from different devices (ie same account different device different paths)?
-    // TODO Beware that now we share the same db while testing,
-    //  so you should create a user for your testing purposes
-    private val userVM: UserViewModel by viewModels {
-        UserViewModelFactory("default")
-    }
+    // Default user data
+    private val userVM: UserViewModel by viewModels()
 
     // Firebase auth
     private lateinit var auth: FirebaseAuth
@@ -47,6 +39,11 @@ class MainActivity : AppCompatActivity() {
 
     // Appbar config
     private lateinit var appBarConfig: AppBarConfiguration
+
+    // Companion
+    companion object {
+        private const val RC_SIGN_IN = 9001
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,11 +61,23 @@ class MainActivity : AppCompatActivity() {
         // Init FAB
         main_fab_add_item.setOnClickListener { navController.navigate(ItemListFragmentDirections.actionCreateItem(null)) }
 
-        // Check if logged in
+        // Observe user data
+        userVM.user.observe(this, Observer {
+            nav_view.getHeaderView(0).also { navView ->
+                navView.nav_header_nickname.text = it.name
+                navView.nav_header_email.text = it.email
+                if (it.photo != "") {
+                    navView.nav_header_profile_photo.apply {
+                        translationY = 0F
+                        setImageBitmap(handleSamplingAndRotationBitmap(context, Uri.parse(it.photo))!!)
+                    }
+                }
+            }
+        })
+
+        // LOGIN
         auth = Firebase.auth
-        auth.currentUser?.also { user ->
-            initUser(user)
-        } ?: signIn()
+        auth.currentUser?.also { userVM.loadUser(it) } ?: signIn()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -91,54 +100,36 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 9001) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                val account = task.getResult(ApiException::class.java)!!
-                firebaseAuthWithGoogle(account.idToken!!)
-            } catch (e: ApiException) {
-                e.printStackTrace()
+        when (requestCode) {
+            RC_SIGN_IN -> {
+                if (resultCode == 0) {
+                    // TODO improve
+                    signIn()
+                }
+                try {
+                    val account = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException::class.java)!!
+                    auth.signInWithCredential(GoogleAuthProvider.getCredential(account.idToken, null)).addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            auth.currentUser?.also { userVM.loadUser(it) } ?: signIn()
+                            displayMessage(nav_view, "Authentication succeeded.")
+                        } else {
+                            displayMessage(nav_view, "Authentication failed.")
+                        }
+                    }
+                } catch (e: ApiException) {
+                    e.printStackTrace()
+                }
             }
         }
     }
 
-    private fun firebaseAuthWithGoogle(idToken: String) {
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        auth.signInWithCredential(credential)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    initUser(auth.currentUser!!)
-                    Snackbar.make(nav_view, "Authentication Succeded.", Snackbar.LENGTH_SHORT).show()
-                } else {
-                    Snackbar.make(nav_view, "Authentication Failed.", Snackbar.LENGTH_SHORT).show()
-                }
-            }
-    }
-
+    // Intent for logging in with google
     private fun signIn() {
         googleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         )
-        startActivityForResult(googleSignInClient.signInIntent, 9001)
-    }
-
-    private fun initUser(user: FirebaseUser) {
-        userVM.changeUser(user.uid)
-        userVM.user.value ?: userVM.createUser(user)
-        // Observe user changes to update drawer
-        userVM.user.observe(this, Observer {
-            nav_view.getHeaderView(0).also { navView ->
-                navView.nav_header_nickname.text = it.name
-                navView.nav_header_email.text = it.email
-                if (it.photo != "") {
-                    navView.nav_header_profile_photo.apply {
-                        translationY = 0F
-                        setImageBitmap(handleSamplingAndRotationBitmap(context, Uri.parse(it.photo))!!)
-                    }
-                }
-            }
-        })
+        startActivityForResult(googleSignInClient.signInIntent, RC_SIGN_IN)
     }
 }

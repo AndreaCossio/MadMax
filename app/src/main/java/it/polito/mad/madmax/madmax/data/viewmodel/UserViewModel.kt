@@ -4,30 +4,24 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseUser
 import it.polito.mad.madmax.madmax.data.model.User
-import it.polito.mad.madmax.madmax.data.repository.UserRepository
+import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
 
-class UserViewModel(private var userId:String): ViewModel() {
+class UserViewModel: ViewModel() {
 
-    private val userRepository: UserRepository = UserRepository()
+    private var userId: String = ""
+    private val firestoreRepository: FirestoreRepository = FirestoreRepository()
 
     val user: MutableLiveData<User> by lazy {
-        MutableLiveData<User>().apply {
-            value = userRepository.readUser(userId)
-        }
+        MutableLiveData<User>()
     }
 
-    fun changeUser(userId: String) {
-        this.userId = userId
-        this.user.value = userRepository.readUser(userId)
+    fun loadUser(user: FirebaseUser) {
+        this.userId = user.uid
+        firestoreRepository.getUser(user, this.user)
     }
 
     fun updateUser(user: User) {
         this.user.value = user
-        userRepository.writeUser(userId, user)
-    }
-
-    fun createUser(newUser: FirebaseUser) {
-        this.userId = newUser.uid
-        this.user.value = userRepository.createUser(newUser)
+        firestoreRepository.writeUser(userId, user)
     }
 }
