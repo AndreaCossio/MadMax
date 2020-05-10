@@ -11,14 +11,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.User
-import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
 import it.polito.mad.madmax.madmax.handleSamplingAndRotationBitmap
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 
 class ShowProfileFragment : Fragment() {
 
     // User
-    private val userVM: UserViewModel by activityViewModels()
 
     // Destination arguments
     private val args: ShowProfileFragmentArgs by navArgs()
@@ -38,9 +36,6 @@ class ShowProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        args.user?.also {
-            updateFields(it)
-        } ?: userVM.user.observe(viewLifecycleOwner, Observer { updateFields(it) })
         profile_card.addOnLayoutChangeListener(cardListener)
     }
 
@@ -85,7 +80,7 @@ class ShowProfileFragment : Fragment() {
         cardListener = View.OnLayoutChangeListener {v, _, _, _, _, _, _, _, _ ->
             val cardView: CardView = v as CardView
             val imageView = (cardView.getChildAt(0) as ViewGroup).getChildAt(0)
-            val user = args.user ?: userVM.user.value
+            val user = args.user ?: User()
 
             // Radius of the card
             cardView.apply { radius = measuredHeight / 2F }

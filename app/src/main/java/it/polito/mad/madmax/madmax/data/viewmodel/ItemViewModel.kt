@@ -3,6 +3,7 @@ package it.polito.mad.madmax.madmax.data.viewmodel
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -14,28 +15,20 @@ class ItemViewModel(): ViewModel() {
     private val itemRepository = ItemRepository()
 
     private val items: MutableLiveData<ArrayList<Item>> by lazy {
-        MutableLiveData<ArrayList<Item>>().apply {
-            value = itemRepository.getOnSaleItems()
+        MutableLiveData<ArrayList<Item>>().also {
+           loadOnSaleItems()
         }
     }
 
-    fun getOnSaleItems() : LiveData<ArrayList<Item>>{
+    fun getOnSaleItems() : MutableLiveData<ArrayList<Item>>{
         return items
     }
 
     private fun loadOnSaleItems(){
-        val db = Firebase.firestore
-        db.collection("items")
-            .get()
-            .addOnSuccessListener {
-                val arr = ArrayList<Item>()
-                for (doc in it.documents){
-                    arr.add(doc.toObject(Item::class.java)!!)
-                }
+        // TODO ??????
+        /*itemRepository.getOnSaleItems().observe(, Observer {
 
-                items.value = arr
-            }.addOnFailureListener{
-                Log.e("XXX",it.toString())
-            }
+        })*/
+        items.value = itemRepository.getOnSaleItems().value
     }
 }

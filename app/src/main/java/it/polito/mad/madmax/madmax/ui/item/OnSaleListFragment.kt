@@ -22,36 +22,28 @@ import kotlinx.android.synthetic.main.fragment_item_list.*
 
 class OnSaleListFragment : Fragment() {
 
-    lateinit var itemVM: ItemViewModel
-    lateinit var itemList: ArrayList<Item>
+    private lateinit var itemVM: ItemViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         super.onCreateView(inflater, container, savedInstanceState)
 
-        itemVM = ViewModelProvider(this).get(ItemViewModel::class.java)
+        itemVM = ViewModelProvider(this).get(ItemViewModel::class.java)7
+
+        // TODO BINDING???
         itemVM.getOnSaleItems().observe(this.requireActivity(), Observer {
-            //it -> itemList = it
-            it.also {
-                item_list_rv.apply {
-                    //check
-                    this.setHasFixedSize(true)
-                    layoutManager = AutoFitGridLayoutManager(requireContext(), 300.toPx())
-                    adapter = ItemAdapter(it, this)
-                    itemAnimator = DefaultItemAnimator()
-                }
+            item_list_rv.apply {
+                adapter = ItemAdapter(it?: ArrayList<Item>(),this)
             }
         })
 
-        return itemList.let {
-            inflater.inflate(R.layout.fragment_item_list, container, false)
-        } ?: inflater.inflate(R.layout.empty_item_list, container, false)
+        return inflater.inflate(R.layout.empty_item_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        itemList?.also {
+        itemVM.getOnSaleItems().value!!.also {
             item_list_rv.apply {
                 //check
                 this.setHasFixedSize(true)

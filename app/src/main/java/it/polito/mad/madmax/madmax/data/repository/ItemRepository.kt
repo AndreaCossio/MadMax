@@ -1,6 +1,8 @@
 package it.polito.mad.madmax.madmax.data.repository
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -12,14 +14,18 @@ class ItemRepository {
 
     private val db = Firebase.firestore
 
-    fun getOnSaleItems(): ArrayList<Item> {
-        val items = ArrayList<Item>()
+
+    fun getOnSaleItems(): MutableLiveData<ArrayList<Item>> {
+        val items = MutableLiveData<ArrayList<Item>>()
         db.collection("items")
             .get()
             .addOnSuccessListener {
+                val itemArray = ArrayList<Item>()
                 for (doc in it.documents){
-                    items.add(doc.toObject(Item::class.java)!!)
+                    itemArray.add(doc.toObject(Item::class.java)!!)
                 }
+                items.value = itemArray
+
             }.addOnFailureListener{
             }
         return items

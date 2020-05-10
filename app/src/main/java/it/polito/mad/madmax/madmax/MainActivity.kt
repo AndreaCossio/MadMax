@@ -5,11 +5,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -25,7 +27,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
+import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModelFactory
 import it.polito.mad.madmax.madmax.ui.item.ItemListFragmentDirections
 import kotlinx.android.synthetic.main.activity_main.*
@@ -37,9 +39,7 @@ class MainActivity : AppCompatActivity() {
     // TODO Images from different devices (ie same account different device different paths)?
     // TODO Beware that now we share the same db while testing,
     //  so you should create a user for your testing purposes
-    private val userVM: UserViewModel by viewModels {
-        UserViewModelFactory("default")
-    }
+
 
     // Firebase auth
     private lateinit var auth: FirebaseAuth
@@ -108,7 +108,6 @@ class MainActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    initUser(auth.currentUser!!)
                     Snackbar.make(nav_view, "Authentication Succeded.", Snackbar.LENGTH_SHORT).show()
                 } else {
                     Snackbar.make(nav_view, "Authentication Failed.", Snackbar.LENGTH_SHORT).show()
@@ -125,7 +124,7 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(googleSignInClient.signInIntent, 9001)
     }
 
-    private fun initUser(user: FirebaseUser) {
+  /*  private fun initUser(user: FirebaseUser) {
         userVM.changeUser(user.uid)
         userVM.user.value ?: userVM.createUser(user)
         // Observe user changes to update drawer
@@ -141,5 +140,5 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-    }
+    }*/
 }
