@@ -16,6 +16,7 @@
     <string name="title_edit_item_fragment">Edit item</string>
     <string name="title_create_item_fragment">Create item</string>
     <string name="title_list_item_fragment">Home</string>
+    <string name="title_on_sale_item_fragment">OnSale</string>
 
     <!-- MENU -->
     <string name="menu_edit_profile">Edit Profile</string>

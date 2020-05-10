@@ -9,7 +9,7 @@ import com.google.firebase.ktx.Firebase
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.repository.ItemRepository
 
-class ItemsViewModel(): ViewModel() {
+class ItemViewModel(): ViewModel() {
 
     private val itemRepository = ItemRepository()
 

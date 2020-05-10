@@ -65,10 +65,11 @@ class MainActivity : AppCompatActivity() {
         main_fab_add_item.setOnClickListener { navController.navigate(ItemListFragmentDirections.actionCreateItem(null)) }
 
         // Check if logged in
+        /*
         auth = Firebase.auth
         auth.currentUser?.also { user ->
             initUser(user)
-        } ?: signIn()
+        } ?: signIn()*/
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

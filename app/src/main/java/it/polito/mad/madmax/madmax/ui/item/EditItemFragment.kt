@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
@@ -20,6 +21,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import it.polito.mad.madmax.madmax.R
@@ -137,12 +140,30 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         }
                     }
 
+                    writeToFirestore()
+
                     // Close keyboard
                     (activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
                     findNavController().navigate(EditItemFragmentDirections.actionSaveItem(item))
                     true
                 }
             } else -> super.onOptionsItemSelected(menuitem)
+        }
+    }
+
+
+    private fun writeToFirestore(){
+
+        val db = Firebase.firestore
+        db.collection("items")
+            .document()
+            .set(
+                item!!
+            )
+            .addOnSuccessListener {
+            Log.d("XXX","Success")
+        }.addOnFailureListener{
+            Log.d("XXX","Error")
         }
     }
 
