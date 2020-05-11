@@ -2,9 +2,8 @@ package it.polito.mad.madmax.madmax.ui.item
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -17,33 +16,88 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
-import it.polito.mad.madmax.madmax.toPx
 import kotlinx.android.synthetic.main.fragment_item_list.*
 
 class OnSaleListFragment : Fragment() {
 
     private lateinit var itemVM: ItemViewModel
+    lateinit var itemsAdapter:ItemAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         super.onCreateView(inflater, container, savedInstanceState)
 
-        itemVM = ViewModelProvider(this).get(ItemViewModel::class.java)7
+
+        itemVM = ViewModelProvider(this).get(ItemViewModel::class.java)
+
+
 
         // TODO BINDING???
-        itemVM.getOnSaleItems().observe(this.requireActivity(), Observer {
+      /*  itemVM.getOnSaleItems().observe(this.requireActivity(), Observer {
             item_list_rv.apply {
                 adapter = ItemAdapter(it?: ArrayList<Item>(),this)
             }
         })
-
-        return inflater.inflate(R.layout.empty_item_list, container, false)
+*/
+        return inflater.inflate(R.layout.fragment_item_list, container, false)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_search_item,menu)
+
+        val searchItem = menu.findItem(R.id.menu_search)
+        val searchView = searchItem.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                return true
+            }
+
+            override fun onQueryTextChange(p0: String?): Boolean {
+                val filteredItems = itemVM.getOnSaleItems().value!!.filter { it -> it.title.contains(p0!!) } as ArrayList<Item>
+                //itemsAdapter.filter.filter(p0)
+                itemsAdapter.setItems(filteredItems)
+                return false
+            }
+        })
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId){
+            R.id.menu_search ->{
+
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        itemVM.getOnSaleItems().value!!.also {
+        itemsAdapter = ItemAdapter(ArrayList<Item>(),item_list_rv)
+
+            item_list_rv.apply {
+                this.setHasFixedSize(true)
+                layoutManager = LinearLayoutManager(this.context)
+                adapter = itemsAdapter
+                itemAnimator = DefaultItemAnimator()
+            }
+
+
+        itemVM.getOnSaleItems().observe(this.requireActivity(), Observer {
+            item_list_rv.apply {
+                itemsAdapter.setItems(it)
+            }
+        })
+
+        /*ArrayList<Item>().also {
             item_list_rv.apply {
                 //check
                 this.setHasFixedSize(true)
@@ -51,7 +105,7 @@ class OnSaleListFragment : Fragment() {
                 adapter = ItemAdapter(it, this)
                 itemAnimator = DefaultItemAnimator()
             }
-        }
+        }*/
 
         activity?.findViewById<FloatingActionButton>(R.id.main_fab_add_item)?.visibility = View.VISIBLE
     }

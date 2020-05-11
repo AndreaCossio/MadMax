@@ -15,8 +15,8 @@ class ItemRepository {
     private val db = Firebase.firestore
 
 
-    fun getOnSaleItems(): MutableLiveData<ArrayList<Item>> {
-        val items = MutableLiveData<ArrayList<Item>>()
+    fun getOnSaleItems(items:MutableLiveData<ArrayList<Item>>){
+        //val items = MutableLiveData<ArrayList<Item>>()
         db.collection("items")
             .get()
             .addOnSuccessListener {
@@ -28,7 +28,6 @@ class ItemRepository {
 
             }.addOnFailureListener{
             }
-        return items
     }
 
     fun writeItem(item: Item) {

@@ -20,15 +20,25 @@ class ItemViewModel(): ViewModel() {
         }
     }
 
-    fun getOnSaleItems() : MutableLiveData<ArrayList<Item>>{
+    fun getOnSaleItems() : LiveData<ArrayList<Item>>{
         return items
     }
 
     private fun loadOnSaleItems(){
-        // TODO ??????
-        /*itemRepository.getOnSaleItems().observe(, Observer {
+        val db = Firebase.firestore
 
-        })*/
-        items.value = itemRepository.getOnSaleItems().value
+        //val items = MutableLiveData<ArrayList<Item>>()
+        db.collection("items")
+            .get()
+            .addOnSuccessListener {
+                val itemArray = ArrayList<Item>()
+                for (doc in it.documents){
+                    itemArray.add(doc.toObject(Item::class.java)!!)
+                }
+                items.value = itemArray
+
+            }.addOnFailureListener{
+            }
+        //itemRepository.getOnSaleItems(items)
     }
 }
