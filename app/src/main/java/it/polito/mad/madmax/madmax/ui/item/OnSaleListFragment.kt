@@ -1,7 +1,11 @@
 package it.polito.mad.madmax.madmax.ui.item
 
+import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -12,10 +16,14 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.dialog.MaterialDialogs
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
+import kotlinx.android.synthetic.main.filter_layout.*
+import kotlinx.android.synthetic.main.fragment_edit_item.*
 import kotlinx.android.synthetic.main.fragment_item_list.*
 
 class OnSaleListFragment : Fragment() {
@@ -69,10 +77,36 @@ class OnSaleListFragment : Fragment() {
 
     }
 
+    private fun applyFilter(){
+
+    }
+
+
+    private fun showDialog() {
+        val builder = AlertDialog.Builder(activity)
+        builder.setCancelable(true)
+        builder.setView(R.layout.filter_layout)
+        builder.setPositiveButton("APPLY"){
+                dialog, i ->
+            dialog.dismiss()
+            Log.d("jjkjk","item_edit_price.text?.toString()")
+            }.setNegativeButton("CANCEL"){
+            dialog, i -> dialog.cancel()
+        }
+
+            val dialog = builder.create()
+            dialog.show()
+        }
+
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId){
             R.id.menu_search ->{
 
+                return true
+            }
+            R.id.menu_filter -> {
+                showDialog()
                 return true
             }
             else -> super.onOptionsItemSelected(item)
