@@ -68,6 +68,8 @@
     <string name="content_descritption_search">Search</string>
     <string name="menu_search">Search</string>
     <!-- Categories -->
+
+    <string name="empty_filter">- - - - -</string>
     <string-array name="item_categories_main">
         <item>Arts &amp; Crafts</item>
         <item>Sports &amp; Hobby</item>

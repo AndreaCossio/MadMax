@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -31,9 +32,28 @@ class OnSaleListFragment : Fragment() {
     private lateinit var itemVM: ItemViewModel
     lateinit var itemsAdapter:ItemAdapter
 
+    var minPrice = 0.0
+    var maxPrice = Double.MAX_VALUE
+    var mainCategory = ""
+    var subCategory = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        setFragmentResultListener("searchFilters"){
+                _, bundle ->
+            val minPrice = bundle.getDouble("minPrice")
+            val maxPrice = bundle.getDouble("maxPrice")
+            val mainCategory = bundle.getString("mainCategory")
+            val subCategory = bundle.getString("subCategory")
+            val filteredItems = itemVM.getOnSaleItems().value!!.filter {
+                    it ->
+                it.price in minPrice..maxPrice
+                it.category_main.contains(mainCategory!!)
+                it.category_sub.contains(subCategory!!)
+            } as ArrayList<Item>
+            itemsAdapter.setItems(filteredItems)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -43,15 +63,6 @@ class OnSaleListFragment : Fragment() {
 
         itemVM = ViewModelProvider(this).get(ItemViewModel::class.java)
 
-
-
-        // TODO BINDING???
-      /*  itemVM.getOnSaleItems().observe(this.requireActivity(), Observer {
-            item_list_rv.apply {
-                adapter = ItemAdapter(it?: ArrayList<Item>(),this)
-            }
-        })
-*/
         return inflater.inflate(R.layout.fragment_item_list, container, false)
     }
 
@@ -77,27 +88,11 @@ class OnSaleListFragment : Fragment() {
 
     }
 
-    private fun applyFilter(){
 
+    private fun showDialog(){
+        val filterDialog = FilterDialog()
+        filterDialog.show(parentFragmentManager,"FilterDialog")
     }
-
-
-    private fun showDialog() {
-        val builder = AlertDialog.Builder(activity)
-        builder.setCancelable(true)
-        builder.setView(R.layout.filter_layout)
-        builder.setPositiveButton("APPLY"){
-                dialog, i ->
-            dialog.dismiss()
-            Log.d("jjkjk","item_edit_price.text?.toString()")
-            }.setNegativeButton("CANCEL"){
-            dialog, i -> dialog.cancel()
-        }
-
-            val dialog = builder.create()
-            dialog.show()
-        }
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId){
@@ -130,16 +125,6 @@ class OnSaleListFragment : Fragment() {
                 itemsAdapter.setItems(it)
             }
         })
-
-        /*ArrayList<Item>().also {
-            item_list_rv.apply {
-                //check
-                this.setHasFixedSize(true)
-                layoutManager = AutoFitGridLayoutManager(requireContext(), 300.toPx())
-                adapter = ItemAdapter(it, this)
-                itemAnimator = DefaultItemAnimator()
-            }
-        }*/
 
         activity?.findViewById<FloatingActionButton>(R.id.main_fab_add_item)?.visibility = View.VISIBLE
     }

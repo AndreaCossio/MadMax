@@ -1,38 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:padding="16dp"
-    >
+    android:padding="16dp">
 
-    <LinearLayout
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Filter results"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_marginTop="16dp"
+        android:hint="minPrice">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="minPrice"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="8dp"
-            android:labelFor="@id/item_edit_minPrice"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-            android:textColor="@color/colorPrimary"/>
-
-
-        <EditText
-            android:layout_gravity="end"
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/item_edit_minPrice"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
-            android:autofillHints="0.0"
-            />
-    </LinearLayout>
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
 
 
 
@@ -42,13 +37,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="@string/item_description">
+        android:hint="maxPrice">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/item_edit_maxPrice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="numberDecimal" />
+            android:inputType="numberDecimal"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -83,6 +79,33 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/cancel_filter"
+            android:backgroundTint="@android:color/darker_gray"
+            android:layout_marginEnd="12dp"
+            android:text="CANCEL"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/apply_filter"
+            android:text="APPLY"/>
+
+
+
+
+    </LinearLayout>
+
+
 
 
 
