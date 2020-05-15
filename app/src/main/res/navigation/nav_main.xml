@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_create_item"
             app:destination="@id/nav_details_item_fragment" />
+        <action
+            android:id="@+id/action_nav_item_list_fragment_to_nav_details_item_fragment"
+            app:destination="@id/nav_details_item_fragment" />
     </fragment>
 
     <fragment
@@ -35,6 +38,9 @@
             app:destination="@id/nav_edit_item_fragment" />
         <action
             android:id="@+id/action_create_item"
+            app:destination="@id/nav_details_item_fragment" />
+        <action
+            android:id="@+id/action_nav_item_on_sale_fragment_to_nav_details_item_fragment"
             app:destination="@id/nav_details_item_fragment" />
     </fragment>
 
