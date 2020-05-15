@@ -15,6 +15,10 @@ class DetailsItemFragment : Fragment() {
 
     // Item
     private var item: Item? = null
+    
+    // User owns the item
+    // TODO: best way to retrieve it?
+    private var own: Boolean = false
 
     // Destination arguments
     private val args: DetailsItemFragmentArgs by navArgs()
@@ -44,7 +48,8 @@ class DetailsItemFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_edit_item, menu)
+        if (own)
+            inflater.inflate(R.menu.menu_edit_item, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
