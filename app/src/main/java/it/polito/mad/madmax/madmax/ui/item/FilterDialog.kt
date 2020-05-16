@@ -1,6 +1,7 @@
 package it.polito.mad.madmax.madmax.ui.item
 
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -33,11 +34,14 @@ class FilterDialog: DialogFragment(), AdapterView.OnItemSelectedListener{
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d("FILTERS","LDJLJDLJALDJDLJ")
         return inflater.inflate(R.layout.filter_layout,container,false)
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("FILTERS","LDJLJDLJALDJDLJ")
         apply_filter.setOnClickListener {
             applyFilters()
         }
@@ -97,11 +101,17 @@ class FilterDialog: DialogFragment(), AdapterView.OnItemSelectedListener{
 
         val bundle = Bundle()
         bundle.putDouble("minPrice",minPrice)
-        bundle.putDouble("minPrice",maxPrice)
+        bundle.putDouble("maxPrice",maxPrice)
         bundle.putString("mainCategory",mainCategory)
         bundle.putString("subCategory",subCategory)
 
         setFragmentResult("searchFilters", bundle)
         dismiss()
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putDouble("minPrice",4.5)
+    }
+
 }

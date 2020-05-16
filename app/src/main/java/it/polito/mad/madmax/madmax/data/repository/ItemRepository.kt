@@ -1,22 +1,24 @@
 package it.polito.mad.madmax.madmax.data.repository
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.google.firebase.auth.FirebaseUser
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 import it.polito.mad.madmax.madmax.data.model.Item
-import it.polito.mad.madmax.madmax.data.model.User
 
 class ItemRepository {
 
     private val db = Firebase.firestore
 
 
-    fun getOnSaleItems(items:MutableLiveData<ArrayList<Item>>){
-        //val items = MutableLiveData<ArrayList<Item>>()
+    fun getOnSaleItems(): CollectionReference {
+        return db.collection("items")
+    }
+
+    /*fun getOnSaleItems():MutableLiveData<ArrayList<Item>>{
+        val items = MutableLiveData<ArrayList<Item>>()
         db.collection("items")
             .get()
             .addOnSuccessListener {
@@ -27,8 +29,9 @@ class ItemRepository {
                 items.value = itemArray
 
             }.addOnFailureListener{
-            }
-    }
+            }.addOnCompleteListener {  }
+        return items
+    }*/
 
     fun writeItem(item: Item) {
         val db = Firebase.firestore

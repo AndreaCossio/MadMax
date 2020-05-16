@@ -7,6 +7,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -32,10 +33,6 @@ class OnSaleListFragment : Fragment() {
     private lateinit var itemVM: ItemViewModel
     lateinit var itemsAdapter:ItemAdapter
 
-    var minPrice = 0.0
-    var maxPrice = Double.MAX_VALUE
-    var mainCategory = ""
-    var subCategory = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,9 +44,8 @@ class OnSaleListFragment : Fragment() {
             val mainCategory = bundle.getString("mainCategory")
             val subCategory = bundle.getString("subCategory")
             val filteredItems = itemVM.getOnSaleItems().value!!.filter {
-                    it ->
-                it.price in minPrice..maxPrice
-                it.category_main.contains(mainCategory!!)
+                it.price in minPrice..maxPrice &&
+                it.category_main.contains(mainCategory!!) &&
                 it.category_sub.contains(subCategory!!)
             } as ArrayList<Item>
             itemsAdapter.setItems(filteredItems)
@@ -121,6 +117,14 @@ class OnSaleListFragment : Fragment() {
 
 
         itemVM.getOnSaleItems().observe(this.requireActivity(), Observer {
+            if(it.isEmpty()){
+                item_list_rv.visibility = View.GONE
+                empty_view.visibility = View.VISIBLE
+            }
+            else{
+                item_list_rv.visibility = View.VISIBLE
+                empty_view.visibility = View.GONE
+            }
             item_list_rv.apply {
                 itemsAdapter.setItems(it)
             }
