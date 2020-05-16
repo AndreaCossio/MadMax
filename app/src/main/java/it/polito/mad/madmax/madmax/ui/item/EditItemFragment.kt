@@ -62,7 +62,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        args.item?.also {
+        if(args.item == null){
             activity?.findViewById<MaterialToolbar>(R.id.main_toolbar)?.setTitle(R.string.title_create_item_fragment)
         }
         val categories = resources.getStringArray(R.array.item_categories_main)

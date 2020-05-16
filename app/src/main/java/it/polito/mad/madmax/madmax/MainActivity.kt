@@ -62,14 +62,13 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfig)
 
         // Init FAB
-        main_fab_add_item.setOnClickListener { navController.navigate(ItemListFragmentDirections.actionCreateItem(null)) }
+        main_fab_add_item.setOnClickListener { navController.navigate(ItemListFragmentDirections.actionEditItem(null)) }
 
         // Check if logged in
-        /*
         auth = Firebase.auth
         auth.currentUser?.also { user ->
             initUser(user)
-        } ?: signIn()*/
+        } ?: signIn()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -124,7 +123,7 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(googleSignInClient.signInIntent, 9001)
     }
 
-  /*  private fun initUser(user: FirebaseUser) {
+    private fun initUser(user: FirebaseUser) {
         userVM.changeUser(user.uid)
         userVM.user.value ?: userVM.createUser(user)
         // Observe user changes to update drawer
@@ -140,5 +139,5 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-    }*/
+    }
 }

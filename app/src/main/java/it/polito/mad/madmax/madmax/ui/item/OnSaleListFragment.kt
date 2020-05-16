@@ -130,7 +130,6 @@ class OnSaleListFragment : Fragment() {
             }
         })
 
-        activity?.findViewById<FloatingActionButton>(R.id.main_fab_add_item)?.visibility = View.VISIBLE
     }
 
     override fun onDestroyView() {
