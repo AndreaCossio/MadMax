@@ -12,8 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.toPx
@@ -24,10 +22,6 @@ class ItemListFragment : Fragment() {
     private var itemList: ArrayList<Item>? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        activity?.getSharedPreferences(getString(R.string.preferences_user_file), Context.MODE_PRIVATE)?.getString("itemList", null)?.also {
-            val listType = object : TypeToken<ArrayList<Item>>() {}.type
-            itemList = Gson().fromJson(it, listType)
-        }
         return itemList?.let {
             inflater.inflate(R.layout.fragment_item_list, container, false)
         } ?: inflater.inflate(R.layout.empty_item_list, container, false)

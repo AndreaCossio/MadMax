@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
         // Setup Navigation
         val navController = findNavController(R.id.nav_host_fragment)
-        appBarConfig = AppBarConfiguration(setOf(R.id.nav_item_list_fragment, R.id.nav_show_profile_fragment), main_drawer_layout)
+        appBarConfig = AppBarConfiguration(setOf(R.id.nav_item_list_fragment, R.id.nav_on_sale_list_fragment, R.id.nav_show_profile_fragment), main_drawer_layout)
         nav_view.setupWithNavController(navController)
 
         // Action bar

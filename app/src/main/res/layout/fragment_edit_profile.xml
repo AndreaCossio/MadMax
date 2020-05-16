@@ -89,8 +89,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/profile_name"
-            app:startIconDrawable="@drawable/ic_profile"
-            app:startIconTint="@color/colorPrimary"
+            app:startIconDrawable="@drawable/ic_profile_primary"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -106,8 +105,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="@string/profile_nickname"
-            app:startIconDrawable="@drawable/ic_nickname"
-            app:startIconTint="@color/colorPrimary"
+            app:startIconDrawable="@drawable/ic_nickname_primary"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -123,8 +121,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="@string/profile_email"
-            app:startIconDrawable="@drawable/ic_email"
-            app:startIconTint="@color/colorPrimary"
+            app:startIconDrawable="@drawable/ic_email_primary"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -140,8 +137,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="@string/profile_location"
-            app:startIconDrawable="@drawable/ic_location"
-            app:startIconTint="@color/colorPrimary"
+            app:startIconDrawable="@drawable/ic_location_primary"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -157,8 +153,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="@string/profile_phone"
-            app:startIconDrawable="@drawable/ic_phone"
-            app:startIconTint="@color/colorPrimary"
+            app:startIconDrawable="@drawable/ic_phone_primary"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
             <com.google.android.material.textfield.TextInputEditText

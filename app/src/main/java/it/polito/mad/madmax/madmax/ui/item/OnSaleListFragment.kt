@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
@@ -23,7 +22,6 @@ class OnSaleListFragment : Fragment() {
 
     private lateinit var itemVM: ItemViewModel
     lateinit var itemsAdapter:ItemAdapter
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,11 +119,6 @@ class OnSaleListFragment : Fragment() {
             }
         })
 
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        activity?.findViewById<FloatingActionButton>(R.id.main_fab_add_item)?.visibility = View.GONE
     }
 
     class AutoFitGridLayoutManager(context: Context?, columnWidth: Int) : GridLayoutManager(context, 1) {

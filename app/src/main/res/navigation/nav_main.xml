@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_main"
-    app:startDestination="@id/nav_item_on_sale_fragment">
+    app:startDestination="@id/nav_on_sale_list_fragment">
 
     <!-- Home -->
     <fragment
-        android:id="@+id/nav_item_on_sale_fragment"
+        android:id="@+id/nav_on_sale_list_fragment"
         android:name="it.polito.mad.madmax.madmax.ui.item.OnSaleListFragment"
         android:label="@string/title_on_sale_item_fragment"
         tools:layout="@layout/fragment_item_list" >
@@ -20,7 +20,7 @@
     <fragment
         android:id="@+id/nav_item_list_fragment"
         android:name="it.polito.mad.madmax.madmax.ui.item.ItemListFragment"
-        android:label="@string/title_list_item_fragment"
+        android:label="@string/title_item_list_fragment"
         tools:layout="@layout/fragment_item_list" >
         <action
             android:id="@+id/action_details_item"
@@ -28,6 +28,9 @@
         <action
             android:id="@+id/action_edit_item"
             app:destination="@id/nav_edit_item_fragment" />
+        <action
+            android:id="@+id/action_create_item"
+            app:destination="@id/nav_details_item_fragment" />
     </fragment>
 
 
