@@ -23,19 +23,26 @@ class OnSaleListFragment : Fragment() {
 
     private lateinit var itemVM: ItemViewModel
     lateinit var itemsAdapter:ItemAdapter
-
+    var minPrice: Double? = null
+    var maxPrice: Double? = null
+    var mainCategory: String? = null
+    var subCategory: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         setFragmentResultListener("searchFilters"){
                 _, bundle ->
-            val minPrice = bundle.getDouble("minPrice")
+            /*val minPrice = bundle.getDouble("minPrice")
             val maxPrice = bundle.getDouble("maxPrice")
             val mainCategory = bundle.getString("mainCategory")
-            val subCategory = bundle.getString("subCategory")
+            val subCategory = bundle.getString("subCategory")*/
+            minPrice = if(bundle.containsKey("minPrice")) bundle.getDouble("minPrice") else null
+            maxPrice = if(bundle.containsKey("maxPrice")) bundle.getDouble("maxPrice") else null
+            mainCategory = bundle.getString("mainCategory")
+            subCategory = bundle.getString("subCategory")
             val filteredItems = itemVM.getOnSaleItems().value!!.filter {
-                it.price in minPrice..maxPrice &&
+                it.price in (minPrice?: 0.0)..(maxPrice?: Double.MAX_VALUE) &&
                 it.category_main.contains(mainCategory!!) &&
                 it.category_sub.contains(subCategory!!)
             } as ArrayList<Item>
@@ -78,6 +85,15 @@ class OnSaleListFragment : Fragment() {
 
     private fun showDialog(){
         val filterDialog = FilterDialog()
+        val bundle = Bundle().apply {
+            this.putString("minPrice",minPrice?.toString() ?: "")
+            this.putString("maxPrice",maxPrice?.toString() ?: "")
+            this.putString("mainCategory",mainCategory?: "")
+            this.putString("subCategory",subCategory?: "")
+        }
+
+
+        filterDialog.arguments = bundle
         filterDialog.show(parentFragmentManager,"FilterDialog")
     }
 

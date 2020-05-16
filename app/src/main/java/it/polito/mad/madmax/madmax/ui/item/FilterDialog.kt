@@ -26,14 +26,12 @@ class FilterDialog: DialogFragment(), AdapterView.OnItemSelectedListener{
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d("FILTERS","LDJLJDLJALDJDLJ")
         return inflater.inflate(R.layout.filter_layout,container,false)
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("FILTERS","LDJLJDLJALDJDLJ")
         apply_filter.setOnClickListener {
             applyFilters()
         }
@@ -45,65 +43,103 @@ class FilterDialog: DialogFragment(), AdapterView.OnItemSelectedListener{
         val dataAdapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, list)
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         dataAdapter.notifyDataSetChanged()
+
         item_edit_category_main.adapter = dataAdapter
         item_edit_category_main.onItemSelectedListener = this
+        retrieveFilters(requireArguments())
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        if (parent?.id == R.id.item_edit_category_main) {
-            val text: String = parent.getItemAtPosition(position).toString()
-            val secondList: Int = when (text) {
-                "Arts & Crafts" -> { R.array.item_categories_sub_art_and_crafts }
-                "Sports & Hobby" -> { R.array.item_categories_sub_sports_and_hobby }
-                "Baby" -> { R.array.item_categories_sub_baby }
-                "Women\'s fashion" -> { R.array.item_categories_sub_womens_fashion }
-                "Men\'s fashion" -> { R.array.item_categories_sub_mens_fashion }
-                "Electronics" -> { R.array.item_categories_sub_electronics }
-                "Games & Videogames" -> { R.array.item_categories_sub_games_and_videogames }
-                "Automotive" -> { R.array.item_categories_sub_automotive }
-                "- - - - -"->{R.string.empty_filter}
+    private fun retrieveFilters(bundle: Bundle){
 
-                else -> throw Exception()
+        val minPrice = bundle.getString("minPrice")
+        val maxPrice = bundle.getString("maxPrice")
+        val mainCat = bundle.getString("mainCategory")?: getString(R.string.empty_filter)
+        val subCat = bundle.getString("subCategory")?: getString(R.string.empty_filter)
+
+        item_edit_minPrice.setText(minPrice)
+        item_edit_maxPrice.setText(maxPrice)
+        if(mainCat.isNotEmpty()) {
+            val selectedMainIndex = resources.getStringArray(R.array.item_categories_main).indexOf(mainCat)
+            item_edit_category_main.setSelection(selectedMainIndex+1)
+
+            /*val subCatElements = mapMainCategoryToSubCategory(mainCat)
+            adaptSubCategoryElements(subCatElements)*/
+
+            if(subCat.isNotEmpty()){
+                val selectedSubIndex = resources.getStringArray(mapMainCategoryToSubCategory(mainCat)).indexOf(subCat)
+                item_edit_category_sub.setSelection(selectedSubIndex+1)
             }
+        }
+        else item_edit_category_main.setSelection(0)
 
-            lateinit var elements:Array<String>
-            if(secondList == R.string.empty_filter){
-                elements = arrayOf(getString(secondList))
-            }else{
-                elements = resources.getStringArray(secondList)
+    }
 
-            }
-            //val elements = resources.getStringArray(secondList)
-            val dataAdapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, elements)
-            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            dataAdapter.notifyDataSetChanged()
-            item_edit_category_sub.adapter = dataAdapter
+    private fun mapMainCategoryToSubCategory(text: String):Int{
+        return when (text) {
+            "Arts & Crafts" -> { R.array.item_categories_sub_art_and_crafts }
+            "Sports & Hobby" -> { R.array.item_categories_sub_sports_and_hobby }
+            "Baby" -> { R.array.item_categories_sub_baby }
+            "Women\'s fashion" -> { R.array.item_categories_sub_womens_fashion }
+            "Men\'s fashion" -> { R.array.item_categories_sub_mens_fashion }
+            "Electronics" -> { R.array.item_categories_sub_electronics }
+            "Games & Videogames" -> { R.array.item_categories_sub_games_and_videogames }
+            "Automotive" -> { R.array.item_categories_sub_automotive }
+            "- - - - -"->{R.string.empty_filter}
+
+            else -> throw Exception()
         }
     }
 
+    private fun adaptSubCategoryElements(secondList: Int){
+        lateinit var elements:List<String>
+
+        if(secondList == R.string.empty_filter){
+            elements = listOf(getString(secondList))
+        }else{
+            val categories = resources.getStringArray(secondList)
+            val list = categories.toMutableList<String>()
+            list.add(0,"- - - - -")
+            elements = list
+
+        }
+        //val elements = resources.getStringArray(secondList)
+        val dataAdapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, elements)
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        dataAdapter.notifyDataSetChanged()
+        item_edit_category_sub.adapter = dataAdapter
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        if (parent?.id == R.id.item_edit_category_main) {
+            val text: String = parent.getItemAtPosition(position).toString()
+            val secondList = mapMainCategoryToSubCategory(text)
+            adaptSubCategoryElements(secondList)
+        }
+
+    }
+
     private fun applyFilters(){
-        val minPrice = item_edit_minPrice.text?.toString()?.toDoubleOrNull() ?: 0.0
-        val maxPrice = item_edit_maxPrice.text?.toString()?.toDoubleOrNull() ?: Double.MAX_VALUE
+        val minPrice = item_edit_minPrice.text?.toString()?.toDoubleOrNull()
+        val maxPrice = item_edit_maxPrice.text?.toString()?.toDoubleOrNull()
         val mainCategory = if(item_edit_category_main.selectedItem?.toString() == getString(R.string.empty_filter)) "" else  item_edit_category_main.selectedItem?.toString()
         val subCategory = if(item_edit_category_sub.selectedItem?.toString() == getString(R.string.empty_filter)) "" else  item_edit_category_sub.selectedItem?.toString()
 
         val bundle = Bundle()
-        bundle.putDouble("minPrice",minPrice)
-        bundle.putDouble("maxPrice",maxPrice)
-        bundle.putString("mainCategory",mainCategory)
-        bundle.putString("subCategory",subCategory)
+        bundle.apply {
+            if(minPrice != null) this.putDouble("minPrice",minPrice)
+            if(maxPrice != null) this.putDouble("maxPrice",maxPrice)
+            this.putString("mainCategory",mainCategory)
+            this.putString("subCategory",subCategory)
+        }
+
 
         setFragmentResult("searchFilters", bundle)
         dismiss()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putDouble("minPrice",4.5)
-    }
 
 }
