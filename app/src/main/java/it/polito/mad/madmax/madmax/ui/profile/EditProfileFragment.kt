@@ -27,28 +27,32 @@ import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import java.io.File
 import java.io.IOException
 
+//TODO strings, messages, animations, resize of screen, fields check
 class EditProfileFragment : Fragment() {
 
     // User view model of the activity
     private val userVM: UserViewModel by activityViewModels()
 
     // User
-    private var tempUser: User? = null
+    private lateinit var tempUser: User
 
     // Listeners
     private lateinit var cardListener: View.OnLayoutChangeListener
 
-    // Intent codes
-    private val capturePermissionRequest = 0
-    private val galleryPermissionRequest = 1
-    private val captureIntentRequest = 2
-    private val galleryIntentRequest = 3
+    // Companion
+    companion object {
+        // Intent codes
+        private const val RP_CAMERA = 0
+        private const val RP_GALLERY = 1
+        private const val RC_CAPTURE = 2
+        private const val RC_GALLERY = 3
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         initListeners()
-        tempUser = userVM.user.value?.copy()
+        tempUser = userVM.user.value!!.copy()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -57,7 +61,7 @@ class EditProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        updateFields(tempUser)
+        updateFields()
         profile_edit_card.addOnLayoutChangeListener(cardListener)
         profile_edit_change_photo.setOnClickListener { selectImage() }
     }
@@ -69,15 +73,15 @@ class EditProfileFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        tempUser = updateUser()
-        outState.putSerializable("profile_edit_user_state", tempUser)
+        updateUser()
+        outState.putSerializable(getString(R.string.profile_edit_user_state), tempUser)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         savedInstanceState?.also { state ->
-            state.getSerializable("profile_edit_user_state")?.also { tempUser = it as User }
-            updateFields(tempUser)
+            state.getSerializable(getString(R.string.profile_edit_user_state))?.also { tempUser = it as User }
+            updateFields()
         }
     }
 
@@ -90,7 +94,8 @@ class EditProfileFragment : Fragment() {
         return when (item.itemId) {
             R.id.menu_save_profile_save -> {
                 updateUser()
-                if (tempUser!!.name == "" || tempUser!!.email == "" || tempUser!!.nickname == "" || tempUser!!.location == "" || tempUser!!.phone == "") {
+                // TODO improve
+                if (tempUser.name == "" || tempUser.email == "" || tempUser.nickname == "" || tempUser.location == "" || tempUser.phone == "") {
                     for (field in setOf(profile_edit_name, profile_edit_email, profile_edit_nickname, profile_edit_location, profile_edit_phone)) {
                         if (field.text.toString() == "") {
                             field.error = getString(R.string.message_error_field_required)
@@ -98,7 +103,7 @@ class EditProfileFragment : Fragment() {
                     }
                     false
                 } else {
-                    userVM.updateUser(tempUser!!)
+                    userVM.updateUser(tempUser)
                     (activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
                     findNavController().navigate(EditProfileFragmentDirections.actionSaveProfile())
                     true
@@ -110,46 +115,44 @@ class EditProfileFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            captureIntentRequest -> {
+            RC_CAPTURE -> {
                 when (resultCode) {
                     Activity.RESULT_OK -> {
-                        updateFields(tempUser)
-                        displayMessage(requireContext(), "Picture taken correctly")
+                        updateFields()
+                        displayMessage(root_edit_profile, getString(R.string.message_taken_photo))
                     }
                     else -> {
-                        tempUser?.also {
+                        tempUser.also {
                             File(it.photo).delete()
                         }
-                        displayMessage(requireContext(), "Request cancelled or something went wrong.")
+                        displayMessage(root_edit_profile, getString(R.string.message_error_intent))
                     }
                 }
             }
-            galleryIntentRequest -> {
+            RC_GALLERY -> {
                 when (resultCode) {
                     Activity.RESULT_OK -> {
                         data?.data?.also {
-                            tempUser = tempUser?.apply { photo = it.toString() } ?: User(
-                                photo = it.toString()
-                            )
-                            updateFields(tempUser)
-                            displayMessage(requireContext(), "Picture loaded correctly")
-                        } ?: displayMessage(requireContext(), "Request cancelled or something went wrong.")
+                            tempUser.apply { photo = it.toString() }
+                            updateFields()
+                            displayMessage(root_edit_profile, getString(R.string.message_chosen_photo))
+                        } ?: displayMessage(root_edit_profile, getString(R.string.message_error_intent))
                     }
-                    else -> displayMessage(requireContext(), "Request cancelled or something went wrong.")
+                    else -> displayMessage(root_edit_profile, getString(R.string.message_error_intent))
                 }
             }
-            else -> displayMessage(requireContext(), "Request cancelled or something went wrong.")
+            //else -> displayMessage(requireContext(), "Request cancelled or something went wrong.")
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
-            capturePermissionRequest -> {
+            RP_CAMERA -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     captureImage()
                 }
             }
-            galleryPermissionRequest -> {
+            RP_GALLERY -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getImageFromGallery()
                 }
@@ -180,7 +183,7 @@ class EditProfileFragment : Fragment() {
     // Handle capturing the Image
     private fun captureImage() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.CAMERA), capturePermissionRequest)
+            requestPermissions(arrayOf(Manifest.permission.CAMERA), RP_CAMERA)
         } else {
             Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
                 activity?.packageManager?.also { pm ->
@@ -189,9 +192,9 @@ class EditProfileFragment : Fragment() {
                         try {
                             createImageFile(requireContext()).also { file ->
                                 val photoUri = FileProvider.getUriForFile(requireContext(), getString(R.string.file_provider), file)
-                                tempUser = tempUser?.apply { photo = photoUri.toString() } ?: User(photo = photoUri.toString())
+                                tempUser.apply { photo = photoUri.toString() }
                                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-                                startActivityForResult(takePictureIntent, captureIntentRequest)
+                                startActivityForResult(takePictureIntent, RC_CAPTURE)
                             }
                         } catch (ex: IOException) {
                             ex.printStackTrace()
@@ -205,47 +208,39 @@ class EditProfileFragment : Fragment() {
     // Handle selecting the image from the gallery
     private fun getImageFromGallery() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), galleryPermissionRequest)
+            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), RP_GALLERY)
         } else {
             Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also { pickPhoto ->
                 pickPhoto.type = "image/*"
                 if (activity?.packageManager?.queryIntentActivities(pickPhoto, 0)?.isNotEmpty() == true) {
-                    startActivityForResult(pickPhoto, galleryIntentRequest)
+                    startActivityForResult(pickPhoto, RC_GALLERY)
                 } else {
-                    displayMessage(requireContext(), "Sorry, no gallery applications")
+                    displayMessage(requireContext(), getString(R.string.message_error_gallery_app))
                 }
             }
         }
     }
 
     // Update user variable using views
-    private fun updateUser(): User {
-        return tempUser?.apply {
+    private fun updateUser() {
+        tempUser.apply {
             name = profile_edit_name.text.toString()
             nickname = profile_edit_nickname.text.toString()
             email = profile_edit_email.text.toString()
             location = profile_edit_location.text.toString()
             phone = profile_edit_phone.text.toString()
-        } ?: User(
-            name = profile_edit_name.text.toString(),
-            nickname = profile_edit_nickname.text.toString(),
-            email = profile_edit_email.text.toString(),
-            location = profile_edit_location.text.toString(),
-            phone = profile_edit_phone.text.toString()
-        )
+        }
     }
 
-    // Update views using the local variable user
-    private fun updateFields(user: User?) {
-        user?.also {
-            profile_edit_name.setText(it.name)
-            profile_edit_nickname.setText(it.nickname)
-            profile_edit_email.setText(it.email)
-            profile_edit_location.setText(it.location)
-            profile_edit_phone.setText(it.phone)
-            if (it.photo != "") {
-                profile_edit_photo.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(it.photo))!!)
-            }
+    // Update views
+    private fun updateFields() {
+        profile_edit_name.setText(tempUser.name)
+        profile_edit_nickname.setText(tempUser.nickname)
+        profile_edit_email.setText(tempUser.email)
+        profile_edit_location.setText(tempUser.location)
+        profile_edit_phone.setText(tempUser.phone)
+        if (tempUser.photo != "") {
+            profile_edit_photo.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(tempUser.photo))!!)
         }
     }
 
@@ -262,14 +257,11 @@ class EditProfileFragment : Fragment() {
 
             // Translation of the photo
             imageView.apply {
-                if (tempUser?.photo == "") {
-                    translationY = measuredHeight / 6F
-                }
-                /*translationY = if (tempUser?.photo != "") {
-                    0F
+                translationY = if (tempUser.photo == "") {
+                    measuredHeight / 6F
                 } else {
-                    v.measuredHeight / 6F
-                }*/
+                    0F
+                }
             }
 
             // Visibility

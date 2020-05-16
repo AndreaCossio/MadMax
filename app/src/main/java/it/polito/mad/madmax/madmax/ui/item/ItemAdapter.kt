@@ -1,7 +1,6 @@
 package it.polito.mad.madmax.madmax.ui.item
 
 import android.content.Context
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,11 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
-import it.polito.mad.madmax.madmax.handleSamplingAndRotationBitmap
-import it.polito.mad.madmax.madmax.toPx
 import kotlinx.android.synthetic.main.item.view.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ItemAdapter(private var items: ArrayList<Item>, private val recycler: RecyclerView) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() , Filterable{
 

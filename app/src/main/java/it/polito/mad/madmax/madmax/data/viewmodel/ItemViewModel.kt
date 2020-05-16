@@ -5,11 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import it.polito.mad.madmax.madmax.data.model.Item
-import it.polito.mad.madmax.madmax.data.repository.ItemRepository
+import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
 
-class ItemViewModel(): ViewModel() {
+class ItemViewModel: ViewModel() {
 
-    private val itemRepository = ItemRepository()
+    private val itemRepository = FirestoreRepository()
 
     private val items: MutableLiveData<ArrayList<Item>> by lazy {
         MutableLiveData<ArrayList<Item>>().also {

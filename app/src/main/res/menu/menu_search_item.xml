@@ -4,17 +4,17 @@
 
     <item
         android:id="@+id/menu_search"
+        android:contentDescription="@string/content_descritption_search"
         android:icon="@drawable/ic_search"
         android:title="@string/menu_search"
-        android:contentDescription="@string/content_descritption_search"
-        app:showAsAction="ifRoom"
-        app:actionViewClass="androidx.appcompat.widget.SearchView" />
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_filter"
+        android:contentDescription="@string/content_description_edit"
         android:icon="@drawable/ic_filter_list_white"
         android:title="@string/menu_edit_profile"
-        android:contentDescription="@string/content_description_edit"
         app:showAsAction="ifRoom" />
 
 

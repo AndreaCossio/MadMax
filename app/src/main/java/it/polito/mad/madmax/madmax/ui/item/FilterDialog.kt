@@ -1,7 +1,5 @@
 package it.polito.mad.madmax.madmax.ui.item
 
-import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,16 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import it.polito.mad.madmax.madmax.R
 import kotlinx.android.synthetic.main.filter_layout.*
-import kotlinx.android.synthetic.main.filter_layout.item_edit_category_main
-import kotlinx.android.synthetic.main.filter_layout.item_edit_category_sub
-import kotlinx.android.synthetic.main.fragment_edit_item.*
-import java.lang.ClassCastException
-import java.util.*
 
 
 class FilterDialog: DialogFragment(), AdapterView.OnItemSelectedListener{

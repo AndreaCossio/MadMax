@@ -10,7 +10,9 @@ import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.view.View
 import android.widget.Toast
+import com.google.android.material.snackbar.Snackbar
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -106,6 +108,10 @@ fun rotateImage(img: Bitmap, degree: Int): Bitmap? {
 // Helper function to display a toast
 fun displayMessage(context: Context, message: String) {
     Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+}
+
+fun displayMessage(context_view: View, message: String) {
+    Snackbar.make(context_view, message, Snackbar.LENGTH_SHORT).show()
 }
 
 fun Int.toPx(): Int = (this * Resources.getSystem().displayMetrics.density).toInt()
