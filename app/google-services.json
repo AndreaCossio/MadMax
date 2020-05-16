@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "427525694081",
+    "firebase_url": "https://madmax-db.firebaseio.com",
+    "project_id": "madmax-db",
+    "storage_bucket": "madmax-db.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:427525694081:android:8b30069ffbae5b5ab7e380",
+        "android_client_info": {
+          "package_name": "it.polito.mad.madmax.madmax"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "427525694081-bkkvhu7gu3gfd50a0b46nj028hmkf3ke.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.polito.mad.madmax.madmax",
+            "certificate_hash": "dd59ad7eb8f36708057bf730e3fad62e6697437d"
+          }
+        },
+        {
+          "client_id": "427525694081-1tjq7g2q7dsv4e56fcf9cjrfakp5ev7j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtgKrHchD25k25vvFKOpeNMM5B6zMrMRk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "427525694081-1tjq7g2q7dsv4e56fcf9cjrfakp5ev7j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

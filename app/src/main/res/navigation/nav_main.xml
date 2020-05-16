@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_main"
-    app:startDestination="@id/nav_item_list_fragment">
+    app:startDestination="@id/nav_item_on_sale_fragment">
 
     <!-- Home -->
     <fragment
@@ -19,6 +19,28 @@
             app:destination="@id/nav_edit_item_fragment" />
         <action
             android:id="@+id/action_create_item"
+            app:destination="@id/nav_details_item_fragment" />
+        <action
+            android:id="@+id/action_nav_item_list_fragment_to_nav_details_item_fragment"
+            app:destination="@id/nav_details_item_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_item_on_sale_fragment"
+        android:name="it.polito.mad.madmax.madmax.ui.item.OnSaleListFragment"
+        android:label="@string/title_on_sale_item_fragment"
+        tools:layout="@layout/fragment_item_list" >
+        <action
+            android:id="@+id/action_details_item"
+            app:destination="@id/nav_details_item_fragment" />
+        <action
+            android:id="@+id/action_edit_item"
+            app:destination="@id/nav_edit_item_fragment" />
+        <action
+            android:id="@+id/action_create_item"
+            app:destination="@id/nav_details_item_fragment" />
+        <action
+            android:id="@+id/action_nav_item_on_sale_fragment_to_nav_details_item_fragment"
             app:destination="@id/nav_details_item_fragment" />
     </fragment>
 

@@ -35,5 +35,3 @@ output.json
 .settings
 .project
 .classpath
-
-app/google-services.json

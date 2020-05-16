@@ -99,10 +99,10 @@ class ShowProfileFragment : Fragment() {
 
             // Translation of the photo
             imageView.apply {
-                if (user?.photo == "") {
-                    translationY = measuredHeight / 6F
+                translationY = if (user?.photo == "") {
+                    measuredHeight / 6F
                 } else {
-                    translationY = 0F
+                    0F
                 }
             }
 

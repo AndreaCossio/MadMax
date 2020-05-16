@@ -257,10 +257,10 @@ class EditProfileFragment : Fragment() {
 
             // Translation of the photo
             imageView.apply {
-                if (tempUser.photo == "") {
-                    translationY = measuredHeight / 6F
+                translationY = if (tempUser.photo == "") {
+                    measuredHeight / 6F
                 } else {
-                    translationY = 0F
+                    0F
                 }
             }
 
