@@ -32,7 +32,6 @@
 
         <activity
             android:name="it.polito.mad.madmax.madmax.MainActivity"
-            android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>

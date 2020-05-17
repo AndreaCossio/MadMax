@@ -10,7 +10,8 @@
     <string name="file_provider">it.polito.mad.madmax.madmax.fileprovider</string>
 
     <!-- SAVED STATES -->
-    <string name="profile_edit_user_state">profile_edit_user_state</string>
+    <string name="edit_profile_state">edit_profile_state</string>
+    <string name="edit_item_state">edit_item_state</string>
 
     <!-- NAVIGATION -->
     <string name="title_show_profile_fragment">Profile</string>

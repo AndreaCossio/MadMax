@@ -7,22 +7,22 @@ import androidx.lifecycle.ViewModel
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
 
-class ItemViewModel: ViewModel() {
+class ItemViewModel(public val personal: Boolean): ViewModel() {
 
-    private val itemRepository = FirestoreRepository()
+    private val firestoreRepository: FirestoreRepository = FirestoreRepository()
 
-    private val items: MutableLiveData<ArrayList<Item>> by lazy {
+    val items: MutableLiveData<ArrayList<Item>> by lazy {
         MutableLiveData<ArrayList<Item>>().also {
-           loadOnSaleItems()
+           loadItems()
         }
     }
 
-    fun getOnSaleItems() : LiveData<ArrayList<Item>>{
+    fun getOnSaleItems() : LiveData<ArrayList<Item>> {
         return items
     }
 
-    private fun loadOnSaleItems(){
-        itemRepository.getOnSaleItems()
+    private fun loadItems() {
+        firestoreRepository.getItems("3ZLAl6PEj5a0Cm8ZyMJrLv72l992", personal)
 
            /* .addOnSuccessListener {
                 val itemArray = ArrayList<Item>()
@@ -34,7 +34,7 @@ class ItemViewModel: ViewModel() {
 
             }*/
         //val items = MutableLiveData<ArrayList<Item>>()
-            .addSnapshotListener{value,e ->
+            /*.addSnapshotListener{value,e ->
                 if (e!= null){
                     Log.e("ERR","Listen failed")
                     return@addSnapshotListener
@@ -45,7 +45,7 @@ class ItemViewModel: ViewModel() {
                 }
                 items.value = itemArray
 
-            }
+            }*/
 
     }
 }

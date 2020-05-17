@@ -48,8 +48,8 @@ class ShowProfileFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         profile_card.removeOnLayoutChangeListener(cardListener)
+        super.onDestroyView()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

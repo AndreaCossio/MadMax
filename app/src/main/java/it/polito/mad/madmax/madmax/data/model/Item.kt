@@ -12,5 +12,5 @@ data class Item (
     var location: String = "",
     var expiry: String = "",
     var stars: Double = 5.0,
-    var photo: String? = null
+    var photo: String = ""
 ) : Serializable
