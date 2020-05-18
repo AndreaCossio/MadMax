@@ -72,9 +72,9 @@ class DetailsItemFragment : Fragment() {
         }
     }
 
-    // Update views using the local variable item
+    // Update views using the ViewModel of the item
     private fun updateFields() {
-        itemVM.items.value?.get(0)?.also { item ->
+        args.item?.also { item ->
             item_details_title.text = item.title
             item_details_description.text = item.description
             item_details_category_main.text = item.category_main
