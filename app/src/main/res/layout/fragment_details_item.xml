@@ -15,40 +15,35 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/item_details_card"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="32dp"
-            app:cardElevation="0dp"
-            app:cardCornerRadius="500dp"
+            android:visibility="invisible"
             app:cardPreventCornerOverlap="true"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#e0e0e0">
 
                 <ImageView
                     android:id="@+id/item_details_photo"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:background="@color/transparent"
                     android:contentDescription="@string/content_description_item_photo"
                     android:src="@drawable/ic_camera_white"
-                    android:scaleType="centerCrop"
-                    app:layout_constraintDimensionRatio="H,1:1"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:scaleType="centerCrop" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -150,16 +145,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:drawableStart="@drawable/ic_category_primary"
+            android:drawableStart="@drawable/ic_bookmark_primary"
             android:drawablePadding="36dp"
             android:hint="@string/item_category_main" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_details_category_sub"
-            style="@style/TextAppearance.MaterialComponents.Body1"
+            style="@style/TextAppearance.MaterialComponents.Body2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="12dp"
             android:paddingStart="60dp"
             android:hint="@string/item_category_main" />
 

@@ -67,20 +67,20 @@ class EditProfileFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         profile_edit_card.removeOnLayoutChangeListener(cardListener)
+        super.onDestroyView()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         updateUser()
-        outState.putSerializable(getString(R.string.profile_edit_user_state), tempUser)
+        outState.putSerializable(getString(R.string.edit_profile_state), tempUser)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         savedInstanceState?.also { state ->
-            state.getSerializable(getString(R.string.profile_edit_user_state))?.also { tempUser = it as User }
+            state.getSerializable(getString(R.string.edit_profile_state))?.also { tempUser = it as User }
             updateFields()
         }
     }

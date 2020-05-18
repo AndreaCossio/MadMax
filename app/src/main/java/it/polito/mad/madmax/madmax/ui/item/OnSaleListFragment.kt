@@ -2,9 +2,12 @@ package it.polito.mad.madmax.madmax.ui.item
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -16,11 +19,15 @@ import androidx.recyclerview.widget.RecyclerView.Recycler
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
+import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModelFactory
 import kotlinx.android.synthetic.main.fragment_item_list.*
 
 class OnSaleListFragment : Fragment() {
 
-    private lateinit var itemVM: ItemViewModel
+    // Other's items
+    private val othersItemsVM: ItemViewModel by activityViewModels {
+        ItemViewModelFactory(false)
+    }
     lateinit var itemsAdapter:ItemAdapter
     var minPrice: Double? = null
     var maxPrice: Double? = null
@@ -40,7 +47,7 @@ class OnSaleListFragment : Fragment() {
             maxPrice = if(bundle.containsKey("maxPrice")) bundle.getDouble("maxPrice") else null
             mainCategory = bundle.getString("mainCategory")
             subCategory = bundle.getString("subCategory")
-            val filteredItems = itemVM.getOnSaleItems().value!!.filter {
+            val filteredItems = othersItemsVM.getOnSaleItems().value!!.filter {
                 it.price in (minPrice?: 0.0)..(maxPrice?: Double.MAX_VALUE) &&
                 it.category_main.contains(mainCategory!!) &&
                 it.category_sub.contains(subCategory!!)
@@ -50,12 +57,7 @@ class OnSaleListFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
         super.onCreateView(inflater, container, savedInstanceState)
-
-
-        itemVM = ViewModelProvider(this).get(ItemViewModel::class.java)
-
         return inflater.inflate(R.layout.fragment_item_list, container, false)
     }
 
@@ -72,7 +74,7 @@ class OnSaleListFragment : Fragment() {
             }
 
             override fun onQueryTextChange(p0: String?): Boolean {
-                val filteredItems = itemVM.getOnSaleItems().value!!.filter { it -> it.title.contains(p0!!) } as ArrayList<Item>
+                val filteredItems = othersItemsVM.getOnSaleItems().value!!.filter { it -> it.title.contains(p0!!) } as ArrayList<Item>
                 //itemsAdapter.filter.filter(p0)
                 itemsAdapter.setItems(filteredItems)
                 return false
@@ -122,7 +124,7 @@ class OnSaleListFragment : Fragment() {
             }
 
 
-        itemVM.getOnSaleItems().observe(this.requireActivity(), Observer {
+        othersItemsVM.getOnSaleItems().observe(this.requireActivity(), Observer {
             if(it.isEmpty()){
                 item_list_rv.visibility = View.GONE
                 empty_view.visibility = View.VISIBLE

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_edit_item"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -15,11 +16,10 @@
 
         <FrameLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -29,9 +29,9 @@
                 android:id="@+id/item_edit_card"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:cardPreventCornerOverlap="true"
-                app:cardCornerRadius="500dp"
-                app:cardElevation="0dp">
+                android:layout_margin="16dp"
+                android:visibility="invisible"
+                app:cardPreventCornerOverlap="true">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -40,17 +40,12 @@
 
                     <ImageView
                         android:id="@+id/item_edit_photo"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:background="@color/transparent"
                         android:contentDescription="@string/content_description_item_photo"
                         android:src="@drawable/ic_camera_white"
-                        android:scaleType="centerCrop"
-                        app:layout_constraintDimensionRatio="H,1:1"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:scaleType="centerCrop" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -61,6 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="bottom|end"
+                android:layout_margin="16dp"
                 android:src="@drawable/ic_menu_camera" />
 
         </FrameLayout>
@@ -98,7 +94,6 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/item_title"
                 app:startIconDrawable="@drawable/ic_title_primary"
-                app:startIconTint="@color/colorPrimary"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -115,7 +110,6 @@
                 android:layout_marginTop="16dp"
                 android:hint="@string/item_description"
                 app:startIconDrawable="@drawable/ic_description_primary"
-                app:startIconTint="@color/colorPrimary"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -132,7 +126,6 @@
                 android:layout_marginTop="16dp"
                 android:hint="@string/item_price"
                 app:startIconDrawable="@drawable/ic_price_primary"
-                app:startIconTint="@color/colorPrimary"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -149,7 +142,6 @@
                 android:layout_marginTop="16dp"
                 android:hint="@string/item_location"
                 app:startIconDrawable="@drawable/ic_location_primary"
-                app:startIconTint="@color/colorPrimary"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
                 <com.google.android.material.textfield.TextInputEditText

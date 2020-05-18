@@ -23,6 +23,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
+import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModelFactory
 import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
 import it.polito.mad.madmax.madmax.ui.item.ItemListFragmentDirections
 import kotlinx.android.synthetic.main.activity_main.*
@@ -30,12 +32,20 @@ import kotlinx.android.synthetic.main.nav_header_main.view.*
 
 class MainActivity : AppCompatActivity() {
 
-    // Default user data
+    // User data
     private val userVM: UserViewModel by viewModels()
 
     // Firebase auth
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+
+    // Item data
+    /*private val othersItemsVM: ItemViewModel by viewModels {
+        ItemViewModelFactory(false)
+    }
+    private val myItemsVM: ItemViewModel by viewModels {
+        ItemViewModelFactory(true)
+    }*/
 
     // Appbar config
     private lateinit var appBarConfig: AppBarConfiguration
@@ -110,10 +120,12 @@ class MainActivity : AppCompatActivity() {
                     val account = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException::class.java)!!
                     auth.signInWithCredential(GoogleAuthProvider.getCredential(account.idToken, null)).addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
-                            auth.currentUser?.also { userVM.loadUser(it) } ?: signIn()
-                            displayMessage(nav_view, "Authentication succeeded.")
+                            auth.currentUser?.also {
+                                userVM.loadUser(it)
+                                displayMessage(nav_view, "Welcome back ${it.displayName}")
+                            } ?: signIn()
                         } else {
-                            displayMessage(nav_view, "Authentication failed.")
+                            signIn()
                         }
                     }
                 } catch (e: ApiException) {
