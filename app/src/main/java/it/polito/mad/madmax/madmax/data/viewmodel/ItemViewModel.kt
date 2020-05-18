@@ -34,16 +34,13 @@ class ItemViewModel: ViewModel() {
 
             }*/
         //val items = MutableLiveData<ArrayList<Item>>()
-            .addSnapshotListener{value,e ->
-                if (e!= null){
-                    Log.e("ERR","Listen failed")
-                    return@addSnapshotListener
-                }
+            .addOnSuccessListener {
                 val itemArray = ArrayList<Item>()
-                for (doc in value!!.documents){
+                for (doc in it.documents){
                     itemArray.add(doc.toObject(Item::class.java)!!)
                 }
                 items.value = itemArray
+            }.addOnFailureListener {
 
             }
 

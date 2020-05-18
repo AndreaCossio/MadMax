@@ -2,8 +2,10 @@ package it.polito.mad.madmax.madmax.data.repository
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
@@ -43,8 +45,8 @@ class FirestoreRepository {
     //
     // ITEM
     //
-    fun getOnSaleItems(): CollectionReference {
-        return db.collection("items")
+    fun getOnSaleItems(): Task<QuerySnapshot> {
+        return db.collection("items").get()
     }
 
     /*fun getOnSaleItems():MutableLiveData<ArrayList<Item>>{
