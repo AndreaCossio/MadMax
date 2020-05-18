@@ -5,10 +5,13 @@ import android.os.Bundle
 import android.view.*
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
+import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.madmax.handleSamplingAndRotationBitmap
 import it.polito.mad.madmax.madmax.toPx
 import kotlinx.android.synthetic.main.fragment_details_item.*
@@ -17,14 +20,13 @@ import kotlinx.android.synthetic.main.item.*
 class DetailsItemFragment : Fragment() {
 
     // Item
-    private var item: Item? = null
-    
-    // User owns the item
-    // TODO: best way to retrieve it?
-    private var own: Boolean = false
+    private val itemVM: ItemViewModel by activityViewModels()
 
     // Destination arguments
     private val args: DetailsItemFragmentArgs by navArgs()
+    
+    // User owns the item
+    private var own: Boolean = false
 
     // Listeners
     private lateinit var cardListener: View.OnLayoutChangeListener
@@ -42,9 +44,9 @@ class DetailsItemFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         args.item?.also {
-            item = it
-        }
-        updateFields()
+            own = true
+            updateFields()
+        } ?: itemVM.items.observe(viewLifecycleOwner, Observer { updateFields() })
         args.item ?: findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(null))
         item_details_card.addOnLayoutChangeListener(cardListener)
     }
@@ -64,7 +66,7 @@ class DetailsItemFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_edit_item_edit -> {
-                findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(this.item))
+                findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(itemVM.items.value?.get(0)))
                 true
             } else -> super.onOptionsItemSelected(item)
         }
@@ -72,7 +74,7 @@ class DetailsItemFragment : Fragment() {
 
     // Update views using the local variable item
     private fun updateFields() {
-        item?.also { item ->
+        itemVM.items.value?.get(0)?.also { item ->
             item_details_title.text = item.title
             item_details_description.text = item.description
             item_details_category_main.text = item.category_main
