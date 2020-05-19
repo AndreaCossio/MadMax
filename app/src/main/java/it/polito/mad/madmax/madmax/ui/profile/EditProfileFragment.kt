@@ -2,7 +2,6 @@ package it.polito.mad.madmax.madmax.ui.profile
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,8 +11,8 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -29,8 +28,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import java.io.IOException
 
-// TODO show alert when going back with unmodified data
-//      dialog disappears on rotation
 class EditProfileFragment : Fragment() {
 
     // User
@@ -39,6 +36,9 @@ class EditProfileFragment : Fragment() {
 
     // Card listener
     private lateinit var cardListener: View.OnLayoutChangeListener
+
+    // Dialogs
+    private var openDialog: String = ""
 
     companion object {
         const val TAG = "MM_EDIT_PROFILE"
@@ -89,6 +89,21 @@ class EditProfileFragment : Fragment() {
         updateFields()
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                updateUser()
+                if (tempUser != userVM.user.value) {
+                    openDialog = "Sure"
+                    openSureDialog()
+                } else {
+                    findNavController().navigateUp()
+                }
+            }
+        })
+    }
+
     override fun onDestroyView() {
         // Detach listener
         profile_edit_card.removeOnLayoutChangeListener(cardListener)
@@ -98,6 +113,7 @@ class EditProfileFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         updateUser()
         outState.putSerializable(getString(R.string.edit_profile_state), tempUser)
+        outState.putString("edit_profile_dialog", openDialog)
         super.onSaveInstanceState(outState)
     }
 
@@ -105,6 +121,13 @@ class EditProfileFragment : Fragment() {
         super.onViewStateRestored(savedInstanceState)
         savedInstanceState?.also { state ->
             state.getSerializable(getString(R.string.edit_profile_state))?.also { tempUser = it as User }
+            state.getString("edit_profile_dialog")?.also {
+                openDialog = it
+                when (openDialog) {
+                    "Sure" -> openSureDialog()
+                    "Change" -> selectImage()
+                }
+            }
             updateFields()
         }
     }
@@ -116,6 +139,10 @@ class EditProfileFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            android.R.id.home -> {
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+                true
+            }
             R.id.menu_save_profile_save -> {
                 // Load modified user data
                 updateUser()
@@ -219,29 +246,68 @@ class EditProfileFragment : Fragment() {
     // Click listener for changing the user profile photo
     private fun selectImage() {
         requireActivity().packageManager?.also { pm ->
-            val builder = MaterialAlertDialogBuilder(requireContext())
-            if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
-                builder.setTitle(R.string.photo_dialog_choose_photo)
-                    .setItems(arrayOf<CharSequence>(getString(R.string.photo_dialog_take_photo), getString(R.string.photo_dialog_gallery_photo), getString(R.string.photo_dialog_delete_image))) { _, which ->
-                        when (which) {
-                            0 -> captureImage()
-                            1 -> getImageFromGallery()
-                            else -> removeImage()
-                        }
-                    }
-                    .setNegativeButton(R.string.photo_dialog_cancel) { dialog, _ -> dialog.cancel() }
+            val items = if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+                arrayOf<CharSequence>(getString(R.string.photo_dialog_change_take), getString(R.string.photo_dialog_change_gallery), getString(R.string.photo_dialog_change_remove))
             } else {
-                builder.setTitle(R.string.photo_dialog_choose_photo)
-                    .setSingleChoiceItems(arrayOf<CharSequence>(getString(R.string.photo_dialog_gallery_photo), getString(R.string.photo_dialog_delete_image)), 0) { _, which ->
-                        when (which) {
-                            0 -> getImageFromGallery()
-                            else -> removeImage()
+                arrayOf<CharSequence>(getString(R.string.photo_dialog_change_gallery), getString(R.string.photo_dialog_change_remove))
+            }
+            openDialog = "Change"
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.photo_dialog_change_title)
+                .setItems(items) { dialog, which ->
+                    openDialog = ""
+                    dialog.cancel()
+                    when(items[which]) {
+                        getString(R.string.photo_dialog_change_take) -> captureImage()
+                        getString(R.string.photo_dialog_change_gallery) -> getImageFromGallery()
+                        else -> removeImage()
+                    }
+                }
+                .setNegativeButton(R.string.photo_dialog_cancel) { dialog, _ ->
+                    openDialog = ""
+                    dialog.cancel()
+                }
+                .setOnKeyListener { dialog, keyCode, _ ->
+                    when (keyCode) {
+                        KeyEvent.KEYCODE_BACK -> {
+                            openDialog = ""
+                            dialog.cancel()
+                            true
+                        } else -> {
+                            true
                         }
                     }
-                    .setNegativeButton(R.string.photo_dialog_cancel) { dialog, _ -> dialog.cancel() }
-            }
-            builder.show()
+                }
+                .show()
         }
+    }
+
+    private fun openSureDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.photo_dialog_sure_title)
+            .setMessage(R.string.photo_dialog_sure_text)
+            .setPositiveButton(R.string.photo_dialog_ok) { dialog, _ ->
+                openDialog = ""
+                dialog.cancel()
+                findNavController().navigateUp()
+            }
+            .setNegativeButton(R.string.photo_dialog_cancel) { dialog, _ ->
+                openDialog = ""
+                dialog.cancel()
+            }
+            .setOnKeyListener { dialog, keyCode, _ ->
+                when (keyCode) {
+                    KeyEvent.KEYCODE_BACK -> {
+                        dialog.cancel()
+                        openDialog = ""
+                        true
+                    } else -> {
+                        dialog.cancel()
+                        true
+                    }
+                }
+            }
+            .show()
     }
 
     // Intent to take a picture with the camera

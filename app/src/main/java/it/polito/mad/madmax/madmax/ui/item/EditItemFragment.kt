@@ -15,7 +15,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.cardview.widget.CardView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -25,8 +24,6 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.madmax.*
 import it.polito.mad.madmax.madmax.data.model.Item
@@ -203,15 +200,15 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val builder = AlertDialog.Builder(requireActivity())
         requireActivity().packageManager?.also { pm ->
             if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
-                builder.setTitle(R.string.photo_dialog_choose_photo)
-                    .setItems(arrayOf<CharSequence>(getString(R.string.photo_dialog_take_photo), getString(R.string.photo_dialog_gallery_photo))) { _, item ->
+                builder.setTitle(R.string.photo_dialog_change_title)
+                    .setItems(arrayOf<CharSequence>(getString(R.string.photo_dialog_change_take), getString(R.string.photo_dialog_change_gallery))) { _, item ->
                         if (item == 0) captureImage()
                         else getImageFromGallery()
                     }
                     .setNegativeButton(R.string.photo_dialog_cancel) { dialog, _ -> dialog.cancel() }
             } else {
-                builder.setTitle(R.string.photo_dialog_choose_photo)
-                    .setItems(arrayOf<CharSequence>(getString(R.string.photo_dialog_gallery_photo))) { _, _ -> getImageFromGallery() }
+                builder.setTitle(R.string.photo_dialog_change_title)
+                    .setItems(arrayOf<CharSequence>(getString(R.string.photo_dialog_change_gallery))) { _, _ -> getImageFromGallery() }
                     .setNegativeButton(R.string.photo_dialog_cancel) { dialog, _ -> dialog.cancel() }
             }
             builder.show()

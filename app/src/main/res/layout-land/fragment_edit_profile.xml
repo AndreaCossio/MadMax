@@ -86,7 +86,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:orientation="vertical"
-            android:gravity="center_vertical">
+            android:layout_gravity="center_vertical">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"

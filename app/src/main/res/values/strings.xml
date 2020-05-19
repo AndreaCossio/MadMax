@@ -44,12 +44,19 @@
     <string name="message_error_gallery_app">Sorry, could not find any gallery app</string>
 
     <!-- PHOTO DIALOG -->
-    <string name="photo_dialog_choose_photo">Change profile picture</string>
-    <string name="photo_dialog_take_photo">Take a picture</string>
-    <string name="photo_dialog_gallery_photo">Choose from gallery</string>
-    <string name="photo_dialog_delete_image">Remove image</string>
+    <string name="photo_dialog_change_title">Change profile picture</string>
+    <string name="photo_dialog_change_take">Take a picture</string>
+    <string name="photo_dialog_change_gallery">Choose from gallery</string>
+    <string name="photo_dialog_change_remove">Remove image</string>
+
+    <!-- ARE YOU SURE DIALOG -->
+    <string name="photo_dialog_sure_title">Are you sure?</string>
+    <string name="photo_dialog_sure_text">If you continue, the changes will be discarded.</string>
+
+    <!-- DIALOGS -->
     <string name="photo_dialog_ok">OK</string>
     <string name="photo_dialog_cancel">Cancel</string>
+
 
     <!-- CONTENT DESCRIPTIONS -->
     <string name="content_description_settings">Settings</string>
