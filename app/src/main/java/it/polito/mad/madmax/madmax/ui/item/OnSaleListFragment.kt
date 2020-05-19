@@ -60,7 +60,8 @@ class OnSaleListFragment : Fragment() {
         super.onCreateView(inflater, container, savedInstanceState)
 
 
-        othersItemsVM = ViewModelProvider(this,ItemViewModelFactory("kdkdsjk")).get(ItemViewModel::class.java)
+        val userVM = activity?.run { ViewModelProvider(this).get(UserViewModel::class.java) }?.getID()
+        othersItemsVM = ViewModelProvider(this,ItemViewModelFactory(userVM!!)).get(ItemViewModel::class.java)
         return inflater.inflate(R.layout.fragment_item_list, container, false)
     }
 
@@ -117,7 +118,7 @@ class OnSaleListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        itemsAdapter = ItemAdapter(ArrayList<Item>(),item_list_rv)
+        itemsAdapter = ItemAdapter(ArrayList<Item>(),item_list_rv,false)
 
             item_list_rv.apply {
                 this.setHasFixedSize(true)

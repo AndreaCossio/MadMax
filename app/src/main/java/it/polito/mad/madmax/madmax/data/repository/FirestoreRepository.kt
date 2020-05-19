@@ -2,6 +2,7 @@ package it.polito.mad.madmax.madmax.data.repository
 
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.QuerySnapshot
@@ -46,26 +47,18 @@ class FirestoreRepository {
     // ITEM
     //
 
-    fun getOnSaleItems(userId: String): Task<QuerySnapshot>{
-        return db.collection("items")
-            .whereGreaterThan("userId",userId)
-            .whereLessThan("userId",userId).get()
+    fun getOnSaleItems(userId: String): Task<List<QuerySnapshot>>{
+        val greaterThanQuery = db.collection("items")
+            .whereGreaterThan("userId",userId).get()
+        val lessThanQuery = db.collection("items").whereLessThan("userId",userId).get()
+        return Tasks.whenAllSuccess<QuerySnapshot>(greaterThanQuery,lessThanQuery)
 
-        val promise = Promise()
 
     }
-    fun getItems(userId: String, personal: Boolean) {
-        if (personal) {
 
-        } else {
-
-        }
+    fun notifyUserOfInterest(item: Item,userId: String){
+        db.collection("items").document(item.id!!).update("interestedUsers",FieldValue.arrayUnion(userId))
     }
-
-    fun writeItem(itemId: String, item: Item) {
-        db.document("items/$itemId").set(item)
-    }
-
     fun createItem(item: Item) {
         val documentReference = db.collection("items").document()
         documentReference.set(item)

@@ -26,8 +26,9 @@ class ItemViewModel(val userId: String): ViewModel() {
     private fun loadItems() {
         firestoreRepository.getOnSaleItems(userId)
             .addOnSuccessListener {
+                val documents = it.map { it -> it.documents }.flatten()
                 val itemArray = ArrayList<Item>()
-                for (doc in it.documents){
+                for (doc in documents){
                     itemArray.add(Gson().fromJson(Gson().toJson(doc.data), Item::class.java).also {
                         item -> item.id = doc.id
                     })

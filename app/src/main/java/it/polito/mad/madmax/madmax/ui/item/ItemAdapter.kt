@@ -1,6 +1,7 @@
 package it.polito.mad.madmax.madmax.ui.item
 
 import android.content.Context
+import android.opengl.Visibility
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,10 +15,13 @@ import it.polito.mad.madmax.madmax.data.model.Item
 import kotlinx.android.synthetic.main.item.view.*
 import java.util.*
 
-class ItemAdapter(private var items: ArrayList<Item>, private val recycler: RecyclerView) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() , Filterable{
+class ItemAdapter(private var items: ArrayList<Item>, private val recycler: RecyclerView, private val isMine:Boolean = true) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() , Filterable{
 
     override fun onCreateViewHolder(parent: ViewGroup, position: Int): ItemViewHolder {
-        return ItemViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item, parent, false))
+
+        return ItemViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item, parent, false)).apply {
+            if(!isMine) this.itemView.item_edit_button.visibility = View.GONE
+        }
     }
 
     override fun getItemCount() = items.size
@@ -36,6 +40,7 @@ class ItemAdapter(private var items: ArrayList<Item>, private val recycler: Recy
         private val button: Button = itemView.item_edit_button
 
         fun bind(item: Item, position: Int, size: Int, recycler: RecyclerView) {
+
             updateFields(item, recycler.context)
             initClickListeners(item, recycler)
 /*

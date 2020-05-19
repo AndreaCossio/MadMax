@@ -2,13 +2,17 @@ package it.polito.mad.madmax.madmax.ui.item
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
+import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
+import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
 import it.polito.mad.madmax.madmax.handleSamplingAndRotationBitmap
 import it.polito.mad.madmax.madmax.toPx
 import kotlinx.android.synthetic.main.fragment_details_item.*
@@ -46,6 +50,11 @@ class DetailsItemFragment : Fragment() {
         }
         updateFields()
         args.item ?: findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(null))
+        notifyOwnerButton.setOnClickListener {
+            val userId =  activity?.run { ViewModelProvider(this).get(UserViewModel::class.java) }?.getID()
+            FirestoreRepository().notifyUserOfInterest(item!!,userId!!);
+            
+        }
         item_details_card.addOnLayoutChangeListener(cardListener)
     }
 

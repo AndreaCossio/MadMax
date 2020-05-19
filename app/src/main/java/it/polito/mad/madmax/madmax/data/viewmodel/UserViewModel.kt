@@ -20,6 +20,9 @@ class UserViewModel: ViewModel() {
         firestoreRepository.getUser(user, this.user)
     }
 
+    fun getID(): String{
+        return userId
+    }
     fun updateUser(user: User) {
         this.user.value = user
         firestoreRepository.writeUser(userId, user)
