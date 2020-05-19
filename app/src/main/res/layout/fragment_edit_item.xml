@@ -57,7 +57,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="bottom|end"
                 android:layout_margin="16dp"
-                android:src="@drawable/ic_menu_camera" />
+                android:src="@drawable/ic_camera_white" />
 
         </FrameLayout>
 
@@ -90,6 +90,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/item_title"
             app:startIconDrawable="@drawable/ic_title_primary"
+            app:startIconTint="@color/colorPrimary"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -106,6 +107,7 @@
             android:layout_marginTop="16dp"
             android:hint="@string/item_description"
             app:startIconDrawable="@drawable/ic_description_primary"
+            app:startIconTint="@color/colorPrimary"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -122,6 +124,7 @@
             android:layout_marginTop="16dp"
             android:hint="@string/item_price"
             app:startIconDrawable="@drawable/ic_price_primary"
+            app:startIconTint="@color/colorPrimary"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -138,6 +141,7 @@
             android:layout_marginTop="16dp"
             android:hint="@string/item_location"
             app:startIconDrawable="@drawable/ic_location_primary"
+            app:startIconTint="@color/colorPrimary"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
             <com.google.android.material.textfield.TextInputEditText

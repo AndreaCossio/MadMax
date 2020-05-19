@@ -2,8 +2,10 @@ package it.polito.mad.madmax.madmax
 
 import android.content.Context
 import android.content.Intent
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
@@ -23,8 +25,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
-import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModelFactory
+import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
 import it.polito.mad.madmax.madmax.ui.item.ItemListFragmentDirections
 import kotlinx.android.synthetic.main.activity_main.*
@@ -38,14 +39,6 @@ class MainActivity : AppCompatActivity() {
     // Firebase auth
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
-
-    // Item data
-    /*private val othersItemsVM: ItemViewModel by viewModels {
-        ItemViewModelFactory(false)
-    }
-    private val myItemsVM: ItemViewModel by viewModels {
-        ItemViewModelFactory(true)
-    }*/
 
     // Appbar config
     private lateinit var appBarConfig: AppBarConfiguration
@@ -79,7 +72,8 @@ class MainActivity : AppCompatActivity() {
                 if (it.photo != "") {
                     navView.nav_header_profile_photo.apply {
                         translationY = 0F
-                        setImageBitmap(handleSamplingAndRotationBitmap(context, Uri.parse(it.photo))!!)
+                        //setImageBitmap(handleSamplingAndRotationBitmap(context, Uri.parse(it.photo))!!)
+                        Picasso.with(context).load(Uri.parse(it.photo)).into(this)
                     }
                 }
             }
@@ -87,7 +81,7 @@ class MainActivity : AppCompatActivity() {
 
         // LOGIN
         auth = Firebase.auth
-        auth.currentUser?.also { userVM.loadUser(it) } ?: signIn()
+        auth.currentUser?.also { userVM.loginOrCreateUser(it) } ?: signIn()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -121,8 +115,8 @@ class MainActivity : AppCompatActivity() {
                     auth.signInWithCredential(GoogleAuthProvider.getCredential(account.idToken, null)).addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
                             auth.currentUser?.also {
-                                userVM.loadUser(it)
-                                displayMessage(nav_view, "Welcome back ${it.displayName}")
+                                userVM.loginOrCreateUser(it)
+                                displayMessage(this, "Welcome back ${it.displayName}")
                             } ?: signIn()
                         } else {
                             signIn()

@@ -20,6 +20,7 @@ import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModelFactory
+import it.polito.mad.madmax.madmax.toPx
 import kotlinx.android.synthetic.main.fragment_item_list.*
 
 class OnSaleListFragment : Fragment() {
@@ -28,11 +29,15 @@ class OnSaleListFragment : Fragment() {
     private val othersItemsVM: ItemViewModel by activityViewModels {
         ItemViewModelFactory(false)
     }
-    lateinit var itemsAdapter:ItemAdapter
-    var minPrice: Double? = null
-    var maxPrice: Double? = null
-    var mainCategory: String? = null
-    var subCategory: String? = null
+
+    // Item adapter
+    lateinit var itemsAdapter: ItemAdapter
+
+    // Variables
+    private var minPrice: Double? = null
+    private var maxPrice: Double? = null
+    private var mainCategory: String? = null
+    private var subCategory: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +52,7 @@ class OnSaleListFragment : Fragment() {
             maxPrice = if(bundle.containsKey("maxPrice")) bundle.getDouble("maxPrice") else null
             mainCategory = bundle.getString("mainCategory")
             subCategory = bundle.getString("subCategory")
-            val filteredItems = othersItemsVM.getOnSaleItems().value!!.filter {
+            val filteredItems = othersItemsVM.items.value!!.filter {
                 it.price in (minPrice?: 0.0)..(maxPrice?: Double.MAX_VALUE) &&
                 it.category_main.contains(mainCategory!!) &&
                 it.category_sub.contains(subCategory!!)
@@ -58,7 +63,34 @@ class OnSaleListFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
+        // TODO show empty layout if no items
         return inflater.inflate(R.layout.fragment_item_list, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        itemsAdapter = ItemAdapter(ArrayList<Item>(),item_list_rv)
+
+        item_list_rv.apply {
+            this.setHasFixedSize(true)
+            layoutManager = AutoFitGridLayoutManager(requireContext(), 300.toPx())
+            adapter = itemsAdapter
+            itemAnimator = DefaultItemAnimator()
+        }
+
+        othersItemsVM.items.observe(viewLifecycleOwner, Observer {
+            if (it.isEmpty()) {
+                item_list_rv.visibility = View.GONE
+                empty_view.visibility = View.VISIBLE
+            } else {
+                item_list_rv.visibility = View.VISIBLE
+                empty_view.visibility = View.GONE
+            }
+            item_list_rv.apply {
+                itemsAdapter.setItems(it)
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -74,15 +106,13 @@ class OnSaleListFragment : Fragment() {
             }
 
             override fun onQueryTextChange(p0: String?): Boolean {
-                val filteredItems = othersItemsVM.getOnSaleItems().value!!.filter { it -> it.title.contains(p0!!) } as ArrayList<Item>
+                val filteredItems = othersItemsVM.items.value!!.filter { it -> it.title.contains(p0!!) } as ArrayList<Item>
                 //itemsAdapter.filter.filter(p0)
                 itemsAdapter.setItems(filteredItems)
                 return false
             }
         })
-
     }
-
 
     private fun showDialog(){
         val filterDialog = FilterDialog()
@@ -92,8 +122,6 @@ class OnSaleListFragment : Fragment() {
             this.putString("mainCategory",mainCategory?: "")
             this.putString("subCategory",subCategory?: "")
         }
-
-
         filterDialog.arguments = bundle
         filterDialog.show(parentFragmentManager,"FilterDialog")
     }
@@ -110,34 +138,6 @@ class OnSaleListFragment : Fragment() {
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        itemsAdapter = ItemAdapter(ArrayList<Item>(),item_list_rv)
-
-            item_list_rv.apply {
-                this.setHasFixedSize(true)
-                layoutManager = LinearLayoutManager(this.context)
-                adapter = itemsAdapter
-                itemAnimator = DefaultItemAnimator()
-            }
-
-
-        othersItemsVM.getOnSaleItems().observe(this.requireActivity(), Observer {
-            if(it.isEmpty()){
-                item_list_rv.visibility = View.GONE
-                empty_view.visibility = View.VISIBLE
-            }
-            else{
-                item_list_rv.visibility = View.VISIBLE
-                empty_view.visibility = View.GONE
-            }
-            item_list_rv.apply {
-                itemsAdapter.setItems(it)
-            }
-        })
-
     }
 
     class AutoFitGridLayoutManager(context: Context?, columnWidth: Int) : GridLayoutManager(context, 1) {

@@ -39,13 +39,16 @@
     <string name="message_chosen_photo">Picture loaded correctly</string>
     <!-- Error -->
     <string name="message_error_field_required">Sorry, this field is required</string>
+    <string name="message_error_field_invalid_email">Sorry, this email is not valid</string>
     <string name="message_error_intent">Request cancelled or something went wrong</string>
     <string name="message_error_gallery_app">Sorry, could not find any gallery app</string>
 
     <!-- PHOTO DIALOG -->
-    <string name="photo_dialog_choose_photo">Profile photo</string>
+    <string name="photo_dialog_choose_photo">Change profile picture</string>
     <string name="photo_dialog_take_photo">Take a picture</string>
     <string name="photo_dialog_gallery_photo">Choose from gallery</string>
+    <string name="photo_dialog_delete_image">Remove image</string>
+    <string name="photo_dialog_ok">OK</string>
     <string name="photo_dialog_cancel">Cancel</string>
 
     <!-- CONTENT DESCRIPTIONS -->

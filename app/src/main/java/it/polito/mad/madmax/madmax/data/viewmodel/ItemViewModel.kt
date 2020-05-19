@@ -7,22 +7,18 @@ import androidx.lifecycle.ViewModel
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
 
-class ItemViewModel(public val personal: Boolean): ViewModel() {
+class ItemViewModel(private val personal: Boolean): ViewModel() {
 
     private val firestoreRepository: FirestoreRepository = FirestoreRepository()
 
     val items: MutableLiveData<ArrayList<Item>> by lazy {
         MutableLiveData<ArrayList<Item>>().also {
-           loadItems()
+           //loadItems()
         }
     }
 
-    fun getOnSaleItems() : LiveData<ArrayList<Item>> {
-        return items
-    }
-
     private fun loadItems() {
-        firestoreRepository.getItems("3ZLAl6PEj5a0Cm8ZyMJrLv72l992", personal)
+        firestoreRepository.getItems("3ZLAl6PEj5a0Cm8ZyMJrLv72l992", personal, items)
 
            /* .addOnSuccessListener {
                 val itemArray = ArrayList<Item>()

@@ -27,6 +27,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.madmax.*
 import it.polito.mad.madmax.madmax.data.model.Item
 import kotlinx.android.synthetic.main.fragment_edit_item.*
@@ -157,13 +158,13 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 when (resultCode) {
                     Activity.RESULT_OK -> {
                         updateFields()
-                        displayMessage(root_edit_item, getString(R.string.message_taken_photo))
+                        displayMessage(requireContext(), getString(R.string.message_taken_photo))
                     }
                     else -> {
                         tempItem.also {
                             File(it.photo).delete()
                         }
-                        displayMessage(root_edit_item, getString(R.string.message_error_intent))
+                        displayMessage(requireContext(), getString(R.string.message_error_intent))
                     }
                 }
             }
@@ -173,10 +174,10 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         data?.data?.also {
                             tempItem.apply { photo = it.toString() }
                             updateFields()
-                            displayMessage(root_edit_item, getString(R.string.message_chosen_photo))
-                        } ?: displayMessage(root_edit_item, getString(R.string.message_error_intent))
+                            displayMessage(requireContext(), getString(R.string.message_chosen_photo))
+                        } ?: displayMessage(requireContext(), getString(R.string.message_error_intent))
                     }
-                    else -> displayMessage(root_edit_item, getString(R.string.message_error_intent))
+                    else -> displayMessage(requireContext(), getString(R.string.message_error_intent))
                 }
             }
         }
@@ -330,7 +331,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
         item_edit_location.setText(tempItem.location)
         item_edit_expiry.text = tempItem.expiry
         if (tempItem.photo == "") {
-            item_edit_photo.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(tempItem.photo))!!)
+            Picasso.with(requireContext()).load(Uri.parse(tempItem.photo)).into(item_edit_photo)
         }
     }
 

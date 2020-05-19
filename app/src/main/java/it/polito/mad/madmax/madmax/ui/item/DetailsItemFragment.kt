@@ -7,12 +7,11 @@ import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
-import it.polito.mad.madmax.madmax.handleSamplingAndRotationBitmap
 import it.polito.mad.madmax.madmax.toPx
 import kotlinx.android.synthetic.main.fragment_details_item.*
-import kotlinx.android.synthetic.main.item.*
 
 class DetailsItemFragment : Fragment() {
 
@@ -82,7 +81,7 @@ class DetailsItemFragment : Fragment() {
             item_details_expiry.text = item.expiry
             item_details_stars.rating = item.stars.toFloat()
             if (item.photo != "") {
-                item_details_photo.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(item.photo))!!)
+                Picasso.with(requireContext()).load(Uri.parse(item.photo)).into(item_details_photo)
             }
         }
     }
