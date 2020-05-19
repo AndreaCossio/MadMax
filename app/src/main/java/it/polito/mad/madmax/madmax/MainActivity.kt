@@ -2,10 +2,8 @@ package it.polito.mad.madmax.madmax
 
 import android.content.Context
 import android.content.Intent
-import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
@@ -89,6 +87,7 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    // TODO check this (dispatch back pressed in edit fragments)
     override fun onSupportNavigateUp(): Boolean {
         (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(currentFocus?.windowToken, 0)
         return findNavController(R.id.nav_host_fragment).navigateUp(appBarConfig) || super.onSupportNavigateUp()

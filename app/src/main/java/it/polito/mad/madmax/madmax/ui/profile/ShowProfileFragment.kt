@@ -16,7 +16,6 @@ import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.User
 import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 
 class ShowProfileFragment : Fragment() {
@@ -35,7 +34,24 @@ class ShowProfileFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        initListeners()
+
+        // Listener to adjust the photo
+        cardListener = View.OnLayoutChangeListener {v , _, _, _, _, _, _, _, _ ->
+            (v as CardView).apply {
+                // Offset the drawable
+                (getChildAt(0) as ViewGroup).getChildAt(0).apply {
+                    translationY = if (userVM.user.value?.photo == "") {
+                        measuredHeight / 6F
+                    } else {
+                        0F
+                    }
+                }
+                // Radius of the card 50%
+                radius = measuredHeight / 2F
+                // Show the card
+                visibility = View.VISIBLE
+            }
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -102,32 +118,6 @@ class ShowProfileFragment : Fragment() {
         } else {
             profile_photo.setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile_white))
             activity?.main_progress?.visibility = View.GONE
-        }
-    }
-
-    // Initialize listeners
-    private fun initListeners() {
-        // This listener is necessary to make sure that the cardView has always 50% radius (circle)
-        // and that if the image is the icon, it is translated down
-        cardListener = View.OnLayoutChangeListener {v, _, _, _, _, _, _, _, _ ->
-            val cardView: CardView = v as CardView
-            val imageView = (cardView.getChildAt(0) as ViewGroup).getChildAt(0)
-            val photo = args.user?.photo ?: userVM.user.value?.photo
-
-            // Radius of the card
-            cardView.apply { radius = measuredHeight / 2F }
-
-            // Translation of the photo
-            imageView.apply {
-                translationY = if (photo == null || photo == "") {
-                    measuredHeight / 6F
-                } else {
-                    0F
-                }
-            }
-
-            // Visibility
-            cardView.visibility = View.VISIBLE
         }
     }
 }

@@ -1,8 +1,8 @@
 package it.polito.mad.madmax.madmax.data.repository
 
 import android.net.Uri
-import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -42,27 +42,11 @@ class FirestoreRepository {
     //
     // ITEM
     //
-    fun getItems(userId: String, personal: Boolean, destItem: MutableLiveData<ArrayList<Item>>) {
-        if (personal) {
+    fun getItems(userId: String, personal: Boolean): CollectionReference {
+        return if (personal) {
             db.collection("users/$userId/items")
-                .get().addOnSuccessListener { collection ->
-                    val list: ArrayList<Item> = ArrayList()
-                    for (doc in collection) {
-                        list.add(doc.toObject(Item::class.java))
-                    }
-                    destItem.value = list
-                }
         } else {
             db.collection("items")
-                .whereLessThan("userId", userId)
-                .whereGreaterThan("userId", userId)
-                .get().addOnSuccessListener { collection ->
-                    val list: ArrayList<Item> = ArrayList()
-                    for (doc in collection) {
-                        list.add(doc.toObject(Item::class.java))
-                    }
-                    destItem.value = list
-                }
         }
     }
 

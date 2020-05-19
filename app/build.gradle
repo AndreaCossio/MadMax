@@ -75,6 +75,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore-ktx:21.4.3'
     implementation 'com.google.firebase:firebase-storage-ktx:19.1.1'
 
+    // FirebaseUI for Cloud Firestore
+    implementation 'com.firebaseui:firebase-ui-firestore:6.2.1'
+
     // Picasso
     implementation 'com.squareup.picasso:picasso:2.5.2'
 }

@@ -1,47 +1,53 @@
 package it.polito.mad.madmax.madmax.data.viewmodel
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.gson.Gson
 import it.polito.mad.madmax.madmax.data.model.Item
+import it.polito.mad.madmax.madmax.data.model.ItemKey
 import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
 
-class ItemViewModel(private val personal: Boolean): ViewModel() {
+class ItemViewModel(private val personal: Boolean, private val userId: String): ViewModel() {
 
     private val firestoreRepository: FirestoreRepository = FirestoreRepository()
 
-    val items: MutableLiveData<ArrayList<Item>> by lazy {
-        MutableLiveData<ArrayList<Item>>().also {
-           //loadItems()
+    val items: MutableLiveData<ArrayList<ItemKey>> by lazy {
+        MutableLiveData<ArrayList<ItemKey>>().also {
+            it.value = ArrayList()
         }
     }
 
-    private fun loadItems() {
-        firestoreRepository.getItems("3ZLAl6PEj5a0Cm8ZyMJrLv72l992", personal, items)
-
-           /* .addOnSuccessListener {
-                val itemArray = ArrayList<Item>()
-                for (doc in it.documents){
-                    itemArray.add(doc.toObject(Item::class.java)!!)
+    fun loadItems() {
+        val colRef = firestoreRepository.getItems(userId, personal)
+        if (personal) {
+            colRef.addSnapshotListener { value, e ->
+                e?.also {
+                    Log.w(TAG, "Listen failed: ${it.message}")
+                } ?: run {
+                    for (doc in value!!) {
+                        items.value!!.add(ItemKey(doc.id, Gson().fromJson(Gson().toJson(doc.data.toString()), Item::class.java)))
+                    }
                 }
-                items.value = itemArray
-            }.addOnFailureListener {
-
-            }*/
-        //val items = MutableLiveData<ArrayList<Item>>()
-            /*.addSnapshotListener{value,e ->
-                if (e!= null){
-                    Log.e("ERR","Listen failed")
-                    return@addSnapshotListener
+            }
+        } else {
+            colRef.addSnapshotListener { value, e ->
+                e?.also {
+                    Log.w(TAG, "Listen failed: ${it.message}")
+                } ?: run {
+                    val list: ArrayList<ItemKey> = ArrayList()
+                    for (doc in value!!) {
+                        val item = doc.toObject(Item::class.java)
+                        if (item.userId != userId)
+                            list.add(ItemKey(doc.id, item))
+                    }
+                    items.value = list
                 }
-                val itemArray = ArrayList<Item>()
-                for (doc in value!!.documents){
-                    itemArray.add(doc.toObject(Item::class.java)!!)
-                }
-                items.value = itemArray
+            }
+        }
+    }
 
-            }*/
-
+    companion object {
+        const val TAG = "MM_ITEM_VM"
     }
 }

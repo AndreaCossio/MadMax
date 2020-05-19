@@ -5,21 +5,14 @@ import android.os.Bundle
 import android.view.*
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.madmax.R
-import it.polito.mad.madmax.madmax.data.model.Item
-import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.madmax.toPx
 import kotlinx.android.synthetic.main.fragment_details_item.*
 
 class DetailsItemFragment : Fragment() {
-
-    // Item
-    private val itemVM: ItemViewModel by activityViewModels()
 
     // Destination arguments
     private val args: DetailsItemFragmentArgs by navArgs()
@@ -42,10 +35,10 @@ class DetailsItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        args.item?.also {
+        /*args.item?.also {
             own = true
             updateFields()
-        } ?: itemVM.items.observe(viewLifecycleOwner, Observer { updateFields() })
+        } ?: itemVM.items.observe(viewLifecycleOwner, Observer { updateFields() })*/
         args.item ?: findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(null))
         item_details_card.addOnLayoutChangeListener(cardListener)
     }
@@ -65,7 +58,7 @@ class DetailsItemFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_edit_item_edit -> {
-                findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(itemVM.items.value?.get(0)))
+                //findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(itemVM.items.value?.get(0)))
                 true
             } else -> super.onOptionsItemSelected(item)
         }

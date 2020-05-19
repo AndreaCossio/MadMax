@@ -3,7 +3,6 @@ package it.polito.mad.madmax.madmax.data.model
 import java.io.Serializable
 
 data class Item (
-    var id: String = "",
     var userId: String = "",
     var title: String = "",
     var description: String = "",

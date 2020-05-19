@@ -4,17 +4,20 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.navigation.Navigation.findNavController
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
+import it.polito.mad.madmax.madmax.data.model.ItemKey
 import kotlinx.android.synthetic.main.item.view.*
-import java.util.*
 
-class ItemAdapter(private var items: ArrayList<Item>, private val recycler: RecyclerView) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() , Filterable{
+class ItemAdapter(private val recycler: RecyclerView) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
+
+    private lateinit var items: ArrayList<ItemKey>
 
     override fun onCreateViewHolder(parent: ViewGroup, position: Int): ItemViewHolder {
         return ItemViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item, parent, false))
@@ -23,7 +26,12 @@ class ItemAdapter(private var items: ArrayList<Item>, private val recycler: Recy
     override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.bind(items[position], position, items.size, recycler)
+        holder.bind(items[position].item, recycler)
+    }
+
+    fun setItems(items: ArrayList<ItemKey>) {
+        this.items = items
+        notifyDataSetChanged()
     }
 
     class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -35,15 +43,9 @@ class ItemAdapter(private var items: ArrayList<Item>, private val recycler: Recy
         private val image: ImageView = itemView.item_photo
         private val button: Button = itemView.item_edit_button
 
-        fun bind(item: Item, position: Int, size: Int, recycler: RecyclerView) {
+        fun bind(item: Item, recycler: RecyclerView) {
             updateFields(item, recycler.context)
             initClickListeners(item, recycler)
-/*
-            if (position in (size-(recycler.layoutManager as ItemListFragment.AutoFitGridLayoutManager).spanCount)..size) {
-                itemView.item_card.layoutParams = (itemView.item_card.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                    bottomMargin = 88.toPx()
-                }
-            }*/
         }
 
         private fun updateFields(item: Item, context: Context) {
@@ -59,31 +61,4 @@ class ItemAdapter(private var items: ArrayList<Item>, private val recycler: Recy
             button.setOnClickListener { findNavController(view).navigate(ItemListFragmentDirections.actionEditItem(item)) }
         }
     }
-
-    fun setItems(newItems: ArrayList<Item>){
-        val diffs = DiffUtil.calculateDiff(ItemDiffCallback(items,newItems))
-        items = newItems
-        diffs.dispatchUpdatesTo(this)
-    }
-
-    override fun getFilter(): Filter {
-        return object :Filter(){
-            override fun performFiltering(filterString: CharSequence?): FilterResults {
-                val results = FilterResults()
-                if(filterString == null || filterString.isEmpty()){
-                    results.values = items
-                }else{
-                    results.values = items.filter { it -> it.title.toLowerCase(Locale.ROOT).contains(filterString) }
-                }
-                return  results
-            }
-
-            override fun publishResults(p0: CharSequence?, p1: FilterResults?) {
-                val newItems = p1!!.values as ArrayList<Item>
-                setItems(newItems)
-            }
-
-        }
-    }
-
 }

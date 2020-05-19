@@ -6,38 +6,40 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import it.polito.mad.madmax.madmax.R
-import it.polito.mad.madmax.madmax.data.model.Item
+import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
+import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModelFactory
 import it.polito.mad.madmax.madmax.toPx
 import kotlinx.android.synthetic.main.fragment_item_list.*
 
 class ItemListFragment : Fragment() {
 
-    private var itemList: ArrayList<Item>? = null
+    // Other's items
+    private val myItemsVM: ItemViewModel by activityViewModels {
+        ItemViewModelFactory(true, Firebase.auth.currentUser!!.uid)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return itemList?.let {
-            inflater.inflate(R.layout.fragment_item_list, container, false)
-        } ?: inflater.inflate(R.layout.empty_item_list, container, false)
+        super.onCreateView(inflater, container, savedInstanceState)
+        return inflater.inflate(R.layout.fragment_item_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        itemList?.also {
-            item_list_rv.apply {
-                //check
-                this.setHasFixedSize(true)
-                layoutManager = AutoFitGridLayoutManager(requireContext(), 300.toPx())
-                adapter = ItemAdapter(it, this)
-                itemAnimator = DefaultItemAnimator()
-            }
+        item_list_rv.apply {
+            this.setHasFixedSize(true)
+            layoutManager = AutoFitGridLayoutManager(requireContext(), 300.toPx())
+            //adapter = ItemAdapterFirebase(FirestoreRecyclerOptions.Builder<Item>().setQuery(myItemsVM.loadItems(), Item::class.java).build())
+            itemAnimator = DefaultItemAnimator()
         }
 
         activity?.findViewById<FloatingActionButton>(R.id.main_fab_add_item)?.visibility = View.VISIBLE

@@ -2,142 +2,55 @@ package it.polito.mad.madmax.madmax.ui.item
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
-import android.view.*
-import androidx.activity.viewModels
-import androidx.appcompat.widget.SearchView
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.Recycler
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import it.polito.mad.madmax.madmax.R
-import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModelFactory
 import it.polito.mad.madmax.madmax.toPx
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_item_list.*
 
 class OnSaleListFragment : Fragment() {
 
     // Other's items
     private val othersItemsVM: ItemViewModel by activityViewModels {
-        ItemViewModelFactory(false)
+        ItemViewModelFactory(false, Firebase.auth.currentUser!!.uid)
     }
-
-    // Item adapter
-    lateinit var itemsAdapter: ItemAdapter
-
-    // Variables
-    private var minPrice: Double? = null
-    private var maxPrice: Double? = null
-    private var mainCategory: String? = null
-    private var subCategory: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        setFragmentResultListener("searchFilters"){
-                _, bundle ->
-            /*val minPrice = bundle.getDouble("minPrice")
-            val maxPrice = bundle.getDouble("maxPrice")
-            val mainCategory = bundle.getString("mainCategory")
-            val subCategory = bundle.getString("subCategory")*/
-            minPrice = if(bundle.containsKey("minPrice")) bundle.getDouble("minPrice") else null
-            maxPrice = if(bundle.containsKey("maxPrice")) bundle.getDouble("maxPrice") else null
-            mainCategory = bundle.getString("mainCategory")
-            subCategory = bundle.getString("subCategory")
-            val filteredItems = othersItemsVM.items.value!!.filter {
-                it.price in (minPrice?: 0.0)..(maxPrice?: Double.MAX_VALUE) &&
-                it.category_main.contains(mainCategory!!) &&
-                it.category_sub.contains(subCategory!!)
-            } as ArrayList<Item>
-            itemsAdapter.setItems(filteredItems)
-        }
+        othersItemsVM.loadItems()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
-        // TODO show empty layout if no items
         return inflater.inflate(R.layout.fragment_item_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        itemsAdapter = ItemAdapter(ArrayList<Item>(),item_list_rv)
-
         item_list_rv.apply {
             this.setHasFixedSize(true)
             layoutManager = AutoFitGridLayoutManager(requireContext(), 300.toPx())
-            adapter = itemsAdapter
-            itemAnimator = DefaultItemAnimator()
+            adapter = ItemAdapter(this)
         }
 
         othersItemsVM.items.observe(viewLifecycleOwner, Observer {
-            if (it.isEmpty()) {
-                item_list_rv.visibility = View.GONE
-                empty_view.visibility = View.VISIBLE
-            } else {
-                item_list_rv.visibility = View.VISIBLE
-                empty_view.visibility = View.GONE
-            }
-            item_list_rv.apply {
-                itemsAdapter.setItems(it)
-            }
+            (item_list_rv.adapter as ItemAdapter).setItems(it)
         })
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_search_item,menu)
-
-        val searchItem = menu.findItem(R.id.menu_search)
-        val searchView = searchItem.actionView as SearchView
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-            override fun onQueryTextSubmit(p0: String?): Boolean {
-                return true
-            }
-
-            override fun onQueryTextChange(p0: String?): Boolean {
-                val filteredItems = othersItemsVM.items.value!!.filter { it -> it.title.contains(p0!!) } as ArrayList<Item>
-                //itemsAdapter.filter.filter(p0)
-                itemsAdapter.setItems(filteredItems)
-                return false
-            }
-        })
-    }
-
-    private fun showDialog(){
-        val filterDialog = FilterDialog()
-        val bundle = Bundle().apply {
-            this.putString("minPrice",minPrice?.toString() ?: "")
-            this.putString("maxPrice",maxPrice?.toString() ?: "")
-            this.putString("mainCategory",mainCategory?: "")
-            this.putString("subCategory",subCategory?: "")
-        }
-        filterDialog.arguments = bundle
-        filterDialog.show(parentFragmentManager,"FilterDialog")
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId){
-            R.id.menu_search ->{
-
-                return true
-            }
-            R.id.menu_filter -> {
-                showDialog()
-                return true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
+        requireActivity().main_progress.visibility = View.GONE
     }
 
     class AutoFitGridLayoutManager(context: Context?, columnWidth: Int) : GridLayoutManager(context, 1) {
@@ -152,7 +65,7 @@ class OnSaleListFragment : Fragment() {
             }
         }
 
-        override fun onLayoutChildren(recycler: Recycler, state: RecyclerView.State) {
+        override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
             if (columnWidthChanged && columnWidth > 0) {
                 val totalSpace = if (orientation == LinearLayoutManager.VERTICAL) {
                     width - paddingRight - paddingLeft
