@@ -1,9 +1,13 @@
 package it.polito.mad.madmax.madmax.data.model
 
+import com.google.firebase.firestore.Exclude
+import com.google.firebase.firestore.IgnoreExtraProperties
 import java.io.Serializable
 
+@IgnoreExtraProperties
 data class Item (
-    var id: Int? = null,
+    var userId: String? = null,
+    @get:Exclude var id: String? = null,
     var title: String = "",
     var description: String = "",
     var category_main: String = "",

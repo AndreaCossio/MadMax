@@ -3,6 +3,7 @@ package it.polito.mad.madmax.madmax.data.model
 import java.io.Serializable
 
 data class User (
+    var id: String?,
     var name: String = "",
     var nickname: String = "",
     var email: String = "",

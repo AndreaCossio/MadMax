@@ -10,6 +10,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -33,16 +35,14 @@ import kotlinx.android.synthetic.main.nav_header_main.view.*
 class MainActivity : AppCompatActivity() {
 
     // User data
-    private val userVM: UserViewModel by viewModels()
+    private lateinit var userVM: UserViewModel
 
     // Firebase auth
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
 
     // Item data
-    /*private val othersItemsVM: ItemViewModel by viewModels {
-        ItemViewModelFactory(false)
-    }
+    /*
     private val myItemsVM: ItemViewModel by viewModels {
         ItemViewModelFactory(true)
     }*/
@@ -71,6 +71,7 @@ class MainActivity : AppCompatActivity() {
         // Init FAB
         main_fab_add_item.setOnClickListener { navController.navigate(ItemListFragmentDirections.actionCreateItem(null)) }
 
+        userVM = ViewModelProvider(this).get(UserViewModel::class.java)
         // Observe user data
         userVM.user.observe(this, Observer {
             nav_view.getHeaderView(0).also { navView ->
@@ -87,7 +88,10 @@ class MainActivity : AppCompatActivity() {
 
         // LOGIN
         auth = Firebase.auth
-        auth.currentUser?.also { userVM.loadUser(it) } ?: signIn()
+        auth.currentUser?.also {
+            userVM.loadUser(it)
+            val itemViewModel = ViewModelProvider(this,ItemViewModelFactory(it.uid)).get(ItemViewModel::class.java)
+        } ?: signIn()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

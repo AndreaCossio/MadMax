@@ -20,14 +20,13 @@ import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModelFactory
+import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.fragment_item_list.*
 
 class OnSaleListFragment : Fragment() {
 
     // Other's items
-    private val othersItemsVM: ItemViewModel by activityViewModels {
-        ItemViewModelFactory(false)
-    }
+    private lateinit var othersItemsVM: ItemViewModel
     lateinit var itemsAdapter:ItemAdapter
     var minPrice: Double? = null
     var maxPrice: Double? = null
@@ -39,15 +38,16 @@ class OnSaleListFragment : Fragment() {
         setHasOptionsMenu(true)
         setFragmentResultListener("searchFilters"){
                 _, bundle ->
-            /*val minPrice = bundle.getDouble("minPrice")
-            val maxPrice = bundle.getDouble("maxPrice")
-            val mainCategory = bundle.getString("mainCategory")
-            val subCategory = bundle.getString("subCategory")*/
             minPrice = if(bundle.containsKey("minPrice")) bundle.getDouble("minPrice") else null
             maxPrice = if(bundle.containsKey("maxPrice")) bundle.getDouble("maxPrice") else null
             mainCategory = bundle.getString("mainCategory")
             subCategory = bundle.getString("subCategory")
-            val filteredItems = othersItemsVM.getOnSaleItems().value!!.filter {
+
+            val othersItemsVM = activity?.run {
+                ViewModelProvider(this).get(ItemViewModel::class.java)
+            }
+
+            val filteredItems = othersItemsVM!!.getOnSaleItems().value!!.filter {
                 it.price in (minPrice?: 0.0)..(maxPrice?: Double.MAX_VALUE) &&
                 it.category_main.contains(mainCategory!!) &&
                 it.category_sub.contains(subCategory!!)
@@ -58,6 +58,9 @@ class OnSaleListFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
+
+
+        othersItemsVM = ViewModelProvider(this,ItemViewModelFactory("kdkdsjk")).get(ItemViewModel::class.java)
         return inflater.inflate(R.layout.fragment_item_list, container, false)
     }
 
@@ -132,9 +135,9 @@ class OnSaleListFragment : Fragment() {
             else{
                 item_list_rv.visibility = View.VISIBLE
                 empty_view.visibility = View.GONE
-            }
-            item_list_rv.apply {
-                itemsAdapter.setItems(it)
+                item_list_rv.apply {
+                    itemsAdapter.setItems(it)
+                }
             }
         })
 
