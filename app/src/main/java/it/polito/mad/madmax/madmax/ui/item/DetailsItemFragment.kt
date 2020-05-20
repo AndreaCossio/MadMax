@@ -53,7 +53,9 @@ class DetailsItemFragment : Fragment() {
         notifyOwnerButton.setOnClickListener {
             val userId =  activity?.run { ViewModelProvider(this).get(UserViewModel::class.java) }?.getID()
             FirestoreRepository().notifyUserOfInterest(item!!,userId!!);
-            
+        }
+        interested_users_tv.setOnClickListener{
+            findNavController().navigate(DetailsItemFragmentDirections.actionSeeInterestedUsers(item))
         }
         item_details_card.addOnLayoutChangeListener(cardListener)
     }

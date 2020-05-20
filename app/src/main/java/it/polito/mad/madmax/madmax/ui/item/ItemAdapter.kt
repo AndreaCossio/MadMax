@@ -1,6 +1,7 @@
 package it.polito.mad.madmax.madmax.ui.item
 
 import android.content.Context
+import android.net.Uri
 import android.opengl.Visibility
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
+import it.polito.mad.madmax.madmax.handleSamplingAndRotationBitmap
 import kotlinx.android.synthetic.main.item.view.*
 import java.util.*
 
@@ -56,7 +58,8 @@ class ItemAdapter(private var items: ArrayList<Item>, private val recycler: Recy
             category.text = item.category_main
             price.text = String.format("%.2f", item.price)
             stars.text = String.format("%.1f", item.stars)
-            //item.photo?.also { image.setImageBitmap(handleSamplingAndRotationBitmap(context, Uri.parse(it))) }
+
+            item.photo?.also { image.setImageBitmap(handleSamplingAndRotationBitmap(context, Uri.parse(it))) }
         }
 
         private fun initClickListeners(item: Item, view: View) {
