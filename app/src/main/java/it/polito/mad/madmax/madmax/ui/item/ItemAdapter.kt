@@ -24,16 +24,90 @@ class ItemAdapter(
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     private var items: ArrayList<ItemKey> = ArrayList()
+    private var filteredItems: ArrayList<ItemKey> = ArrayList()
+
+    private var minPrice: Double? = null
+    private var maxPrice: Double? = null
+    private var mainCat: String? = null
+    private var subCat: String? = null
+
     val myCount: MutableLiveData<Int> = MutableLiveData(0)
 
     override fun onCreateViewHolder(parent: ViewGroup, position: Int): ItemViewHolder {
         return ItemViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item, parent, false))
     }
 
-    override fun getItemCount() = items.size
+    override fun getItemCount() = filteredItems.size
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.bind(items[position], recycler, cardClickListener, actionClickListener)
+        holder.bind(filteredItems[position], recycler, cardClickListener, actionClickListener)
+    }
+
+    fun setFilters(minPrice: Double? = null, maxPrice: Double? = null, mainCat: String? = null, subCat: String? = null) {
+        this.minPrice = minPrice
+        this.maxPrice = maxPrice
+        this.mainCat = mainCat
+        this.subCat = subCat
+
+        filteredItems.clear()
+        myCount.value = 0
+        notifyDataSetChanged()
+        for (i in items) {
+            if (isOk(i.item)) {
+                handleFiltered(i)
+            }
+        }
+    }
+
+    private fun isOk(item: Item): Boolean {
+        minPrice?.also {
+            if (item.price < it) {
+                return false
+            }
+        }
+        maxPrice?.also {
+            if (item.price > it) {
+                return false
+            }
+        }
+        mainCat?.also {
+            if (item.category_main != it) {
+                return false
+            }
+        }
+        subCat?.also {
+            if (item.category_sub != it) {
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun handleFiltered(item: ItemKey) {
+        var alreadyIn = false
+        for (i in filteredItems) {
+            if (i.itemId == item.itemId) {
+                if (isOk(item.item)) {
+                    i.item = item.item
+                    notifyItemChanged(filteredItems.indexOf(i))
+                } else {
+                    val position = filteredItems.indexOf(i)
+                    filteredItems.removeAt(position)
+                    myCount.value = myCount.value!! - 1
+                    notifyItemRemoved(position)
+                    notifyItemRangeChanged(position, itemCount)
+                }
+                alreadyIn = true
+                break
+            }
+        }
+        if (!alreadyIn) {
+            if (isOk(item.item)) {
+                filteredItems.add(item)
+                myCount.value = myCount.value!! + 1
+                notifyItemInserted(filteredItems.indexOf(item))
+            }
+        }
     }
 
     fun addItem(item: ItemKey) {
@@ -41,33 +115,35 @@ class ItemAdapter(
         for (i in items) {
             if (i.itemId == item.itemId) {
                 i.item = item.item
-                notifyItemChanged(items.indexOf(i))
                 alreadyIn = true
                 break
             }
         }
         if (!alreadyIn) {
             items.add(item)
-            myCount.value = myCount.value!! + 1
-            notifyItemInserted(items.indexOf(item))
         }
+        handleFiltered(item)
     }
 
     fun changeItem(item: ItemKey) {
         for (i in items) {
             if (i.itemId == item.itemId) {
                 i.item = item.item
-                notifyItemChanged(items.indexOf(i))
+                break
             }
         }
+        handleFiltered(item)
     }
 
     fun removeItem(item: ItemKey) {
-        val position = items.indexOf(item)
         items.remove(item)
-        myCount.value = myCount.value!! - 1
-        notifyItemRemoved(position)
-        notifyItemRangeChanged(position, itemCount)
+        if (filteredItems.contains(item)) {
+            val position = filteredItems.indexOf(item)
+            filteredItems.removeAt(position)
+            myCount.value = myCount.value!! - 1
+            notifyItemRemoved(position)
+            notifyItemRangeChanged(position, itemCount)
+        }
     }
 
     class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

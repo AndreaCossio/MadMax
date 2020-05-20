@@ -1,7 +1,6 @@
 package it.polito.mad.madmax.madmax.ui.item
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,7 @@ import it.polito.mad.madmax.madmax.R
 import kotlinx.android.synthetic.main.filter_layout.*
 
 
-class FilterDialog: DialogFragment(), AdapterView.OnItemSelectedListener{
+class FilterDialog: DialogFragment(), AdapterView.OnItemSelectedListener {
 
     interface OnFiltersApplied {
         fun sendInput(input: String?)
@@ -137,7 +136,7 @@ class FilterDialog: DialogFragment(), AdapterView.OnItemSelectedListener{
         }
 
 
-        setFragmentResult("searchFilters", bundle)
+        setFragmentResult("item_filter", bundle)
         dismiss()
     }
 
