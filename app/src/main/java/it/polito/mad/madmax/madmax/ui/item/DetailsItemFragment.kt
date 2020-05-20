@@ -21,6 +21,7 @@ import it.polito.mad.madmax.madmax.data.model.ItemKey
 import it.polito.mad.madmax.madmax.data.model.User
 import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
+import it.polito.mad.madmax.madmax.displayMessage
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_details_item.*
 
@@ -116,7 +117,15 @@ class DetailsItemFragment : Fragment() {
 
         listener = itemsVM.listenOnItems(args.message.startsWith("Y"), null)
 
-        requireActivity().main_fab_add_item?.visibility = View.GONE
+        if (args.message.startsWith("N")) {
+            requireActivity().main_fab_add_item.setOnClickListener {
+                itemsVM.notifyInterest(args.message.split("-")[2])
+            }
+            requireActivity().main_fab_add_item.setImageDrawable(requireContext().getDrawable(R.drawable.ic_favorite))
+            requireActivity().main_fab_add_item.visibility = View.VISIBLE
+        } else {
+            requireActivity().main_fab_add_item?.visibility = View.GONE
+        }
     }
 
     override fun onDestroyView() {
@@ -125,6 +134,7 @@ class DetailsItemFragment : Fragment() {
             listener.remove()
             if (args.message.startsWith("N")) {
                 userListener.remove()
+                requireActivity().main_fab_add_item.setOnClickListener(null)
             }
         }
         item_details_card.removeOnLayoutChangeListener(cardListener)

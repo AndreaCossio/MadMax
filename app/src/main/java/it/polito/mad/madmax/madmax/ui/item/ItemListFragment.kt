@@ -53,6 +53,9 @@ class ItemListFragment : Fragment() {
 
         listener = itemsVM.listenOnItems(true, itemAdapter)
 
+        // Init FAB
+        requireActivity().main_fab_add_item.setOnClickListener { findNavController().navigate(ItemListFragmentDirections.actionEditOrCreateItem("create")) }
+        requireActivity().main_fab_add_item.setImageDrawable(requireContext().getDrawable(R.drawable.ic_add))
         requireActivity().main_fab_add_item.visibility = View.VISIBLE
         requireActivity().main_progress.visibility = View.GONE
     }
@@ -60,6 +63,7 @@ class ItemListFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         listener.remove()
+        requireActivity().main_fab_add_item.setOnClickListener(null)
     }
 
     private var itemDetails = { itemId: String ->

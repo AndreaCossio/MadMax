@@ -3,6 +3,7 @@ package it.polito.mad.madmax.madmax.data.repository
 import android.net.Uri
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -72,5 +73,9 @@ class FirestoreRepository {
                 ref.downloadUrl
             }
         }
+    }
+
+    fun notifyInterest(itemId: String, userId: String): Task<Void> {
+        return db.collection("items").document(itemId).update("interesedUsers", FieldValue.arrayUnion(userId))
     }
 }

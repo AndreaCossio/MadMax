@@ -59,9 +59,6 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(main_toolbar)
         setupActionBarWithNavController(navController, appBarConfig)
 
-        // Init FAB
-        main_fab_add_item.setOnClickListener { navController.navigate(ItemListFragmentDirections.actionEditOrCreateItem("create")) }
-
         // Observe user data
         userVM.user.observe(this, Observer {
             nav_view.getHeaderView(0).also { navView ->
