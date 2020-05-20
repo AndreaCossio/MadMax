@@ -89,6 +89,20 @@ class DetailsItemFragment : Fragment() {
             if (args.message.startsWith("Y-edit")) {
                 findNavController().navigate(DetailsItemFragmentDirections.actionEditItem("edit-$itemId"))
             }
+
+            // TODO for future implement rating system
+            /*if (!args.message.startsWith("Y")) {
+                item_details_stars.setIsIndicator(false)
+            } else {
+                item_details_stars.setIsIndicator(true)
+            }
+
+            item_details_stars.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+                if (fromUser) {
+                    ratingBar.setIsIndicator(true)
+                    itemsVM.updateItemRating(itemId, rating)
+                }
+            }*/
         }
 
         listener = itemsVM.listenOnItems(args.message.startsWith("Y"), null)
@@ -130,7 +144,12 @@ class DetailsItemFragment : Fragment() {
         item_details_price.text = item.price.toString()
         item_details_location.text = item.location
         item_details_expiry.text = item.expiry
-        item_details_stars.rating = item.stars.toFloat()
+        if (item.stars.toFloat() == -1.0F && args.message.startsWith("Y")) {
+            item_details_stars_container.visibility = View.GONE
+        } else {
+            item_details_stars_container.visibility = View.VISIBLE
+            item_details_stars.rating = item.stars.toFloat()
+        }
         if (item.photo != "") {
             Picasso.with(requireContext()).load(Uri.parse(item.photo)).into(item_details_photo, object : Callback {
                 override fun onSuccess() {

@@ -76,6 +76,7 @@ class ItemAdapter(
         private val category: TextView = itemView.item_category
         private val price: TextView = itemView.item_price
         private val stars: TextView = itemView.item_stars
+        private val starsIcon: ImageView = itemView.item_star_icon
         private val image: ImageView = itemView.item_photo
         private val button: Button = itemView.item_edit_button
 
@@ -89,7 +90,14 @@ class ItemAdapter(
             title.text = item.title
             category.text = item.category_main
             price.text = String.format("%.2f", item.price)
-            stars.text = String.format("%.1f", item.stars)
+            if (item.stars == -1.0) {
+                stars.visibility = View.GONE
+                starsIcon.visibility = View.GONE
+            } else {
+                stars.visibility = View.VISIBLE
+                starsIcon.visibility = View.VISIBLE
+                stars.text = String.format("%.1f", item.stars)
+            }
             if (item.photo != "") {
                 Picasso.with(context).load(Uri.parse(item.photo)).into(image)
             } else {
