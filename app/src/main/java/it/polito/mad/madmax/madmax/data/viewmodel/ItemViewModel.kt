@@ -38,28 +38,6 @@ class ItemViewModel(val userId: String): ViewModel() {
                 throw (it)
             }
 
-           /* .addOnSuccessListener {
-                val itemArray = ArrayList<Item>()
-                for (doc in it.documents){
-                    itemArray.add(doc.toObject(Item::class.java)!!)
-                }
-                items.value = itemArray
-            }.addOnFailureListener {
-
-            }*/
-        //val items = MutableLiveData<ArrayList<Item>>()
-            /*.addSnapshotListener{value,e ->
-                if (e!= null){
-                    Log.e("ERR","Listen failed")
-                    return@addSnapshotListener
-                }
-                val itemArray = ArrayList<Item>()
-                for (doc in value!!.documents){
-                    itemArray.add(doc.toObject(Item::class.java)!!)
-                }
-                items.value = itemArray
-
-            }*/
 
     }
 }

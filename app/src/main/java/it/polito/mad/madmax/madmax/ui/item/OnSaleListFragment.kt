@@ -43,11 +43,11 @@ class OnSaleListFragment : Fragment() {
             mainCategory = bundle.getString("mainCategory")
             subCategory = bundle.getString("subCategory")
 
-            val othersItemsVM = activity?.run {
+/*            othersItemsVM = activity?.run {
                 ViewModelProvider(this).get(ItemViewModel::class.java)
-            }
+            }!!*/
 
-            val filteredItems = othersItemsVM!!.getOnSaleItems().value!!.filter {
+            val filteredItems = othersItemsVM.getOnSaleItems().value!!.filter {
                 it.price in (minPrice?: 0.0)..(maxPrice?: Double.MAX_VALUE) &&
                 it.category_main.contains(mainCategory!!) &&
                 it.category_sub.contains(subCategory!!)

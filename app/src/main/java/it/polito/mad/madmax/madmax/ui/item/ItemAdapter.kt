@@ -11,6 +11,7 @@ import androidx.navigation.Navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
+import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.handleSamplingAndRotationBitmap
@@ -59,7 +60,8 @@ class ItemAdapter(private var items: ArrayList<Item>, private val recycler: Recy
             price.text = String.format("%.2f", item.price)
             stars.text = String.format("%.1f", item.stars)
 
-            item.photo?.also { image.setImageBitmap(handleSamplingAndRotationBitmap(context, Uri.parse(it))) }
+            if(item.photo != "") Picasso.with(context).load(item.photo).into(image)
+
         }
 
         private fun initClickListeners(item: Item, view: View) {

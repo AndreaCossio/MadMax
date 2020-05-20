@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
@@ -57,7 +58,19 @@ class FirestoreRepository {
     }
 
     fun notifyUserOfInterest(item: Item,userId: String){
-        db.collection("items").document(item.id!!).update("interestedUsers",FieldValue.arrayUnion(userId))
+        db.collection("users")
+            .document(userId)
+            .get()
+            .addOnSuccessListener {
+                val user = Gson().fromJson(Gson().toJson(it.data), User::class.java)
+                db.collection("items")
+                    .document(item.id!!)
+                    .collection("interestedUsers")
+                    .document(userId)
+                    .set(user)
+
+            }
+        db.collection("items").document(item.id!!).collection("interestedUsers")
     }
     fun createItem(item: Item) {
         val documentReference = db.collection("items").document()
@@ -65,7 +78,17 @@ class FirestoreRepository {
             .addOnSuccessListener {
                 db.collection("users")
                     .document(item.userId!!)
-                    .update("items",FieldValue.arrayUnion(documentReference.id))
+                    .collection("items")
+                    .document(documentReference.id)
+                    .set(item)
             }
+    }
+
+    fun getInterestedUsersList(itemId: String): CollectionReference{
+        return  db.collection("items")
+            .document(itemId)
+            .collection("interestedUsers")
+
+
     }
 }

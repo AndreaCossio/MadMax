@@ -74,4 +74,6 @@ dependencies {
     // Firebase
     implementation 'com.google.firebase:firebase-firestore-ktx:21.4.3'
     implementation 'com.google.firebase:firebase-auth-ktx:19.3.1'
+
+    implementation 'com.squareup.picasso:picasso:2.5.2'
 }

@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
@@ -93,7 +94,7 @@ class DetailsItemFragment : Fragment() {
             item_details_expiry.text = item.expiry
             item_details_stars.rating = item.stars.toFloat()
             if (item.photo != "") {
-                item_details_photo.setImageBitmap(handleSamplingAndRotationBitmap(requireContext(), Uri.parse(item.photo))!!)
+                Picasso.with(context).load(Uri.parse(item.photo)).into(item_details_photo)
             }
         }
     }

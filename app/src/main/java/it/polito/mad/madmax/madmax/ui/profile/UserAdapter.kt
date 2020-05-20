@@ -1,10 +1,12 @@
 
 import android.content.Context
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.User
 import kotlinx.android.synthetic.main.item.view.*
@@ -15,9 +17,7 @@ class UserAdapter(private var users: ArrayList<User>, private val recycler: Recy
 
     override fun onCreateViewHolder(parent: ViewGroup, position: Int): UserViewHolder {
 
-        return UserViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.user_card, parent, false)).apply {
-            if(!isMine) this.itemView.item_edit_button.visibility = View.GONE
-        }
+        return UserViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.user_card, parent, false))
     }
 
     override fun getItemCount() = users.size
@@ -26,12 +26,12 @@ class UserAdapter(private var users: ArrayList<User>, private val recycler: Recy
         holder.bind(users[position], position, users.size, recycler)
     }
 
-    class UserViewHolder(userView: View) : RecyclerView.ViewHolder(userView) {
+    class UserViewHolder(private val userView: View) : RecyclerView.ViewHolder(userView) {
         private val profilePic  = userView.user_card_photo
         private val nameTV = userView.user_card_name
 
         fun bind(user: User, position: Int, size: Int, recycler: RecyclerView) {
-
+            Picasso.with(userView.context).load(Uri.parse(user.photo)).into(profilePic)
             nameTV.text = user.name
 
         }
