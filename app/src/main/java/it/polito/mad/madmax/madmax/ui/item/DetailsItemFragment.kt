@@ -11,13 +11,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.model.ItemKey
+import it.polito.mad.madmax.madmax.data.model.User
 import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
+import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_details_item.*
 
@@ -27,8 +30,13 @@ class DetailsItemFragment : Fragment() {
     private val itemsVM: ItemViewModel by activityViewModels()
     private lateinit var itemLive: MutableLiveData<ItemKey>
 
+    // User
+    private val userVM: UserViewModel by activityViewModels()
+    private lateinit var user: User
+
     // Realtime listener
     private lateinit var listener: ListenerRegistration
+    private lateinit var userListener: ListenerRegistration
 
     // Destination arguments
     private val args: DetailsItemFragmentArgs by navArgs()
@@ -80,6 +88,7 @@ class DetailsItemFragment : Fragment() {
                         break
                     }
                 }
+                userListener = userVM.getUser(itemLive.value!!.item.userId, userChange)
             }
             itemLive.observe(viewLifecycleOwner, Observer {
                 updateFields(it.item)
@@ -114,6 +123,9 @@ class DetailsItemFragment : Fragment() {
         super.onDestroyView()
         if (!args.message.startsWith("create")) {
             listener.remove()
+            if (args.message.startsWith("N")) {
+                userListener.remove()
+            }
         }
         item_details_card.removeOnLayoutChangeListener(cardListener)
     }
@@ -135,6 +147,11 @@ class DetailsItemFragment : Fragment() {
         }
     }
 
+    private val userChange = { document: DocumentSnapshot ->
+        item_details_owner.text = document.getString("name")
+        user = document.toObject(User::class.java)!!
+    }
+
     // Update views using the ViewModel of the item
     private fun updateFields(item: Item) {
         item_details_title.text = item.title
@@ -144,6 +161,12 @@ class DetailsItemFragment : Fragment() {
         item_details_price.text = item.price.toString()
         item_details_location.text = item.location
         item_details_expiry.text = item.expiry
+        if (args.message.startsWith("N")) {
+            item_details_owner.visibility = View.VISIBLE
+            item_details_owner.setOnClickListener {
+                findNavController().navigate(DetailsItemFragmentDirections.actionVisitProfile(item.userId))
+            }
+        }
         if (item.stars.toFloat() == -1.0F && args.message.startsWith("Y")) {
             item_details_stars_container.visibility = View.GONE
         } else {

@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.firebase.firestore.ListenerRegistration
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.madmax.R
@@ -22,11 +23,14 @@ class ShowProfileFragment : Fragment() {
 
     // User
     private val userVM: UserViewModel by activityViewModels()
+    private var otherUser: User? = null
 
     // Destination arguments
     // If not null, the user is visiting the profile of another user
     private val args: ShowProfileFragmentArgs by navArgs()
     private var localUser: Boolean = true
+
+    private lateinit var userListener: ListenerRegistration
 
     // Listeners
     private lateinit var cardListener: View.OnLayoutChangeListener
@@ -44,7 +48,13 @@ class ShowProfileFragment : Fragment() {
             (v as CardView).apply {
                 // Offset the drawable
                 (getChildAt(0) as ViewGroup).getChildAt(0).apply {
-                    translationY = if (userVM.user.value?.photo == "") {
+                    translationY = args.user?.let {
+                        if (otherUser?.photo == "") {
+                            measuredHeight / 6F
+                        } else {
+                            0F
+                        }
+                    } ?: if (userVM.user.value?.photo == "") {
                         measuredHeight / 6F
                     } else {
                         0F
@@ -68,13 +78,19 @@ class ShowProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         args.user?.also {
             localUser = false
-            updateFields(it)
+            userListener = userVM.getUser(it) { document ->
+                otherUser = document.toObject(User::class.java)
+                updateFields(document.toObject(User::class.java)!!)
+            }
         } ?: userVM.user.observe(viewLifecycleOwner, Observer { updateFields(it) })
         profile_card.addOnLayoutChangeListener(cardListener)
     }
 
     override fun onDestroyView() {
         profile_card.removeOnLayoutChangeListener(cardListener)
+        args.user?.also {
+            userListener.remove()
+        }
         super.onDestroyView()
     }
 

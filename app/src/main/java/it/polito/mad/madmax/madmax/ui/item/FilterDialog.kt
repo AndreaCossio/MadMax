@@ -124,17 +124,16 @@ class FilterDialog: DialogFragment(), AdapterView.OnItemSelectedListener {
     private fun applyFilters(){
         val minPrice = item_edit_minPrice.text?.toString()?.toDoubleOrNull()
         val maxPrice = item_edit_maxPrice.text?.toString()?.toDoubleOrNull()
-        val mainCategory = if(item_edit_category_main.selectedItem?.toString() == getString(R.string.empty_filter)) "" else  item_edit_category_main.selectedItem?.toString()
-        val subCategory = if(item_edit_category_sub.selectedItem?.toString() == getString(R.string.empty_filter)) "" else  item_edit_category_sub.selectedItem?.toString()
+        val mainCategory = if(item_edit_category_main.selectedItem?.toString() == getString(R.string.empty_filter)) null else  item_edit_category_main.selectedItem?.toString()
+        val subCategory = if(item_edit_category_sub.selectedItem?.toString() == getString(R.string.empty_filter)) null else  item_edit_category_sub.selectedItem?.toString()
 
         val bundle = Bundle()
         bundle.apply {
             if(minPrice != null) this.putDouble("minPrice",minPrice)
             if(maxPrice != null) this.putDouble("maxPrice",maxPrice)
-            this.putString("mainCategory",mainCategory)
-            this.putString("subCategory",subCategory)
+            if(mainCategory != null) this.putString("mainCategory",mainCategory)
+            if(subCategory != null) this.putString("subCategory",subCategory)
         }
-
 
         setFragmentResult("item_filter", bundle)
         dismiss()

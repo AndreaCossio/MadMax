@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.ListenerRegistration
 import it.polito.mad.madmax.madmax.data.model.User
 import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
 
@@ -55,6 +57,14 @@ class UserViewModel: ViewModel() {
                 }
                 userId.value = fUser.uid
             }
+        }
+    }
+
+    fun getUser(userId: String, listener: (DocumentSnapshot) -> Unit): ListenerRegistration {
+        return repo.getUser(userId).addSnapshotListener {value, e ->
+            e?.also {
+                Log.w(TAG, "Listen failed: ${it.message}")
+            } ?: listener(value!!)
         }
     }
 

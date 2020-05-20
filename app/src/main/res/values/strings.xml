@@ -85,6 +85,7 @@
     <string name="item_price">Price</string>
     <string name="item_location">Location</string>
     <string name="item_expiry">Expiry Date</string>
+    <string name="item_owner">Item Owner</string>
     <string name="item_expiry_change">Change</string>
     <string name="item_details">Item details</string>
     <string name="item_stars">Rate</string>

@@ -192,6 +192,17 @@
                 android:drawablePadding="36dp"
                 android:hint="@string/item_expiry" />
 
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/item_details_owner"
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:drawableStart="@drawable/ic_profile_primary"
+                android:drawablePadding="36dp"
+                android:visibility="gone"
+                android:hint="@string/item_owner" />
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

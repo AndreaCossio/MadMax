@@ -39,6 +39,9 @@
         <argument
             android:name="message"
             app:argType="string" />
+        <action
+            android:id="@+id/action_visit_profile"
+            app:destination="@id/nav_show_profile_fragment" />
     </fragment>
 
     <!-- Edit item -->
@@ -73,7 +76,7 @@
             app:destination="@id/nav_edit_profile_fragment" />
         <argument
             android:name="user"
-            app:argType="it.polito.mad.madmax.madmax.data.model.User"
+            app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>
