@@ -8,29 +8,31 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.ListenerRegistration
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
-import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModelFactory
+import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
+import it.polito.mad.madmax.madmax.displayMessage
 import it.polito.mad.madmax.madmax.toPx
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_item_list.*
 
 class OnSaleListFragment : Fragment() {
 
-    // Other's items
-    private val othersItemsVM: ItemViewModel by activityViewModels {
-        ItemViewModelFactory(false, Firebase.auth.currentUser!!.uid)
-    }
+    // Items VM
+    private val userVM: UserViewModel by activityViewModels()
+    private val itemsVM: ItemViewModel by activityViewModels()
+
+    // Realtime listener
+    private lateinit var listener: ListenerRegistration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        othersItemsVM.loadItems()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -40,17 +42,44 @@ class OnSaleListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        item_list_rv.apply {
-            this.setHasFixedSize(true)
-            layoutManager = AutoFitGridLayoutManager(requireContext(), 300.toPx())
-            adapter = ItemAdapter(this)
-        }
+        userVM.userId.observe(viewLifecycleOwner, Observer {
+            if (it != "") {
+                val itemAdapter = ItemAdapter(item_list_rv, itemDetails, actionItem)
 
-        othersItemsVM.items.observe(viewLifecycleOwner, Observer {
-            (item_list_rv.adapter as ItemAdapter).setItems(it)
+                item_list_rv.apply {
+                    setHasFixedSize(false)
+                    layoutManager = AutoFitGridLayoutManager(requireContext(), 300.toPx())
+                    adapter = itemAdapter
+                }
+
+                itemAdapter.myCount.observe(viewLifecycleOwner, Observer {
+                    item_list_empty.visibility = if (it == 0) {
+                        View.VISIBLE
+                    } else {
+                        View.GONE
+                    }
+                })
+
+                listener = itemsVM.listenOnItems(false, itemAdapter)
+
+                requireActivity().main_fab_add_item.visibility = View.GONE
+                requireActivity().main_progress.visibility = View.GONE
+            }
         })
+    }
 
-        requireActivity().main_progress.visibility = View.GONE
+    override fun onDestroyView() {
+        super.onDestroyView()
+        listener.remove()
+    }
+
+    private var itemDetails = { itemId: String ->
+        requireActivity().main_progress.visibility = View.VISIBLE
+        findNavController().navigate(OnSaleListFragmentDirections.actionDetailsItem("N-details-$itemId"))
+    }
+
+    private var actionItem = { itemId: String ->
+        displayMessage(requireContext(), "Hey")
     }
 
     class AutoFitGridLayoutManager(context: Context?, columnWidth: Int) : GridLayoutManager(context, 1) {
@@ -58,7 +87,7 @@ class OnSaleListFragment : Fragment() {
         private var columnWidth = 0
         private var columnWidthChanged = true
 
-        fun setColumnWidth(newColumnWidth: Int) {
+        private fun setColumnWidth(newColumnWidth: Int) {
             if (newColumnWidth > 0 && newColumnWidth != columnWidth) {
                 columnWidth = newColumnWidth
                 columnWidthChanged = true
@@ -72,7 +101,7 @@ class OnSaleListFragment : Fragment() {
                 } else {
                     height - paddingTop - paddingBottom
                 }
-                val spanCount = Math.max(1, totalSpace / columnWidth)
+                val spanCount = 1.coerceAtLeast(totalSpace / columnWidth)
                 setSpanCount(spanCount)
                 columnWidthChanged = false
             }

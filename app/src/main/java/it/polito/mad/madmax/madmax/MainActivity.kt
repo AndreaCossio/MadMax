@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfig)
 
         // Init FAB
-        main_fab_add_item.setOnClickListener { navController.navigate(ItemListFragmentDirections.actionCreateItem(null)) }
+        main_fab_add_item.setOnClickListener { navController.navigate(ItemListFragmentDirections.actionEditOrCreateItem("create")) }
 
         // Observe user data
         userVM.user.observe(this, Observer {

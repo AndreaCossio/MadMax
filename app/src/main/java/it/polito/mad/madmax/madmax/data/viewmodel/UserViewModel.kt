@@ -11,7 +11,7 @@ import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
 
 class UserViewModel: ViewModel() {
 
-    private var userId: String = ""
+    val userId: MutableLiveData<String> by lazy { MutableLiveData<String>("") }
     private val repo: FirestoreRepository = FirestoreRepository()
 
     val user: MutableLiveData<User> by lazy {
@@ -20,16 +20,16 @@ class UserViewModel: ViewModel() {
 
     fun updateUser(newUser: User): Task<Void> {
         return if (newUser.photo == "" || newUser.photo == user.value?.photo) {
-            repo.writeUser(userId, newUser).addOnFailureListener { e ->
+            repo.writeUser(userId.value!!, newUser).addOnFailureListener { e ->
                 Log.e(TAG, "Failed to update user", e)
             }
         } else {
-            repo.writeUserPhoto(userId, Uri.parse(newUser.photo)).addOnCompleteListener { task ->
+            repo.writeUserPhoto(userId.value!!, Uri.parse(newUser.photo)).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     newUser.apply { photo = task.result.toString() }
                 }
             }.continueWithTask {
-                repo.writeUser(userId, newUser).addOnFailureListener { e ->
+                repo.writeUser(userId.value!!, newUser).addOnFailureListener { e ->
                     Log.e(TAG, "Failed to update user", e)
                 }
             }
@@ -53,7 +53,7 @@ class UserViewModel: ViewModel() {
                         Log.e(TAG, "Failed to create user", ee)
                     }
                 }
-                userId = fUser.uid
+                userId.value = fUser.uid
             }
         }
     }

@@ -31,6 +31,10 @@ class ShowProfileFragment : Fragment() {
     // Listeners
     private lateinit var cardListener: View.OnLayoutChangeListener
 
+    companion object {
+        const val TAG = "MM_SHOW_PROFILE"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -52,6 +56,8 @@ class ShowProfileFragment : Fragment() {
                 visibility = View.VISIBLE
             }
         }
+
+        requireActivity().main_fab_add_item.visibility = View.GONE
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -83,7 +89,7 @@ class ShowProfileFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_edit_profile_edit -> {
-                activity?.main_progress?.visibility = View.VISIBLE
+                requireActivity().main_progress.visibility = View.VISIBLE
                 findNavController().navigate(ShowProfileFragmentDirections.actionEditProfile())
                 true
             } else -> super.onOptionsItemSelected(item)
@@ -112,7 +118,7 @@ class ShowProfileFragment : Fragment() {
                 }
 
                 override fun onError() {
-                    Log.d(EditProfileFragment.TAG, "Error waiting picasso to load ${user.photo}")
+                    Log.d(TAG, "Error waiting picasso to load ${user.photo}")
                 }
             })
         } else {

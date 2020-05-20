@@ -72,6 +72,8 @@ class EditProfileFragment : Fragment() {
                 visibility = View.VISIBLE
             }
         }
+
+        requireActivity().main_fab_add_item.visibility = View.GONE
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -105,16 +107,16 @@ class EditProfileFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        super.onDestroyView()
         // Detach listener
         profile_edit_card.removeOnLayoutChangeListener(cardListener)
-        super.onDestroyView()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
         updateUser()
         outState.putSerializable(getString(R.string.edit_profile_state), tempUser)
         outState.putString("edit_profile_dialog", openDialog)
-        super.onSaveInstanceState(outState)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -164,7 +166,7 @@ class EditProfileFragment : Fragment() {
                 // Load user data to the db and go back
                 if (!invalidFields) {
                     // Show progress before uploading user data to the db
-                    activity?.main_progress?.visibility = View.VISIBLE
+                    requireActivity().main_progress.visibility = View.VISIBLE
                     // Keep reference to the image so that it can be delete after the upload
                     val oldPath = tempUser.photo
                     userVM.updateUser(tempUser).addOnCompleteListener {
@@ -386,7 +388,7 @@ class EditProfileFragment : Fragment() {
             Picasso.with(requireContext()).load(Uri.parse(tempUser.photo)).into(profile_edit_photo, object : Callback {
                 override fun onSuccess() {
                     // Hide progress
-                    activity?.main_progress?.visibility = View.GONE
+                    requireActivity().main_progress.visibility = View.GONE
                 }
 
                 // TODO small problem here, if the image cannot be loaded, it is anyway set in the user var
@@ -396,12 +398,12 @@ class EditProfileFragment : Fragment() {
                     // Reset drawable
                     profile_edit_photo.setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile_white))
                     // Hide progress
-                    activity?.main_progress?.visibility = View.GONE
+                    requireActivity().main_progress.visibility = View.GONE
                 }
             })
         } else {
             profile_edit_photo.setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile_white))
-            activity?.main_progress?.visibility = View.GONE
+            requireActivity().main_progress.visibility = View.GONE
         }
     }
 }

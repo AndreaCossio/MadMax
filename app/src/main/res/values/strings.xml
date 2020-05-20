@@ -37,6 +37,7 @@
     <!-- Normal -->
     <string name="message_taken_photo">Picture taken correctly</string>
     <string name="message_chosen_photo">Picture loaded correctly</string>
+    <string name="message_empty_list">There are no items! Please create one</string>
     <!-- Error -->
     <string name="message_error_field_required">Sorry, this field is required</string>
     <string name="message_error_field_invalid_email">Sorry, this email is not valid</string>
@@ -56,7 +57,6 @@
     <!-- DIALOGS -->
     <string name="photo_dialog_ok">OK</string>
     <string name="photo_dialog_cancel">Cancel</string>
-
 
     <!-- CONTENT DESCRIPTIONS -->
     <string name="content_description_settings">Settings</string>
@@ -86,7 +86,6 @@
     <string name="content_descritption_search">Search</string>
     <string name="menu_search">Search</string>
     <!-- Categories -->
-
     <string name="empty_filter">- - - - -</string>
     <string-array name="item_categories_main">
         <item>Arts &amp; Crafts</item>

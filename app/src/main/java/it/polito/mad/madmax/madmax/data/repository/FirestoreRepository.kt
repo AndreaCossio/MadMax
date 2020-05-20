@@ -2,8 +2,8 @@ package it.polito.mad.madmax.madmax.data.repository
 
 import android.net.Uri
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -42,7 +42,7 @@ class FirestoreRepository {
     //
     // ITEM
     //
-    fun getItems(userId: String, personal: Boolean): CollectionReference {
+    fun getItems(userId: String, personal: Boolean): Query {
         return if (personal) {
             db.collection("users/$userId/items")
         } else {
@@ -50,11 +50,27 @@ class FirestoreRepository {
         }
     }
 
-    fun writeItem(itemId: String, item: Item) {
-        db.document("items/$itemId").set(item)
+    fun getNewItemId(): String {
+        return db.collection("items").document().id
     }
 
-    fun createItem(item: Item) {
-        db.collection("items").document().set(item)
+    fun writeItem(itemId: String, item: Item): Task<Void> {
+        return db.runBatch { batch ->
+            batch.set(db.document("items/$itemId"), item)
+            batch.set(db.document("users/${item.userId}/items/$itemId"), item)
+        }
+    }
+
+    fun writeItemPhoto(itemId: String, uri: Uri): Task<Uri> {
+        storage.reference.child("images/$itemId.jpg").also { ref ->
+            return ref.putFile(uri).continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let {
+                        throw it
+                    }
+                }
+                ref.downloadUrl
+            }
+        }
     }
 }
