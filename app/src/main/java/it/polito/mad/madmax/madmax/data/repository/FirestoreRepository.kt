@@ -1,14 +1,13 @@
 package it.polito.mad.madmax.madmax.data.repository
 
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.google.gson.Gson
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.model.User
@@ -16,32 +15,30 @@ import it.polito.mad.madmax.madmax.data.model.User
 class FirestoreRepository {
 
     private val db = Firebase.firestore
+    private val storage = Firebase.storage
 
     //
     // USER
     //
-    fun getUser(user: FirebaseUser, destUser: MutableLiveData<User>) {
-        db.document("users/${user.uid}").get().addOnSuccessListener { document ->
-            destUser.value = document?.data?.let {
-                Gson().fromJson(Gson().toJson(it), User::class.java)
-            } ?: createUser(user)
-            destUser.value!!.id  = document.id
-        }
+    fun getUser(userId: String): DocumentReference {
+        return db.document("users/$userId")
     }
 
-    fun writeUser(userId: String, user: User) {
-        db.document("users/$userId").set(user)
+    fun writeUser(userId: String, user: User): Task<Void> {
+        return db.document("users/$userId").set(user)
     }
 
-    private fun createUser(newUser: FirebaseUser): User {
-        val user: User = User(null).apply {
-            name = newUser.displayName ?: ""
-            email = newUser.email ?: ""
-            phone = newUser.phoneNumber ?: ""
-            //photo = newUser.photoUrl.toString() TODO maybe already get the photo?
+    fun writeUserPhoto(userId: String, uri: Uri): Task<Uri> {
+        storage.reference.child("images/$userId/profile.jpg").also { ref ->
+            return ref.putFile(uri).continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let {
+                        throw it
+                    }
+                }
+                ref.downloadUrl
+            }
         }
-        writeUser(newUser.uid, user)
-        return user
     }
 
     //
@@ -53,25 +50,12 @@ class FirestoreRepository {
             .whereGreaterThan("userId",userId).get()
         val lessThanQuery = db.collection("items").whereLessThan("userId",userId).get()
         return Tasks.whenAllSuccess<QuerySnapshot>(greaterThanQuery,lessThanQuery)
-
-
     }
 
     fun notifyUserOfInterest(item: Item,userId: String){
-        db.collection("users")
-            .document(userId)
-            .get()
-            .addOnSuccessListener {
-                val user = Gson().fromJson(Gson().toJson(it.data), User::class.java)
-                db.collection("items")
-                    .document(item.id!!)
-                    .collection("interestedUsers")
-                    .document(userId)
-                    .set(user)
-
-            }
-        db.collection("items").document(item.id!!).collection("interestedUsers")
+        db.collection("items").document(item.id!!).update("interestedUsers", FieldValue.arrayUnion(userId))
     }
+
     fun createItem(item: Item) {
         val documentReference = db.collection("items").document()
         documentReference.set(item)
@@ -84,11 +68,10 @@ class FirestoreRepository {
             }
     }
 
-    fun getInterestedUsersList(itemId: String): CollectionReference{
-        return  db.collection("items")
+    fun getInterestedUsersList(itemId: String): Task<DocumentSnapshot>{
+        return db.collection("items")
             .document(itemId)
-            .collection("interestedUsers")
-
+            .get()
 
     }
 }
