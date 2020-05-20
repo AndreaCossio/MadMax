@@ -62,7 +62,7 @@ class OnSaleListFragment : Fragment() {
 
                 listener = itemsVM.listenOnItems(false, itemAdapter)
 
-                requireActivity().main_fab_add_item.visibility = View.GONE
+                requireActivity().main_fab_add_item?.visibility = View.GONE
                 requireActivity().main_progress.visibility = View.GONE
             }
         })

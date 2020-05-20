@@ -74,6 +74,7 @@
 
     <!-- ITEM -->
     <string name="item_title">Title</string>
+    <string name="item_general_info">General Information</string>
     <string name="item_description">Description</string>
     <string name="item_category_main">Category</string>
     <string name="item_category_sub">Sub-Category</string>

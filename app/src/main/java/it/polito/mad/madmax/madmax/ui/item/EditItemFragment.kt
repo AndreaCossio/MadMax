@@ -22,6 +22,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.ktx.auth
@@ -38,6 +39,8 @@ import it.polito.mad.madmax.madmax.displayMessage
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_edit_item.*
 import java.io.IOException
+import java.text.DateFormat
+import java.util.*
 
 
 class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
@@ -97,11 +100,11 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
             }
         }
 
-        requireActivity().main_fab_add_item.visibility = View.GONE
+        requireActivity().main_fab_add_item?.visibility = View.GONE
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        if (task == "create"){
+        if (task == "create") {
             activity?.findViewById<MaterialToolbar>(R.id.main_toolbar)?.setTitle(R.string.title_create_item_fragment)
         }
         return inflater.inflate(R.layout.fragment_edit_item, container, false)
@@ -189,7 +192,6 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 // Load modified item data
                 updateItem()
 
-                // TODO choose fields
                 // Validate fields
                 var invalidFields = false
                 for (field in setOf(item_edit_title, item_edit_price)) {
@@ -197,6 +199,16 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         invalidFields = true
                         field.error = getString(R.string.message_error_field_required)
                     }
+                }
+
+                if (item_edit_expiry.text.toString() != "") {
+                    if (DateFormat.getDateInstance().parse(item_edit_expiry.text.toString())!! < Date()) {
+                        displayMessage(requireContext(), "Date must be future")
+                        invalidFields = true
+                    }
+                } else {
+                    displayMessage(requireContext(), "Date must be set")
+                    invalidFields = true
                 }
 
                 // Load item data to the db and go back
@@ -414,14 +426,14 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
     // Show date picker
     private fun showDatePicker() {
         val builder = MaterialDatePicker.Builder.datePicker()
-        val picker = builder.build()
-        picker.addOnPositiveButtonClickListener { item_edit_expiry.text = picker.headerText }
+        val picker = builder.setCalendarConstraints(CalendarConstraints.Builder().setStart(System.currentTimeMillis()-1000).build()).build()
+        picker.addOnPositiveButtonClickListener {
+            item_edit_expiry.text = picker.headerText
+        }
         picker.show(childFragmentManager, picker.toString())
     }
 
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-        TODO("Not yet implemented")
-    }
+    override fun onNothingSelected(parent: AdapterView<*>?) {}
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         if (parent?.id == R.id.item_edit_category_main) {
@@ -454,7 +466,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
             description = item_edit_description.text.toString()
             category_main = item_edit_category_main.selectedItem.toString()
             category_sub = item_edit_category_sub.selectedItem.toString()
-            price = item_edit_price.text.toString().toDoubleOrNull() ?: 0.0
+            price = item_edit_price.text.toString().toDoubleOrNull() ?: -1.0
             location = item_edit_location.text.toString()
             expiry = item_edit_expiry.text.toString()
         }
@@ -482,7 +494,11 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
         secondList?.also {
             item_edit_category_sub.setSelection(resources.getStringArray(it).indexOf(tempItem.category_sub))
         }
-        item_edit_price.setText(tempItem.price.toString())
+        if (tempItem.price == -1.0) {
+            item_edit_price.setText("")
+        } else {
+            item_edit_price.setText(tempItem.price.toString())
+        }
         item_edit_location.setText(tempItem.location)
         item_edit_expiry.text = tempItem.expiry
 

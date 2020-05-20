@@ -73,7 +73,7 @@ class EditProfileFragment : Fragment() {
             }
         }
 
-        requireActivity().main_fab_add_item.visibility = View.GONE
+        requireActivity().main_fab_add_item?.visibility = View.GONE
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

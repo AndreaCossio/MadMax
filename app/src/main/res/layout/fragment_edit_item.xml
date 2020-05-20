@@ -82,8 +82,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/item_edit_guideline"
-        app:layout_constraintVertical_bias="0.2"
         app:layout_constraintWidth_max="500dp">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/item_general_info"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:textColor="@color/colorPrimary"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -157,8 +165,6 @@
             android:layout_height="wrap_content"
             android:text="@string/item_category_main"
             android:layout_marginTop="16dp"
-            android:layout_marginStart="8dp"
-            android:labelFor="@id/item_edit_category_main"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
             android:textColor="@color/colorPrimary"/>
 
@@ -173,8 +179,6 @@
             android:layout_height="wrap_content"
             android:text="@string/item_category_sub"
             android:layout_marginTop="16dp"
-            android:layout_marginStart="8dp"
-            android:labelFor="@id/item_edit_category_sub"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
             android:textColor="@color/colorPrimary"/>
 
@@ -194,7 +198,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/item_expiry"
-                android:layout_marginStart="8dp"
                 android:labelFor="@id/item_edit_expiry"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 android:textColor="@color/colorPrimary"

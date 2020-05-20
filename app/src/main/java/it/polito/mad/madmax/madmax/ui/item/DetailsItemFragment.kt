@@ -93,7 +93,7 @@ class DetailsItemFragment : Fragment() {
 
         listener = itemsVM.listenOnItems(args.message.startsWith("Y"), null)
 
-        requireActivity().main_fab_add_item.visibility = View.GONE
+        requireActivity().main_fab_add_item?.visibility = View.GONE
     }
 
     override fun onDestroyView() {

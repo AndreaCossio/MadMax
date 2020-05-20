@@ -89,6 +89,15 @@
             android:orientation="vertical"
             android:gravity="center_vertical">
 
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/item_general_info"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textColor="@color/colorPrimary"/>
+
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -161,8 +170,6 @@
                 android:layout_height="wrap_content"
                 android:text="@string/item_category_main"
                 android:layout_marginTop="16dp"
-                android:layout_marginStart="8dp"
-                android:labelFor="@id/item_edit_category_main"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 android:textColor="@color/colorPrimary"/>
 
@@ -177,8 +184,6 @@
                 android:layout_height="wrap_content"
                 android:text="@string/item_category_sub"
                 android:layout_marginTop="16dp"
-                android:layout_marginStart="8dp"
-                android:labelFor="@id/item_edit_category_sub"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 android:textColor="@color/colorPrimary"/>
 
@@ -198,7 +203,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/item_expiry"
-                    android:layout_marginStart="8dp"
                     android:labelFor="@id/item_edit_expiry"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                     android:textColor="@color/colorPrimary"
@@ -212,7 +216,6 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/item_expiry"
                     android:layout_marginTop="16dp"
-                    android:layout_marginStart="8dp"
                     app:layout_constraintTop_toBottomOf="@id/item_edit_expiry_label"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"/>
