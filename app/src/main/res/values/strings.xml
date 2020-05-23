@@ -1,17 +1,17 @@
 <resources>
     <!-- APPLICATION -->
     <string name="app_name">MadMax</string>
-    <string name="title_activity_main">MainActivity</string>
 
     <!-- SHARED PREFERENCES -->
-    <string name="preferences_user_file">it.polito.mad.madmax.madmax.PREFERENCE_FILE_USER</string>
 
     <!-- FILE PROVIDER -->
     <string name="file_provider">it.polito.mad.madmax.madmax.fileprovider</string>
 
     <!-- SAVED STATES -->
     <string name="edit_profile_state">edit_profile_state</string>
+    <string name="edit_profile_dialog_state">edit_profile_dialog_state</string>
     <string name="edit_item_state">edit_item_state</string>
+    <string name="edit_item_dialog_state">edit_item_dialog_state</string>
 
     <!-- NAVIGATION -->
     <string name="title_show_profile_fragment">Profile</string>
@@ -23,12 +23,10 @@
     <string name="title_item_list_fragment">My Items</string>
 
     <!-- MENU -->
-    <string name="menu_edit_profile">Edit Profile</string>
-    <string name="menu_save_profile">Save</string>
-    <string name="menu_edit_item">Edit Item</string>
-    <string name="menu_save_item">Save</string>
     <string name="menu_settings">Settings</string>
-    <string name="menu_search">Search</string>
+    <string name="menu_logout">Logout</string>
+    <string name="menu_edit">Edit</string>
+    <string name="menu_save">Save</string>
     <string name="menu_filter">Filter</string>
 
     <!-- BUTTONS -->
@@ -47,10 +45,10 @@
     <string name="message_error_gallery_app">Sorry, could not find any gallery app</string>
 
     <!-- PHOTO DIALOG -->
-    <string name="photo_dialog_change_title">Change profile picture</string>
-    <string name="photo_dialog_change_take">Take a picture</string>
+    <string name="photo_dialog_change_title">Select a method to change the photo</string>
+    <string name="photo_dialog_change_take">Take picture</string>
     <string name="photo_dialog_change_gallery">Choose from gallery</string>
-    <string name="photo_dialog_change_remove">Remove image</string>
+    <string name="photo_dialog_change_remove">Remove photo</string>
 
     <!-- ARE YOU SURE DIALOG -->
     <string name="photo_dialog_sure_title">Are you sure?</string>
@@ -61,13 +59,13 @@
     <string name="photo_dialog_cancel">Cancel</string>
 
     <!-- CONTENT DESCRIPTIONS -->
-    <string name="content_description_settings">Settings</string>
-    <string name="content_description_edit">Edit</string>
-    <string name="content_description_save">Save</string>
-    <string name="content_description_profile_photo">Photo profile</string>
-    <string name="content_description_item_photo">Photo item</string>
-    <string name="content_description_search">Search</string>
-    <string name="content_description_filter">Filter</string>
+    <string name="content_settings">Settings</string>
+    <string name="content_logout">Logout</string>
+    <string name="content_edit">Edit</string>
+    <string name="content_save">Save</string>
+    <string name="content_profile_photo">Photo profile</string>
+    <string name="content_item_photo">Photo item</string>
+    <string name="content_filter">Filter</string>
 
     <!-- PROFILE -->
     <string name="profile_name">Full Name</string>
@@ -87,8 +85,6 @@
     <string name="item_expiry">Expiry Date</string>
     <string name="item_owner">Item Owner</string>
     <string name="item_expiry_change">Change</string>
-    <string name="item_details">Item details</string>
-    <string name="item_stars">Rate</string>
     <!-- Categories -->
     <string name="empty_filter">- - - - -</string>
     <string-array name="item_categories_main">

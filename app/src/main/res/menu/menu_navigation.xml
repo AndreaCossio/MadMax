@@ -12,7 +12,7 @@
             android:title="@string/title_item_list_fragment" />
         <item
             android:id="@id/nav_show_profile_fragment"
-            android:icon="@drawable/ic_profile"
+            android:icon="@drawable/ic_profile_primary"
             android:title="@string/title_show_profile_fragment" />
     </group>
 

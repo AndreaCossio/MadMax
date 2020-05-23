@@ -21,7 +21,6 @@ import it.polito.mad.madmax.madmax.data.model.ItemKey
 import it.polito.mad.madmax.madmax.data.model.User
 import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
-import it.polito.mad.madmax.madmax.displayMessage
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_details_item.*
 
@@ -143,13 +142,13 @@ class DetailsItemFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         if (args.message.startsWith("Y")) {
-            inflater.inflate(R.menu.menu_edit_item, menu)
+            inflater.inflate(R.menu.menu_edit, menu)
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_edit_item_edit -> {
+            R.id.menu_edit -> {
                 requireActivity().main_progress.visibility = View.VISIBLE
                 findNavController().navigate(DetailsItemFragmentDirections.actionEditItem("edit-${args.message.split("-")[2]}"))
                 true
@@ -159,7 +158,7 @@ class DetailsItemFragment : Fragment() {
 
     private val userChange = { document: DocumentSnapshot ->
         item_details_owner.text = document.getString("name")
-        user = document.toObject(User::class.java)!!
+        //user = document.toObject(User::class.java)!!
     }
 
     // Update views using the ViewModel of the item
@@ -184,12 +183,12 @@ class DetailsItemFragment : Fragment() {
             item_details_stars.rating = item.stars.toFloat()
         }
         if (item.photo != "") {
-            Picasso.with(requireContext()).load(Uri.parse(item.photo)).into(item_details_photo, object : Callback {
+            Picasso.get().load(Uri.parse(item.photo)).into(item_details_photo, object: Callback {
                 override fun onSuccess() {
                     requireActivity().main_progress.visibility = View.GONE
                 }
 
-                override fun onError() {
+                override fun onError(e: Exception?) {
                     Log.d(TAG, "Error waiting picasso to load ${item.photo}")
                 }
             })

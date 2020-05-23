@@ -62,8 +62,8 @@ class OnSaleListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        userVM.userId.observe(viewLifecycleOwner, Observer {
-            if (it != "") {
+        userVM.getCurrentUserData().observe(viewLifecycleOwner, Observer {
+            if (it.userId != "") {
                 itemAdapter = ItemAdapter(item_list_rv, itemDetails, actionItem).apply {
                     setFilters(minPrice, maxPrice, mainCategory, subCategory)
                 }
@@ -93,6 +93,7 @@ class OnSaleListFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        if (this::listener.isInitialized)
         listener.remove()
     }
 

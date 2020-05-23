@@ -2,7 +2,6 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_main"
     app:startDestination="@id/nav_on_sale_list_fragment">
 
     <!-- Home -->
@@ -10,7 +9,7 @@
         android:id="@+id/nav_on_sale_list_fragment"
         android:name="it.polito.mad.madmax.madmax.ui.item.OnSaleListFragment"
         android:label="@string/title_on_sale_item_fragment"
-        tools:layout="@layout/fragment_item_list" >
+        tools:layout="@layout/fragment_item_list">
         <action
             android:id="@+id/action_details_item"
             app:destination="@id/nav_details_item_fragment" />
@@ -21,7 +20,7 @@
         android:id="@+id/nav_item_list_fragment"
         android:name="it.polito.mad.madmax.madmax.ui.item.ItemListFragment"
         android:label="@string/title_item_list_fragment"
-        tools:layout="@layout/fragment_item_list" >
+        tools:layout="@layout/fragment_item_list">
         <action
             android:id="@+id/action_edit_or_create_item"
             app:destination="@id/nav_details_item_fragment" />
@@ -32,7 +31,7 @@
         android:id="@+id/nav_details_item_fragment"
         android:name="it.polito.mad.madmax.madmax.ui.item.DetailsItemFragment"
         android:label="@string/title_details_item_fragment"
-        tools:layout="@layout/fragment_details_item" >
+        tools:layout="@layout/fragment_details_item">
         <action
             android:id="@+id/action_edit_item"
             app:destination="@id/nav_edit_item_fragment" />
@@ -49,7 +48,7 @@
         android:id="@+id/nav_edit_item_fragment"
         android:name="it.polito.mad.madmax.madmax.ui.item.EditItemFragment"
         android:label="@string/title_edit_item_fragment"
-        tools:layout="@layout/fragment_edit_item" >
+        tools:layout="@layout/fragment_edit_item">
         <argument
             android:name="message"
             app:argType="string" />
@@ -70,15 +69,16 @@
         android:id="@+id/nav_show_profile_fragment"
         android:name="it.polito.mad.madmax.madmax.ui.profile.ShowProfileFragment"
         android:label="@string/title_show_profile_fragment"
-        tools:layout="@layout/fragment_show_profile" >
+        tools:layout="@layout/fragment_show_profile">
         <action
             android:id="@+id/action_edit_profile"
-            app:destination="@id/nav_edit_profile_fragment" />
+            app:destination="@id/nav_edit_profile_fragment"/>
+        <!--app:enterAnim="@anim/slide_in_right"-->
         <argument
             android:name="user"
+            android:defaultValue="@null"
             app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
     </fragment>
 
     <!-- Edit profile -->
@@ -92,6 +92,7 @@
             app:destination="@id/nav_show_profile_fragment"
             app:popUpTo="@id/nav_show_profile_fragment"
             app:popUpToInclusive="true" />
+        <!--app:enterAnim="@anim/slide_in_left"-->
     </fragment>
 
 </navigation>

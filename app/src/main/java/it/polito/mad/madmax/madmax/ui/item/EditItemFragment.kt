@@ -179,7 +179,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_save_item, menu)
+        inflater.inflate(R.menu.menu_save, menu)
     }
 
     override fun onOptionsItemSelected(menuitem: MenuItem): Boolean {
@@ -188,7 +188,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 requireActivity().onBackPressedDispatcher.onBackPressed()
                 true
             }
-            R.id.menu_save_item_save -> {
+            R.id.menu_save -> {
                 // Load modified item data
                 updateItem()
 
@@ -504,7 +504,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         // Update photo
         if (tempItem.photo != "") {
-            Picasso.with(requireContext()).load(Uri.parse(tempItem.photo)).into(item_edit_photo, object : Callback {
+            Picasso.get().load(Uri.parse(tempItem.photo)).into(item_edit_photo, object : Callback {
                 override fun onSuccess() {
                     // Hide progress
                     activity?.main_progress?.visibility = View.GONE
@@ -512,7 +512,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                 // TODO small problem here, if the image cannot be loaded, it is anyway set in the user var
                 //      so the card layout does not translate down the icon
-                override fun onError() {
+                override fun onError(e: Exception?) {
                     Log.e(TAG, "Picasso failed to load the image")
                     // Reset drawable
                     item_edit_photo.setImageDrawable(requireContext().getDrawable(R.drawable.ic_camera_white))

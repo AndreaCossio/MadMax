@@ -3,7 +3,8 @@
     package="it.polito.mad.madmax.madmax">
 
     <!-- Features -->
-    <uses-feature android:name="android.hardware.camera.any"
+    <uses-feature
+        android:name="android.hardware.camera.any"
         android:required="false" />
 
     <!-- Permissions -->

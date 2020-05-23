@@ -39,9 +39,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/transparent"
-                    android:contentDescription="@string/content_description_item_photo"
+                    android:contentDescription="@string/content_item_photo"
                     android:src="@drawable/ic_camera_white"
-                    android:scaleType="centerCrop"/>
+                    android:scaleType="centerCrop"
+                    android:adjustViewBounds="true"/>
 
             </LinearLayout>
 

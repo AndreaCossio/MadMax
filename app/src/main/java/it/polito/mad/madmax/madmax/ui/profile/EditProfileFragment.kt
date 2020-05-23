@@ -8,17 +8,13 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.*
-import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
-import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.madmax.*
@@ -34,46 +30,14 @@ class EditProfileFragment : Fragment() {
     private val userVM: UserViewModel by activityViewModels()
     private lateinit var tempUser: User
 
-    // Card listener
-    private lateinit var cardListener: View.OnLayoutChangeListener
-
     // Dialogs
     private var openDialog: String = ""
-
-    companion object {
-        const val TAG = "MM_EDIT_PROFILE"
-        private const val RP_CAMERA = 0
-        private const val RP_READ_STORAGE = 1
-        private const val RC_CAPTURE = 2
-        private const val RC_GALLERY = 3
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-
-        // Change the user only locally
-        tempUser = userVM.user.value!!.copy()
-
-        // Listener to adjust the photo
-        cardListener = View.OnLayoutChangeListener {v , _, _, _, _, _, _, _, _ ->
-            (v as CardView).apply {
-                // Offset the drawable
-                (getChildAt(0) as ViewGroup).getChildAt(0).apply {
-                    translationY = if (tempUser.photo == "") {
-                        measuredHeight / 6F
-                    } else {
-                        0F
-                    }
-                }
-                // Radius of the card 50%
-                radius = measuredHeight / 2F
-                // Show the card
-                visibility = View.VISIBLE
-            }
-        }
-
-        requireActivity().main_fab_add_item?.visibility = View.GONE
+        // Create a copy of the user data
+        tempUser = userVM.getCurrentUserData().value!!.copy()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -83,51 +47,61 @@ class EditProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Attach listeners
-        profile_edit_card.addOnLayoutChangeListener(cardListener)
-        profile_edit_change_photo.setOnClickListener { selectImage() }
+        // Hide FAB because not used by this fragment
+        requireActivity().main_fab_add_item.visibility = View.GONE
+
+        // Real 0.33 guideline
+        guidelineConstrain(requireContext(), profile_edit_guideline)
+
+        // Attach listener
+        profile_edit_change_photo.setOnClickListener {
+            openPhotoDialog(requireContext(), requireActivity(), { a: String -> openDialog = a}, {captureImage()}, {getImageFromGallery()}, {removeImage()})
+        }
 
         // Display user data
         updateFields()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Detach listener
+        profile_edit_change_photo.setOnClickListener(null)
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        // Custom back navigation to alert the user that any unsaved changes will be discarded
         requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 updateUser()
-                if (tempUser != userVM.user.value) {
-                    openDialog = "Sure"
-                    openSureDialog()
+                if (tempUser != userVM.getCurrentUserData().value) {
+                    openSureDialog(requireContext(), requireActivity()) { a: String -> openDialog = a}
                 } else {
+                    showProgress(requireActivity())
                     findNavController().navigateUp()
                 }
             }
         })
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        // Detach listener
-        profile_edit_card.removeOnLayoutChangeListener(cardListener)
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         updateUser()
         outState.putSerializable(getString(R.string.edit_profile_state), tempUser)
-        outState.putString("edit_profile_dialog", openDialog)
+        outState.putString(getString(R.string.edit_profile_dialog_state), openDialog)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         savedInstanceState?.also { state ->
-            state.getSerializable(getString(R.string.edit_profile_state))?.also { tempUser = it as User }
-            state.getString("edit_profile_dialog")?.also {
+            state.getSerializable(getString(R.string.edit_profile_state))?.also {
+                tempUser = it as User
+            }
+            state.getString(getString(R.string.edit_profile_dialog_state))?.also {
                 openDialog = it
                 when (openDialog) {
-                    "Sure" -> openSureDialog()
-                    "Change" -> selectImage()
+                    "Sure" -> openSureDialog(requireContext(), requireActivity()) { a: String -> openDialog = a}
+                    "Change" -> openPhotoDialog(requireContext(), requireActivity(), { a: String -> openDialog = a}, {captureImage()}, {getImageFromGallery()}, {removeImage()})
                 }
             }
             updateFields()
@@ -136,16 +110,17 @@ class EditProfileFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_save_profile, menu)
+        inflater.inflate(R.menu.menu_save, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            // Custom back navigation
             android.R.id.home -> {
                 requireActivity().onBackPressedDispatcher.onBackPressed()
                 true
             }
-            R.id.menu_save_profile_save -> {
+            R.id.menu_save -> {
                 // Load modified user data
                 updateUser()
 
@@ -163,22 +138,19 @@ class EditProfileFragment : Fragment() {
                     }
                 }
 
-                // Load user data to the db and go back
                 if (!invalidFields) {
                     // Show progress before uploading user data to the db
-                    requireActivity().main_progress.visibility = View.VISIBLE
-                    // Keep reference to the image so that it can be delete after the upload
-                    val oldPath = tempUser.photo
-                    userVM.updateUser(tempUser).addOnCompleteListener {
-                        if (oldPath.contains(getString(R.string.file_provider))) {
-                            requireContext().contentResolver.delete(Uri.parse(oldPath), null, null)
-                        }
-                        (activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
+                    showProgress(requireActivity())
+
+                    // // Load user data to the db and go back
+                    userVM.updateUser(tempUser.copy()).addOnCompleteListener {
+                        deletePhoto(requireContext(), tempUser.photo)
                         findNavController().navigate(EditProfileFragmentDirections.actionSaveProfile())
                     }
                     true
                 } else false
-            } else -> return super.onOptionsItemSelected(item)
+            }
+            else -> return super.onOptionsItemSelected(item)
         }
     }
 
@@ -191,20 +163,17 @@ class EditProfileFragment : Fragment() {
                 when (resultCode) {
                     // Image taken correctly
                     Activity.RESULT_OK -> {
-                        // Compress taken image
-                        val newUri = compressImage(requireContext(), tempUser.photo)
-                        requireContext().contentResolver.delete(Uri.parse(tempUser.photo), null, null)
-                        // Update tempUser field with the new path of the compressed image
-                        tempUser.apply { photo = newUri.toString() }
+                        // Compress Image
+                        tempUser.apply { photo = compressImage(requireContext(), tempUser.photo).toString() }
                         updateFields()
                         displayMessage(requireContext(), getString(R.string.message_taken_photo))
                     }
                     // Capturing image aborted
                     else -> {
                         // Delete destination file
-                        requireContext().contentResolver.delete(Uri.parse(tempUser.photo), null, null)
+                        deletePhoto(requireContext(), tempUser.photo)
                         // Restore tempUser field
-                        tempUser.apply { photo = userVM.user.value?.photo ?: "" }
+                        tempUser.apply { photo = userVM.getCurrentUserData().value!!.photo }
                         updateFields()
                         displayMessage(requireContext(), getString(R.string.message_error_intent))
                     }
@@ -232,84 +201,15 @@ class EditProfileFragment : Fragment() {
         when (requestCode) {
             RP_CAMERA -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "Permission granted: CAMERA")
                     captureImage()
                 }
             }
             RP_READ_STORAGE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "Permission granted: READ STORAGE")
                     getImageFromGallery()
                 }
             }
         }
-    }
-
-    // Click listener for changing the user profile photo
-    private fun selectImage() {
-        requireActivity().packageManager?.also { pm ->
-            val items = if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
-                arrayOf<CharSequence>(getString(R.string.photo_dialog_change_take), getString(R.string.photo_dialog_change_gallery), getString(R.string.photo_dialog_change_remove))
-            } else {
-                arrayOf<CharSequence>(getString(R.string.photo_dialog_change_gallery), getString(R.string.photo_dialog_change_remove))
-            }
-            openDialog = "Change"
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.photo_dialog_change_title)
-                .setItems(items) { dialog, which ->
-                    openDialog = ""
-                    dialog.cancel()
-                    when(items[which]) {
-                        getString(R.string.photo_dialog_change_take) -> captureImage()
-                        getString(R.string.photo_dialog_change_gallery) -> getImageFromGallery()
-                        else -> removeImage()
-                    }
-                }
-                .setNegativeButton(R.string.photo_dialog_cancel) { dialog, _ ->
-                    openDialog = ""
-                    dialog.cancel()
-                }
-                .setOnKeyListener { dialog, keyCode, _ ->
-                    when (keyCode) {
-                        KeyEvent.KEYCODE_BACK -> {
-                            openDialog = ""
-                            dialog.cancel()
-                            true
-                        } else -> {
-                            true
-                        }
-                    }
-                }
-                .show()
-        }
-    }
-
-    private fun openSureDialog() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.photo_dialog_sure_title)
-            .setMessage(R.string.photo_dialog_sure_text)
-            .setPositiveButton(R.string.photo_dialog_ok) { dialog, _ ->
-                openDialog = ""
-                dialog.cancel()
-                findNavController().navigateUp()
-            }
-            .setNegativeButton(R.string.photo_dialog_cancel) { dialog, _ ->
-                openDialog = ""
-                dialog.cancel()
-            }
-            .setOnKeyListener { dialog, keyCode, _ ->
-                when (keyCode) {
-                    KeyEvent.KEYCODE_BACK -> {
-                        dialog.cancel()
-                        openDialog = ""
-                        true
-                    } else -> {
-                        dialog.cancel()
-                        true
-                    }
-                }
-            }
-            .show()
     }
 
     // Intent to take a picture with the camera
@@ -327,6 +227,7 @@ class EditProfileFragment : Fragment() {
                                 val photoUri = FileProvider.getUriForFile(requireContext(), getString(R.string.file_provider), file)
                                 tempUser.apply { photo = photoUri.toString() }
                                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+                                showProgress(requireActivity())
                                 startActivityForResult(takePictureIntent, RC_CAPTURE)
                             }
                         } catch (ex: IOException) {
@@ -346,6 +247,7 @@ class EditProfileFragment : Fragment() {
             Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also { pickPhoto ->
                 pickPhoto.type = "image/*"
                 if (activity?.packageManager?.queryIntentActivities(pickPhoto, 0)?.isNotEmpty() == true) {
+                    showProgress(requireActivity())
                     startActivityForResult(pickPhoto, RC_GALLERY)
                 } else {
                     displayMessage(requireContext(), getString(R.string.message_error_gallery_app))
@@ -373,10 +275,6 @@ class EditProfileFragment : Fragment() {
 
     // Update views
     private fun updateFields() {
-        // Show progress
-        activity?.main_progress?.visibility = View.VISIBLE
-
-        // Update fields
         profile_edit_name.setText(tempUser.name)
         profile_edit_nickname.setText(tempUser.nickname)
         profile_edit_email.setText(tempUser.email)
@@ -384,26 +282,39 @@ class EditProfileFragment : Fragment() {
         profile_edit_phone.setText(tempUser.phone)
 
         // Update photo
-        if (tempUser.photo != "") {
-            Picasso.with(requireContext()).load(Uri.parse(tempUser.photo)).into(profile_edit_photo, object : Callback {
-                override fun onSuccess() {
-                    // Hide progress
-                    requireActivity().main_progress.visibility = View.GONE
-                }
+        profile_edit_photo.post {
+            profile_edit_card.apply {
+                radius = measuredHeight * 0.5F
+            }
+            profile_edit_photo.apply {
+                if (tempUser.photo != "") {
+                    Picasso.get().load(Uri.parse(tempUser.photo)).into(profile_edit_photo, object : Callback {
+                        override fun onSuccess() {
+                            translationY = 0F
+                            hideProgress(requireActivity())
+                        }
 
-                // TODO small problem here, if the image cannot be loaded, it is anyway set in the user var
-                //      so the card layout does not translate down the icon
-                override fun onError() {
-                    Log.e(TAG, "Picasso failed to load the image")
-                    // Reset drawable
-                    profile_edit_photo.setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile_white))
-                    // Hide progress
-                    requireActivity().main_progress.visibility = View.GONE
+                        override fun onError(e: Exception?) {
+                            translationY = measuredHeight / 6F
+                            setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile_white))
+                            hideProgress(requireActivity())
+                        }
+                    })
+                } else {
+                    translationY = measuredHeight / 6F
+                    setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile_white))
+                    hideProgress(requireActivity())
                 }
-            })
-        } else {
-            profile_edit_photo.setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile_white))
-            requireActivity().main_progress.visibility = View.GONE
+            }
         }
+    }
+
+    // Companion
+    companion object {
+        const val TAG = "MM_EDIT_PROFILE"
+        private const val RP_CAMERA = 0
+        private const val RP_READ_STORAGE = 1
+        private const val RC_CAPTURE = 2
+        private const val RC_GALLERY = 3
     }
 }

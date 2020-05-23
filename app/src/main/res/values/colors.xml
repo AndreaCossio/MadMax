@@ -4,7 +4,6 @@
     <color name="colorPrimaryDark">#1976D2</color>
     <color name="colorSecondary">#009688</color>
     <color name="colorSecondaryDark">#00796B</color>
-    <color name="colorBackground">#FFFFFF</color>
     <color name="colorSurface">#FFFFFF</color>
     <color name="colorError">#F44336</color>
     <color name="colorTextBlack">#000000</color>

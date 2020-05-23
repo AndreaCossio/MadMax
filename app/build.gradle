@@ -79,5 +79,5 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-firestore:6.2.1'
 
     // Picasso
-    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.squareup.picasso:picasso:2.71828'
 }

@@ -19,10 +19,10 @@
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/main_toolbar"
+                style="@style/Widget.MaterialComponents.Toolbar.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:menu="@menu/menu_main"
-                style="@style/Widget.MaterialComponents.Toolbar.Primary" />
+                app:menu="@menu/menu_main" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -65,20 +65,20 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- FAB -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/main_fab_add_item"
+            style="@style/Widget.MaterialComponents.FloatingActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
             android:visibility="gone"
-            app:srcCompat="@drawable/ic_add"
-            style="@style/Widget.MaterialComponents.FloatingActionButton" />
+            app:srcCompat="@drawable/ic_add" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

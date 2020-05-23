@@ -175,7 +175,7 @@ class ItemAdapter(
                 stars.text = String.format("%.1f", item.stars)
             }
             if (item.photo != "") {
-                Picasso.with(context).load(Uri.parse(item.photo)).into(image)
+                Picasso.get().load(Uri.parse(item.photo)).into(image)
             } else {
                 image.setImageDrawable(context.getDrawable(R.drawable.ic_camera_white))
             }
