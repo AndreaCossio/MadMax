@@ -1,6 +1,7 @@
 package it.polito.mad.madmax.madmax.ui.item
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
@@ -37,7 +38,7 @@ class OnSaleListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        itemAdapter = ItemAdapter(itemDetails, actionItem)
+        itemAdapter = ItemAdapter(itemDetails, {}, actionBuyItem)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -140,9 +141,14 @@ class OnSaleListFragment : Fragment() {
         findNavController().navigate(OnSaleListFragmentDirections.actionDetailsItem(ItemArg("Details", item, item.userId == userVM.getCurrentUserData().value!!.userId)))
     }
 
-    private var actionItem = { item: Item ->
-        // TODO
-        displayMessage(requireContext(), "Buy?")
+    private var actionBuyItem = { item: Item ->
+        itemsVM.buyItem(item, userVM.getCurrentUserData().value!!.userId)
+            .addOnSuccessListener {
+                displayMessage(requireContext(), "Successfully bought item")
+            }.addOnFailureListener {
+                Log.d(TAG, it.message.toString())
+                displayMessage(requireContext(), "Failed to buy item")
+            }
     }
 
     // Companion

@@ -15,6 +15,7 @@
 
     <!-- NAVIGATION -->
     <string name="title_show_profile_fragment">Profile</string>
+    <string name="title_show_profile_fragment_mine">My Profile</string>
     <string name="title_edit_profile_fragment">Edit profile</string>
     <string name="title_details_item_fragment">Item</string>
     <string name="title_edit_item_fragment">Edit item</string>
@@ -27,12 +28,14 @@
     <string name="menu_logout">Logout</string>
     <string name="menu_edit">Edit</string>
     <string name="menu_delete">Delete</string>
+    <string name="menu_disable">Disable</string>
     <string name="menu_save">Save</string>
     <string name="menu_filter">Filter</string>
     <string name="menu_search">Search</string>
 
     <!-- BUTTONS -->
     <string name="button_edit_item">Edit</string>
+    <string name="button_buy_item">Buy</string>
 
     <!-- MESSAGES -->
     <!-- Normal -->
@@ -66,6 +69,7 @@
     <string name="content_logout">Logout</string>
     <string name="content_edit">Edit</string>
     <string name="content_delete">Delete</string>
+    <string name="content_disable">Disable</string>
     <string name="content_save">Save</string>
     <string name="content_profile_photo">Photo profile</string>
     <string name="content_item_photo">Photo item</string>

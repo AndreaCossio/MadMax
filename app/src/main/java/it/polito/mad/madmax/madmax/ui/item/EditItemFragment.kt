@@ -188,13 +188,14 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 if (!invalidFields) {
                     // Show progress before uploading user data to the db
                     showProgress(requireActivity())
-                    val newId = if (itemArg.task == "Create") {
-                        itemsVM.getNewItemId()
-                    } else {
-                        itemArg.item.itemId
-                    }
                     tempItem.apply {
-                        itemId = newId
+                        if (itemArg.task == "Create") {
+                            itemId = itemsVM.getNewItemId()
+                            status = "Enabled"
+                        } else {
+                            itemId = itemArg.item.itemId
+                            status = itemArg.item.status
+                        }
                     }
                     itemsVM.updateItem(tempItem.copy(), tempItem.photo != itemArg.item.photo).addOnCompleteListener {
                         deletePhoto(requireContext(), tempItem.photo)
@@ -324,10 +325,13 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     // Show date picker
     private fun showDatePicker() {
+        val localeBackup = resources.configuration.locale
+        Locale.setDefault(Locale.UK)
         val builder = MaterialDatePicker.Builder.datePicker()
         val picker = builder.setCalendarConstraints(CalendarConstraints.Builder().setStart(System.currentTimeMillis()-1000).build()).build()
         picker.addOnPositiveButtonClickListener {
-            item_edit_expiry.setText(picker.headerText)
+            item_edit_expiry.setText(picker.headerText.replace(",", ""))
+            Locale.setDefault(localeBackup)
         }
         picker.show(childFragmentManager, picker.toString())
     }

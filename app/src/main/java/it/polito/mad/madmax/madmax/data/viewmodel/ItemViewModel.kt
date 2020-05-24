@@ -130,9 +130,11 @@ class ItemViewModel: ViewModel() {
                         // If not expired
                         if (SimpleDateFormat("dd MMM yyyy", Locale.UK).parse(doc["expiry"].toString())!! > Date()) {
                             if (!itemFilter.onlyFavourite || (doc["interestedUsers"] as ArrayList<String>).contains(Firebase.auth.currentUser!!.uid)) {
-                                newItems.add(doc.toObject(Item::class.java).apply {
-                                    itemId = doc.id
-                                })
+                                if (doc["status"].toString() == "Enabled") {
+                                    newItems.add(doc.toObject(Item::class.java).apply {
+                                        itemId = doc.id
+                                    })
+                                }
                             }
                         }
                     }
@@ -152,6 +154,18 @@ class ItemViewModel: ViewModel() {
 
     fun checkIfInterested(itemId: String, userId: String): Task<DocumentSnapshot> {
         return repo.checkIfInterested(itemId, userId).get()
+    }
+
+    fun enableItem(itemId: String, userId: String): Task<Transaction> {
+        return repo.enableItem(itemId, userId)
+    }
+
+    fun disableItem(itemId: String, userId: String): Task<Transaction> {
+        return repo.disableItem(itemId, userId)
+    }
+
+    fun buyItem(item: Item, userId: String): Task<Transaction> {
+        return repo.buyItem(item, userId)
     }
 
     companion object {

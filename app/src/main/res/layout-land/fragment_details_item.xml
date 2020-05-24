@@ -213,6 +213,17 @@
                 android:text="See interested users"
                 android:visibility="gone" />
 
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/item_details_bought_by"
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:drawableStart="@drawable/ic_profile_primary"
+                android:drawablePadding="36dp"
+                android:text="Bought by: "
+                android:visibility="gone" />
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

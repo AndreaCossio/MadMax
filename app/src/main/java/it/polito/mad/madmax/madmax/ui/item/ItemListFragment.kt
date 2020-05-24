@@ -32,7 +32,7 @@ class ItemListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        itemAdapter = ItemAdapter(itemDetails, actionItem)
+        itemAdapter = ItemAdapter(itemDetails, actionEditItem, {null})
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -99,7 +99,7 @@ class ItemListFragment : Fragment() {
         findNavController().navigate(ItemListFragmentDirections.actionEditOrCreateItem(ItemArg("Details", item, item.userId == userVM.getCurrentUserData().value!!.userId)))
     }
 
-    private var actionItem = { item: Item ->
+    private var actionEditItem = { item: Item ->
         showProgress(requireActivity())
         findNavController().navigate(ItemListFragmentDirections.actionEditOrCreateItem(ItemArg("Edit", item, item.userId == userVM.getCurrentUserData().value!!.userId)))
     }

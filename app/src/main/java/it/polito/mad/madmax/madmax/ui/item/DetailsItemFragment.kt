@@ -35,11 +35,14 @@ class DetailsItemFragment : Fragment() {
     // Destination arguments
     private val args: DetailsItemFragmentArgs by navArgs()
 
+    // Reference to menu
+    private lateinit var status: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-
         itemArg = args.itemArg
+        status = itemArg.item.status
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -62,11 +65,33 @@ class DetailsItemFragment : Fragment() {
             "Details" -> {
                 // Listen and observe item
                 itemListener = itemsVM.listenSingleItem(itemArg.item.itemId)
-                itemsVM.getSingleItem().observe(viewLifecycleOwner, Observer {
-                    it?.also {
-                        updateFields(it)
+                itemsVM.getSingleItem().observe(viewLifecycleOwner, Observer { it ->
+                    it?.also { item ->
+                        updateFields(item)
+                        status = item.status
+                        if (!itemArg.owned) {
+                            if (item.status == "Disabled" || item.status == "Bought") {
+                                displayMessage(requireContext(), "This item is no longer available")
+                                findNavController().navigateUp()
+                            }
+                        } else {
+                            requireActivity().invalidateOptionsMenu()
+                            if (item.status == "Bought") {
+                                // Listen and observe owner
+                                if (this::userListener.isInitialized) {
+                                    userListener.remove()
+                                }
+                                userListener = userVM.listenOtherUser(itemArg.item.boughtBy)
+                                userVM.getOtherUserData().observe(viewLifecycleOwner, Observer { user ->
+                                    updateUserBought(user.name)
+                                })
+                                item_details_bought_by.setOnClickListener {
+                                    findNavController().navigate(DetailsItemFragmentDirections.actionVisitProfile(item.boughtBy))
+                                }
+                            }
+                        }
                     } ?: run {
-                        displayMessage(requireContext(), "This item has been deleted")
+                        displayMessage(requireContext(), "This item is no longer available")
                         findNavController().navigateUp()
                     }
                 })
@@ -130,11 +155,46 @@ class DetailsItemFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
         if (itemArg.owned) {
             inflater.inflate(R.menu.menu_edit_item, menu)
+            when (status) {
+                "Enabled" -> menu.findItem(R.id.menu_disable).title = "Disable"
+                "Disabled" -> menu.findItem(R.id.menu_disable).title = "Enable"
+                "Bought" -> menu.findItem(R.id.menu_disable).isVisible = false
+            }
+        }
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        if (itemArg.owned) {
+            when (status) {
+                "Enabled" -> menu.findItem(R.id.menu_disable).title = "Disable"
+                "Disabled" -> menu.findItem(R.id.menu_disable).title = "Enable"
+                "Bought" -> menu.findItem(R.id.menu_disable).isVisible = false
+            }
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.menu_disable -> {
+                when (item.title) {
+                    "Enable" -> {
+                        itemsVM.enableItem(itemArg.item.itemId, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
+                            displayMessage(requireContext(), "Successfully enabled item")
+                        }.addOnFailureListener {
+                            displayMessage(requireContext(), "Error enabling item")
+                        }
+                    }
+                    "Disable" -> {
+                        itemsVM.disableItem(itemArg.item.itemId, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
+                            displayMessage(requireContext(), "Successfully enabled item")
+                        }.addOnFailureListener {
+                            displayMessage(requireContext(), "Error enabling item")
+                        }
+                    }
+                }
+                true
+            }
             R.id.menu_delete -> {
                 itemsVM.deleteItem(itemArg.item)
                 true
@@ -162,6 +222,11 @@ class DetailsItemFragment : Fragment() {
             item_details_owner.visibility = View.VISIBLE
         } else {
             item_details_interested_users.visibility = View.VISIBLE
+        }
+
+        if (item.status == "Bought") {
+            item_details_interested_users.visibility = View.GONE
+            item_details_bought_by.visibility = View.VISIBLE
         }
 
         // Rating
@@ -200,6 +265,10 @@ class DetailsItemFragment : Fragment() {
 
     private fun updateUserField(name: String) {
         item_details_owner.text = name
+    }
+
+    private fun updateUserBought(name: String) {
+        item_details_bought_by.text = "Bought by: $name"
     }
 
     private fun showInterest() {

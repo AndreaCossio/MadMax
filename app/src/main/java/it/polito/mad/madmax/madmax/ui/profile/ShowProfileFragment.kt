@@ -8,6 +8,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.firebase.firestore.ListenerRegistration
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -39,6 +40,7 @@ class ShowProfileFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        args.user ?: activity?.findViewById<MaterialToolbar>(R.id.main_toolbar)?.setTitle(R.string.title_show_profile_fragment_mine)
         return inflater.inflate(R.layout.fragment_show_profile, container, false)
     }
 

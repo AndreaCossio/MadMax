@@ -105,4 +105,27 @@ class FirestoreRepository {
     fun getInterestedUsersList(itemId: String): Task<DocumentSnapshot> {
         return db.collection("items").document(itemId).get()
     }
+
+    fun enableItem(itemId: String, userId: String): Task<Transaction> {
+        return db.runTransaction { transaction ->
+            transaction.update(db.document("items/$itemId"), "status", "Enabled")
+            transaction.update(db.document("users/$userId/items/$itemId"), "status", "Enabled")
+        }
+    }
+
+    fun disableItem(itemId: String, userId: String): Task<Transaction> {
+        return db.runTransaction { transaction ->
+            transaction.update(db.document("items/$itemId"), "status", "Disabled")
+            transaction.update(db.document("users/$userId/items/$itemId"), "status", "Disabled")
+        }
+    }
+
+    fun buyItem(item: Item, userId: String): Task<Transaction> {
+        return db.runTransaction { transaction ->
+            transaction.update(db.document("items/${item.itemId}"), "status", "Bought")
+            transaction.update(db.document("users/${item.userId}/items/${item.itemId}"), "status", "Bought")
+            transaction.update(db.document("items/${item.itemId}"), "boughtBy", userId)
+            transaction.update(db.document("users/${item.userId}/items/${item.itemId}"), "boughtBy", userId)
+        }
+    }
 }

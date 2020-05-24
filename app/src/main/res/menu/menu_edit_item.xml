@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_disable"
+        android:title="@string/menu_disable"
+        android:contentDescription="@string/content_disable"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/menu_delete"
         android:icon="@drawable/ic_delete"
         android:title="@string/menu_delete"

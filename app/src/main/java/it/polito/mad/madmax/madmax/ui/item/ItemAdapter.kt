@@ -5,6 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.Transaction
+import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
@@ -12,7 +16,8 @@ import kotlinx.android.synthetic.main.item.view.*
 
 class ItemAdapter(
     private val cardClickListener: (Item) -> Unit,
-    private val actionClickListener: (Item) -> Unit
+    private val actionEdit: (Item) -> Unit,
+    private val actionBuy: (Item) -> Task<Transaction>?
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     private var items: ArrayList<Item> = ArrayList()
@@ -24,7 +29,7 @@ class ItemAdapter(
     override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.bind(items[position], cardClickListener, actionClickListener)
+        holder.bind(items[position], cardClickListener, actionEdit, actionBuy)
     }
 
     fun setItems(newItems: ArrayList<Item>) {
@@ -64,7 +69,7 @@ class ItemAdapter(
 
     class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(item: Item, cardClickListener: (Item) -> Unit, actionClickListener: (Item) -> Unit) {
+        fun bind(item: Item, cardClickListener: (Item) -> Unit, actionEdit: (Item) -> Unit, actionBuy: (Item) -> Task<Transaction>?) {
             // Update fields
             itemView.item_title.text = item.title
             itemView.item_category.text = item.category_main
@@ -87,8 +92,13 @@ class ItemAdapter(
                 itemView.item_photo.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_camera_white))
             }
 
+            if (item.userId != Firebase.auth.currentUser!!.uid) {
+                itemView.item_button.text = itemView.context.getString(R.string.button_buy_item)
+                itemView.item_button.setOnClickListener { actionBuy(item) }
+            } else {
+                itemView.item_button.setOnClickListener { actionEdit(item) }
+            }
             itemView.item_card.setOnClickListener { cardClickListener(item) }
-            itemView.item_button.setOnClickListener { actionClickListener(item) }
         }
     }
 }
