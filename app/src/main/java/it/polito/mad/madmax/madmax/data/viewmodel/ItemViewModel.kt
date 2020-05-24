@@ -5,10 +5,12 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.Transaction
+import com.google.firebase.ktx.Firebase
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.model.ItemFilter
 import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
@@ -125,15 +127,13 @@ class ItemViewModel: ViewModel() {
             for (doc in snapshots!!) {
                 if (itemFilter.userId == "" || itemFilter.userId != doc["userId"]) {
                     if (itemFilter.text == "" || doc["title"].toString().contains(itemFilter.text) || doc["description"].toString().contains(itemFilter.text)) {
-                        // This if is just to be sure to not display something unwanted
-                        if (/*(itemFilter.mainCategory == "" || itemFilter.mainCategory == doc["category_main"].toString()) &&
-                            (itemFilter.subCategory == "" || itemFilter.subCategory == doc["category_sub"].toString()) &&
-                            (itemFilter.minPrice == -1.0 || itemFilter.minPrice < doc["price"].toString().toDouble()) &&
-                            (itemFilter.maxPrice == -1.0 || itemFilter.maxPrice > doc["price"].toString().toDouble()) &&*/
-                            SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).parse(doc["expiry"].toString())!! > Date()) {
+                        // If not expired
+                        if (SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).parse(doc["expiry"].toString())!! > Date()) {
+                            if (!itemFilter.onlyFavourite || (doc["interestedUsers"] as ArrayList<String>).contains(Firebase.auth.currentUser!!.uid)) {
                                 newItems.add(doc.toObject(Item::class.java).apply {
                                     itemId = doc.id
                                 })
+                            }
                         }
                     }
                 }

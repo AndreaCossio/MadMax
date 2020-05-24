@@ -55,6 +55,7 @@
     <string name="photo_dialog_filter_title">Item filter</string>
     <string name="photo_dialog_filter_min_price">Minimum price</string>
     <string name="photo_dialog_filter_max_price">Maximum price</string>
+    <string name="photo_dialog_filter_favourites">Only favourites</string>
     <string name="photo_dialog_change_title">Select a method to change the photo</string>
     <string name="photo_dialog_change_take">Take picture</string>
     <string name="photo_dialog_change_gallery">Choose from gallery</string>

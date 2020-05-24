@@ -26,14 +26,14 @@ class FilterViewModel: ViewModel() {
     }
 
     fun setText(text: String) {
-        filter.value = filter.value?.apply {
+        filter.value?.apply {
             this.text = text
-        } ?: ItemFilter(text = text)
+        } ?: run { filter.value = ItemFilter(text = text) }
     }
 
     fun setUserId(userId: String) {
-        filter.value = filter.value?.apply {
+        filter.value?.apply {
             this.userId = userId
-        } ?: ItemFilter(userId = userId)
+        } ?: run { filter.value = ItemFilter(userId = userId) }
     }
 }

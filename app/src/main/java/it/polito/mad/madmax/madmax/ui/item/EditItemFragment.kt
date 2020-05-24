@@ -333,8 +333,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
-        // Called when the current selection is removed
-        TODO("Not useful in our case")
+        item_edit_main_cat.setSelection(0)
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {

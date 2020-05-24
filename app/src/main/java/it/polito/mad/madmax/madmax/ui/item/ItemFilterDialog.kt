@@ -42,6 +42,7 @@ class ItemFilterDialog: DialogFragment(), AdapterView.OnItemSelectedListener {
             filter_dialog_max_price.setText(String.format("%.2f", filters.maxPrice))
         }
         filter_dialog_main_cat.setSelection(getMainCategories(requireContext()).indexOf(filters.mainCategory))
+        filter_dialog_favourites.isChecked = filters.onlyFavourite
 
         // Init listeners
         filter_dialog_main_cat.onItemSelectedListener = this
@@ -50,8 +51,7 @@ class ItemFilterDialog: DialogFragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
-        // Called when the current selection is removed
-        TODO("Not useful in our case")
+        filter_dialog_main_cat.setSelection(0)
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -69,7 +69,8 @@ class ItemFilterDialog: DialogFragment(), AdapterView.OnItemSelectedListener {
             filter_dialog_min_price.text.toString().toDoubleOrNull() ?: -1.0,
             filter_dialog_max_price.text.toString().toDoubleOrNull() ?: -1.0,
             filter_dialog_main_cat.selectedItem.toString(),
-            filter_dialog_sub_cat.selectedItem.toString()
+            filter_dialog_sub_cat.selectedItem.toString(),
+            onlyFavourite = filter_dialog_favourites.isChecked
         ))
         dismiss()
     }
