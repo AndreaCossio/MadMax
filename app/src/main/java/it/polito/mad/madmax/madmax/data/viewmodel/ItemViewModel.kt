@@ -8,9 +8,9 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.Transaction
+import it.polito.mad.madmax.madmax.FirestoreRepository
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.model.ItemFilter
-import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList

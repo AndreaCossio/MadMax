@@ -114,7 +114,7 @@ class DetailsItemFragment : Fragment() {
                     }
                     requireActivity().main_fab_add_item.setImageDrawable(requireContext().getDrawable(R.drawable.ic_favorite))
                     showFab(requireActivity())
-                } else {
+                } else ->{
                     item_details_stars.setIsIndicator(true)
                     item_details_interested_users.setOnClickListener {
                         findNavController().navigate(DetailsItemFragmentDirections.actionSeeInterestedUsers(itemArg.item))
@@ -130,7 +130,7 @@ class DetailsItemFragment : Fragment() {
                 itemsVM.updateItemRating(itemId, rating)
             }
         }*/
-    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -253,7 +253,7 @@ class DetailsItemFragment : Fragment() {
         val notification = JSONObject()
         val notificationBody = JSONObject()
         notificationBody.put("title", "MadMax")
-        notificationBody.put("message", "Someone is interested in your article ${item!!.title}")   //Enter your notification message
+        notificationBody.put("message", "Someone is interested in your article ${itemArg.item.title}")   //Enter your notification message
         notification.put("to", topic)
         notification.put("data", notificationBody)
 

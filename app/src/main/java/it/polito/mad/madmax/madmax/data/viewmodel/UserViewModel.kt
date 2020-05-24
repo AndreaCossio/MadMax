@@ -11,13 +11,15 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.gson.Gson
+import it.polito.mad.madmax.madmax.FirestoreRepository
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.model.User
 
 
+
 class UserViewModel : ViewModel() {
 
-    private val repo: FirestoreRepository = FirestoreRepository()
+    private val repo = FirestoreRepository()
 
     private val currentUser: MutableLiveData<User> by lazy {
         MutableLiveData<User>().apply {

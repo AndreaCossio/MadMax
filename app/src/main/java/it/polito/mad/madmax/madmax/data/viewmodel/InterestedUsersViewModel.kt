@@ -8,9 +8,9 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
+import it.polito.mad.madmax.madmax.FirestoreRepository
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.model.User
-import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
 
 class InterestedUsersViewModel(val itemId: String): ViewModel() {
 
