@@ -2,7 +2,10 @@ package it.polito.mad.madmax.madmax.data.repository
 
 import android.net.Uri
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.*
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.Transaction
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -102,8 +105,8 @@ class FirestoreRepository {
         return db.document("items/$itemId")
     }
 
-    fun getInterestedUsersList(itemId: String): Task<DocumentSnapshot> {
-        return db.collection("items").document(itemId).get()
+    fun getInterestedUsersList(itemId: String): DocumentReference {
+        return db.document("items/$itemId")
     }
 
     fun enableItem(itemId: String, userId: String): Task<Transaction> {

@@ -5,8 +5,11 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
+import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.model.User
 import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
 
@@ -26,6 +29,12 @@ class UserViewModel : ViewModel() {
         }
     }
 
+    private val interestedUsers: MutableLiveData<ArrayList<User>> by lazy {
+        MutableLiveData<ArrayList<User>>().apply {
+            value = ArrayList<User>()
+        }
+    }
+
     fun getCurrentUserData(): MutableLiveData<User> {
         return currentUser
     }
@@ -34,8 +43,16 @@ class UserViewModel : ViewModel() {
         return otherUser
     }
 
+    fun getInterestedUsersData() : MutableLiveData<ArrayList<User>> {
+        return interestedUsers
+    }
+
     fun clearOtherUserData() {
         otherUser.value = User()
+    }
+
+    fun clearInterestedUsersData() {
+        interestedUsers.value?.clear()
     }
 
     fun updateUser(newUser: User): Task<Void> {
@@ -111,6 +128,27 @@ class UserViewModel : ViewModel() {
             // Shouldn't happen
             else {
                 Log.d(TAG, "No user found with this id $userId")
+            }
+        }
+    }
+
+    fun listenInterestedUsers(itemId: String): ListenerRegistration {
+        return repo.getInterestedUsersList(itemId).addSnapshotListener { value, e ->
+            if (e != null) {
+                Log.e(TAG, "Listen failed.", e)
+                return@addSnapshotListener
+            }
+
+            val tasks = value!!.toObject(Item::class.java)!!.interestedUsers.map { uid ->
+                repo.getUser(uid).get()
+            }
+            Tasks.whenAllSuccess<DocumentSnapshot>(tasks).addOnSuccessListener { snapshot ->
+                val list = snapshot.map { ds ->
+                    ds.toObject(User::class.java)?.apply {
+                        userId = ds.id
+                    }
+                } as ArrayList<User>
+                interestedUsers.value = list
             }
         }
     }

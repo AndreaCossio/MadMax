@@ -17,6 +17,7 @@ import it.polito.mad.madmax.madmax.data.model.ItemArg
 import it.polito.mad.madmax.madmax.data.viewmodel.FilterViewModel
 import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
+import it.polito.mad.madmax.madmax.ui.AutoFitGridLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_item_list.*
 
@@ -56,7 +57,11 @@ class OnSaleListFragment : Fragment() {
         // Init recyclerview
         item_list_rv.apply {
             setHasFixedSize(false)
-            layoutManager = AutoFitGridLayoutManager(requireContext(), 300.toPx())
+            layoutManager =
+                AutoFitGridLayoutManager(
+                    requireContext(),
+                    300.toPx()
+                )
             adapter = itemAdapter
         }
 

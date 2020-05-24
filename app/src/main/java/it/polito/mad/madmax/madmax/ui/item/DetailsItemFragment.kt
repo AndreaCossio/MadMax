@@ -60,8 +60,14 @@ class DetailsItemFragment : Fragment() {
 
         // Create
         when (itemArg.task) {
-            "Create" -> findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(itemArg))
-            "Edit" -> findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(itemArg))
+            "Create" -> {
+                showProgress(requireActivity())
+                findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(itemArg))
+            }
+            "Edit" -> {
+                showProgress(requireActivity())
+                findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(itemArg))
+            }
             "Details" -> {
                 // Listen and observe item
                 itemListener = itemsVM.listenSingleItem(itemArg.item.itemId)
@@ -72,6 +78,7 @@ class DetailsItemFragment : Fragment() {
                         if (!itemArg.owned) {
                             if (item.status == "Disabled" || item.status == "Bought") {
                                 displayMessage(requireContext(), "This item is no longer available")
+                                showProgress(requireActivity())
                                 findNavController().navigateUp()
                             }
                         } else {
@@ -86,12 +93,14 @@ class DetailsItemFragment : Fragment() {
                                     updateUserBought(user.name)
                                 })
                                 item_details_bought_by.setOnClickListener {
+                                    showProgress(requireActivity())
                                     findNavController().navigate(DetailsItemFragmentDirections.actionVisitProfile(item.boughtBy))
                                 }
                             }
                         }
                     } ?: run {
                         displayMessage(requireContext(), "This item is no longer available")
+                        showProgress(requireActivity())
                         findNavController().navigateUp()
                     }
                 })
@@ -122,9 +131,11 @@ class DetailsItemFragment : Fragment() {
 
         // Init listeners
         item_details_owner.setOnClickListener {
+            showProgress(requireActivity())
             findNavController().navigate(DetailsItemFragmentDirections.actionVisitProfile(itemArg.item.userId))
         }
         item_details_interested_users.setOnClickListener {
+            showProgress(requireActivity())
             findNavController().navigate(DetailsItemFragmentDirections.actionSeeInterestedUsers(itemArg.item))
         }
 

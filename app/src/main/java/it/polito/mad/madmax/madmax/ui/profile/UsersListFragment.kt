@@ -1,100 +1,76 @@
-package it.polito.mad.madmax.madmax.ui.item
+package it.polito.mad.madmax.madmax.ui.profile
 
 import UserAdapter
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.Recycler
+import com.google.firebase.firestore.ListenerRegistration
 import it.polito.mad.madmax.madmax.R
-import it.polito.mad.madmax.madmax.data.model.Item
-import it.polito.mad.madmax.madmax.data.model.User
-import it.polito.mad.madmax.madmax.data.viewmodel.InterestedUsersViewModel
-import it.polito.mad.madmax.madmax.data.viewmodel.InterestedUsersViewModelFactory
+import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
+import it.polito.mad.madmax.madmax.hideProgress
 import it.polito.mad.madmax.madmax.toPx
-import kotlinx.android.synthetic.main.users_list.*
+import it.polito.mad.madmax.madmax.ui.AutoFitGridLayoutManager
+import kotlinx.android.synthetic.main.fragment_users_list.*
 
 class UsersListFragment : Fragment() {
 
-    private lateinit var usersListVM: InterestedUsersViewModel
-    lateinit var usersAdapter: UserAdapter
-    lateinit var item: Item
+    // User
+    private val userVM: UserViewModel by activityViewModels()
+    private lateinit var usersAdapter: UserAdapter
+
+    // User listener
+    private lateinit var userListener: ListenerRegistration
+
+    // Args
     private val args: UsersListFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        item= args.item!!
-        usersListVM = ViewModelProvider(this,InterestedUsersViewModelFactory(args.item!!.itemId))
-            .get(InterestedUsersViewModel::class.java)
-
+        usersAdapter = UserAdapter(actionVisit)
     }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
-
-        return inflater.inflate(R.layout.users_list, container, false)
+        return inflater.inflate(R.layout.fragment_users_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        usersAdapter = UserAdapter(ArrayList<User>(),users_list_rv,false)
+        hideProgress(requireActivity())
 
-            users_list_rv.apply {
-                //check
-                this.setHasFixedSize(true)
-                layoutManager = AutoFitGridLayoutManager(requireContext(), 300.toPx())
-                adapter = usersAdapter
-                itemAnimator = DefaultItemAnimator()
+        users_list_rv.apply {
+            setHasFixedSize(false)
+            layoutManager = AutoFitGridLayoutManager(requireContext(), 300.toPx())
+            adapter = usersAdapter
+        }
+
+        userVM.getInterestedUsersData().observe(viewLifecycleOwner, Observer {
+            usersAdapter.setUsers(it)
+            if (usersAdapter.itemCount == 0) {
+                user_list_empty.visibility = View.VISIBLE
+            } else {
+                user_list_empty.visibility = View.GONE
             }
+        })
 
-            item.apply {
-                usersListVM.getUsersList().observe(requireActivity(), Observer{
-                    usersAdapter.setUsers(it)
-                })
-            }
-
+        userListener = userVM.listenInterestedUsers(args.item.itemId)
     }
 
-
-
-    class AutoFitGridLayoutManager(context: Context?, columnWidth: Int) : GridLayoutManager(context, 1) {
-
-        private var columnWidth = 0
-        private var columnWidthChanged = true
-
-        fun setColumnWidth(newColumnWidth: Int) {
-            if (newColumnWidth > 0 && newColumnWidth != columnWidth) {
-                columnWidth = newColumnWidth
-                columnWidthChanged = true
-            }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if (this::userListener.isInitialized) {
+            userListener.remove()
         }
+        userVM.clearInterestedUsersData()
+    }
 
-        override fun onLayoutChildren(recycler: Recycler, state: RecyclerView.State) {
-            if (columnWidthChanged && columnWidth > 0) {
-                val totalSpace = if (orientation == LinearLayoutManager.VERTICAL) {
-                    width - paddingRight - paddingLeft
-                } else {
-                    height - paddingTop - paddingBottom
-                }
-                val spanCount = Math.max(1, totalSpace / columnWidth)
-                setSpanCount(spanCount)
-                columnWidthChanged = false
-            }
-            super.onLayoutChildren(recycler, state)
-        }
-
-        init {
-            setColumnWidth(columnWidth)
-        }
+    private var actionVisit = { userId: String ->
+        findNavController().navigate(UsersListFragmentDirections.actionVisitProfile(userId))
     }
 }

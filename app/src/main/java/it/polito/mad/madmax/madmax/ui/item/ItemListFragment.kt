@@ -15,6 +15,7 @@ import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.model.ItemArg
 import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
+import it.polito.mad.madmax.madmax.ui.AutoFitGridLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_item_list.*
 
@@ -86,11 +87,6 @@ class ItemListFragment : Fragment() {
             itemListener.remove()
         }
         requireActivity().main_fab_add_item.setOnClickListener(null)
-        itemsVM.getItemList().value?.clear()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
         itemsVM.clearItemsData()
     }
 

@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -121,6 +122,7 @@ class MainActivity : AppCompatActivity() {
         auth.currentUser?.also {
             loggingIn = false
             userVM.listenCurrentUser(it)
+            FirebaseMessaging.getInstance().subscribeToTopic("/topics/${it.uid}")
             displayMessage(this, "Welcome back ${it.displayName}")
         } ?: run {
             // Intent dialog for logging in with google

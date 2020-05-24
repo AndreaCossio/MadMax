@@ -68,47 +68,47 @@ class ItemAdapter(
         }
     }
 
-    class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ItemViewHolder(private val itemV: View) : RecyclerView.ViewHolder(itemV) {
 
         fun bind(item: Item, cardClickListener: (Item) -> Unit, actionEdit: (Item) -> Unit, actionBuy: (Item) -> Task<Transaction>?) {
             // Update fields
-            itemView.item_title.text = item.title
-            itemView.item_category.text = item.category_main
-            itemView.item_price.text = String.format("%.2f", item.price)
+            itemV.item_title.text = item.title
+            itemV.item_category.text = item.category_main
+            itemV.item_price.text = String.format("%.2f", item.price)
 
             // Stars
             if (item.stars == -1.0) {
-                itemView.item_stars.visibility = View.GONE
-                itemView.item_star_icon.visibility = View.GONE
+                itemV.item_stars.visibility = View.GONE
+                itemV.item_star_icon.visibility = View.GONE
             } else {
-                itemView.item_stars.text = String.format("%.1f", item.stars)
-                itemView.item_stars.visibility = View.VISIBLE
-                itemView.item_star_icon.visibility = View.VISIBLE
+                itemV.item_stars.text = String.format("%.1f", item.stars)
+                itemV.item_stars.visibility = View.VISIBLE
+                itemV.item_star_icon.visibility = View.VISIBLE
             }
 
             // Image
             if (item.photo != "") {
-                Picasso.get().load(Uri.parse(item.photo)).into(itemView.item_photo)
+                Picasso.get().load(Uri.parse(item.photo)).into(itemV.item_photo)
             } else {
-                itemView.item_photo.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_camera_white))
+                itemV.item_photo.setImageDrawable(itemV.context.getDrawable(R.drawable.ic_camera_white))
             }
 
             // Status
             if (item.status == "Disabled") {
-                itemView.item_card.setCardBackgroundColor(ContextCompat.getColor(itemView.context, R.color.lightGrey))
+                itemV.item_card.setCardBackgroundColor(ContextCompat.getColor(itemV.context, R.color.lightGrey))
             }
             if (item.status == "Bought") {
-                itemView.item_card.setCardBackgroundColor(ContextCompat.getColor(itemView.context, R.color.lightSecondary))
+                itemV.item_card.setCardBackgroundColor(ContextCompat.getColor(itemV.context, R.color.lightSecondary))
             }
 
             // Button
             if (item.userId != Firebase.auth.currentUser!!.uid) {
-                itemView.item_button.text = itemView.context.getString(R.string.button_buy_item)
-                itemView.item_button.setOnClickListener { actionBuy(item) }
+                itemV.item_button.text = itemV.context.getString(R.string.button_buy_item)
+                itemV.item_button.setOnClickListener { actionBuy(item) }
             } else {
-                itemView.item_button.setOnClickListener { actionEdit(item) }
+                itemV.item_button.setOnClickListener { actionEdit(item) }
             }
-            itemView.item_card.setOnClickListener { cardClickListener(item) }
+            itemV.item_card.setOnClickListener { cardClickListener(item) }
         }
     }
 }

@@ -43,6 +43,7 @@
     <string name="message_chosen_photo">Picture loaded correctly</string>
     <string name="message_empty_list">There are no items! Please create one</string>
     <string name="message_empty_list_others">There are no items! Please try to change the filter</string>
+    <string name="message_empty_interested_users">Sorry, there are no interested users!</string>
     <!-- Error -->
     <string name="message_error_field_required">Sorry, this field is required</string>
     <string name="message_error_field_invalid_email">Sorry, this email is not valid</string>
@@ -95,6 +96,11 @@
     <string name="item_expiry">Expiry Date</string>
     <string name="item_owner">Item Owner</string>
     <string name="item_expiry_change">Change</string>
+
+    <!-- CLOUD MESSAGING-->
+    <string name="apiUrl">https://fcm.googleapis.com/fcm/send</string>
+    <string name="serverKey">AAAAY4qEYoE:APA91bE8SyfjBdnCMjkHqT63CLcuZw_0OY-51XlUCy5kgTw4e5-GRDwyYKsLGVGeCP_DG6DIwDzcPSXefAkZrO6-r4dOZxLroVFYkrbbgiT35gf4MIfaemo4w-1RzcnFacpI2cw9_j6i</string>
+    <string name="cloudContentType">application/json</string>
 
     <!-- Categories -->
     <string-array name="item_categories_main">

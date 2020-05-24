@@ -50,8 +50,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0-alpha03"
     // LiveData
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.0-alpha03"
-    // SavedState
-    //implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.3.0-alpha02"
 
     // Navigation library
     implementation 'androidx.navigation:navigation-ui-ktx:2.2.2'
@@ -74,6 +72,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx:19.3.1'
     implementation 'com.google.firebase:firebase-firestore-ktx:21.4.3'
     implementation 'com.google.firebase:firebase-storage-ktx:19.1.1'
+    implementation 'com.google.firebase:firebase-messaging:20.2.0'
 
     // FirebaseUI for Cloud Firestore
     implementation 'com.firebaseui:firebase-ui-firestore:6.2.1'

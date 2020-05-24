@@ -38,8 +38,9 @@
         <action
             android:id="@+id/action_visit_profile"
             app:destination="@id/nav_show_profile_fragment" />
-        <action android:id="@+id/action_see_interested_users"
-            app:destination="@id/nav_users_list_fragment"/>
+        <action
+            android:id="@+id/action_see_interested_users"
+            app:destination="@id/nav_users_list_fragment" />
         <argument
             android:name="itemArg"
             app:argType="it.polito.mad.madmax.madmax.data.model.ItemArg" />
@@ -105,15 +106,15 @@
     <!--Interested Users -->
     <fragment
         android:id="@+id/nav_users_list_fragment"
-        android:name="it.polito.mad.madmax.madmax.ui.item.UsersListFragment"
+        android:name="it.polito.mad.madmax.madmax.ui.profile.UsersListFragment"
         android:label="Users List"
-        tools:layout="@layout/users_list">
-
+        tools:layout="@layout/fragment_users_list">
+        <action
+            android:id="@+id/action_visit_profile"
+            app:destination="@id/nav_show_profile_fragment" />
         <argument
             android:name="item"
-            app:argType="it.polito.mad.madmax.madmax.data.model.Item"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:argType="it.polito.mad.madmax.madmax.data.model.Item" />
     </fragment>
 
 </navigation>

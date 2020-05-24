@@ -1,4 +1,4 @@
-package it.polito.mad.madmax.madmax.ui.item
+package it.polito.mad.madmax.madmax.ui
 
 import android.content.Context
 import androidx.recyclerview.widget.GridLayoutManager
