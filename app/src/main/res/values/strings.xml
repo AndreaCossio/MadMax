@@ -89,6 +89,11 @@
     <string name="item_owner">Item Owner</string>
     <string name="item_expiry_change">Change</string>
 
+    <!-- CLOUD MESSAGING-->
+    <string name="apiUrl">https://fcm.googleapis.com/fcm/send</string>
+    <string name="serverKey">AAAAY4qEYoE:APA91bE8SyfjBdnCMjkHqT63CLcuZw_0OY-51XlUCy5kgTw4e5-GRDwyYKsLGVGeCP_DG6DIwDzcPSXefAkZrO6-r4dOZxLroVFYkrbbgiT35gf4MIfaemo4w-1RzcnFacpI2cw9_j6i</string>
+    <string name="cloudContentType">application/json</string>
+
     <!-- Categories -->
     <string-array name="item_categories_main">
         <item></item>

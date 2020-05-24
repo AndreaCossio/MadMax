@@ -84,7 +84,9 @@ class FirestoreRepository {
         }
     }
 
-    fun getInterestedUsersList(itemId: String): Task<DocumentSnapshot> {
-        return db.collection("items").document(itemId).get()
+    fun getInterestedUsersList(itemId: String): DocumentReference{
+        return db.collection("items")
+            .document(itemId)
+
     }
 }

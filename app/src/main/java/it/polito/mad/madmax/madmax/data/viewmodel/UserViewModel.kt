@@ -2,11 +2,16 @@ package it.polito.mad.madmax.madmax.data.viewmodel
 
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.gson.Gson
+import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.model.User
 import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
 
@@ -118,5 +123,50 @@ class UserViewModel : ViewModel() {
     // Companion
     companion object {
         const val TAG = "MM_USER_VM"
+    }
+
+
+    // INTERESTED USERS PART
+    private var selectedItemId =""
+
+    fun setItemId(itemId: String){
+        selectedItemId = itemId
+    }
+
+    private val users: MutableLiveData<ArrayList<User>> by lazy {
+        MutableLiveData<ArrayList<User>>().also {
+            loadUsers()
+        }
+    }
+
+    fun getUsersList() : LiveData<ArrayList<User>> {
+        return users
+    }
+
+    private fun loadUsers() {
+        val gson = Gson()
+        if(selectedItemId.isNotEmpty()){
+            repo.getInterestedUsersList(selectedItemId)
+                .addSnapshotListener { value, e ->
+                    if (e != null) {
+                        Log.e("ERR", "Listen failed.", e)
+                        users.value = ArrayList()
+                    }
+                    val newItem =  gson.fromJson(gson.toJson(value!!.data), Item::class.java)
+
+                    val tasks = newItem.interestedUsers.map {
+                            uid -> repo.getUser(uid).get()
+                    }
+                    Tasks.whenAllSuccess<DocumentSnapshot>(tasks).addOnSuccessListener {
+                            docsnap ->
+                        val list = docsnap.map { ds -> gson.fromJson(gson.toJson(ds.data),User::class.java) } as ArrayList
+                        users.value = list
+                    }
+
+                }
+        }
+
+
+
     }
 }

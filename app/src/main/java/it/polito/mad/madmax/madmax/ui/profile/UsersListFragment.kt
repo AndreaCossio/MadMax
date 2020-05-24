@@ -18,14 +18,13 @@ import androidx.recyclerview.widget.RecyclerView.Recycler
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.model.User
-import it.polito.mad.madmax.madmax.data.viewmodel.InterestedUsersViewModel
-import it.polito.mad.madmax.madmax.data.viewmodel.InterestedUsersViewModelFactory
+import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
 import it.polito.mad.madmax.madmax.toPx
 import kotlinx.android.synthetic.main.users_list.*
 
 class UsersListFragment : Fragment() {
 
-    private lateinit var usersListVM: InterestedUsersViewModel
+    private lateinit var usersListVM: UserViewModel
     lateinit var usersAdapter: UserAdapter
     lateinit var item: Item
     private val args: UsersListFragmentArgs by navArgs()
@@ -34,8 +33,7 @@ class UsersListFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         item= args.item!!
-        usersListVM = ViewModelProvider(this,InterestedUsersViewModelFactory(args.item!!.itemId))
-            .get(InterestedUsersViewModel::class.java)
+        usersListVM = requireActivity().run { ViewModelProvider(this).get(UserViewModel::class.java) }
 
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

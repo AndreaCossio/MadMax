@@ -28,7 +28,7 @@ class InterestedUsersViewModel(val itemId: String): ViewModel() {
 
     private fun loadUsers(itemId: String) {
         val gson = Gson()
-        firestoreRepository.getInterestedUsersList(itemId)
+        /*firestoreRepository.getInterestedUsersList(itemId)
             .addOnSuccessListener {
                 val item = gson.fromJson(gson.toJson(it.data),Item::class.java)
 
@@ -42,7 +42,7 @@ class InterestedUsersViewModel(val itemId: String): ViewModel() {
                     val list = docsnap.map { ds -> gson.fromJson(gson.toJson(ds.data),User::class.java) } as ArrayList
                     users.value = list
                 }
-            }
+            }*/
             /*.addSnapshotListener { value, e ->
                 if (e != null) {
                     Log.e("ERR", "Listen failed.", e)

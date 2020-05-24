@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -59,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         // Observe user data
         userVM.getCurrentUserData().observe(this, Observer { user ->
             nav_view.getHeaderView(0).apply {
+                FirebaseMessaging.getInstance().subscribeToTopic("/topics/${user.userId}")
                 nav_header_nickname.text = user.name
                 nav_header_email.text = user.email
                 nav_header_profile_photo.post {
