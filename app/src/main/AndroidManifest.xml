@@ -22,7 +22,7 @@
 
         <!-- GCM service -->
         <service
-            android:name="MyFirebaseMessagingService"
+            android:name=".data.repository.MyFirebaseMessagingService"
             android:enabled="true"
             android:exported="true"
             android:permission="com.google.android.c2dm.permission.SEND">
@@ -30,10 +30,6 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
-
-            <meta-data
-                android:name="com.google.firebase.messaging.default_notification_icon"
-                android:resource="@mipmap/ic_launcher_round" />
         </service>
 
         <!-- File Provider -->

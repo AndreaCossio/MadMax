@@ -1,4 +1,4 @@
-package it.polito.mad.madmax.madmax
+package it.polito.mad.madmax.madmax.data.repository
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -13,6 +13,8 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import it.polito.mad.madmax.madmax.MainActivity
+import it.polito.mad.madmax.madmax.R
 import java.util.*
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
@@ -48,6 +50,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .setAutoCancel(true)
             .setSound(notificationSoundUri)
             .setContentIntent(pendingIntent)
+            .setSmallIcon(R.mipmap.ic_launcher_round)
 
         //Set notification color to match your app color template
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

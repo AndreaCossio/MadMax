@@ -102,7 +102,7 @@ class ItemAdapter(
             }
 
             // Button
-            if (item.userId != Firebase.auth.currentUser!!.uid) {
+            if (item.userId != Firebase.auth.currentUser?.uid) {
                 itemV.item_button.text = itemV.context.getString(R.string.button_buy_item)
                 itemV.item_button.setOnClickListener { actionBuy(item) }
             } else {

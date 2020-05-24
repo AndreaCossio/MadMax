@@ -1,9 +1,13 @@
 package it.polito.mad.madmax.madmax.data.viewmodel
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
@@ -11,16 +15,19 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.Transaction
 import com.google.firebase.ktx.Firebase
+import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.model.ItemFilter
 import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
+import it.polito.mad.madmax.madmax.displayMessage
+import org.json.JSONException
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 class ItemViewModel: ViewModel() {
 
-    //private val userId: String = Firebase.auth.currentUser!!.uid
     private val repo: FirestoreRepository = FirestoreRepository()
 
     private val item: MutableLiveData<Item> by lazy {
@@ -144,8 +151,15 @@ class ItemViewModel: ViewModel() {
         }
     }
 
-    fun notifyInterest(item: Item, userId: String): Task<Transaction> {
-        return repo.notifyInterest(item, userId)
+    fun notifyInterest(context: Context, item: Item, userId: String): Task<Transaction> {
+        return repo.notifyInterest(item, userId).also {
+            val notification = createNotification(item)
+            try {
+                sendNotification(context, notification)
+            } catch (e: JSONException) {
+                Log.e("TAG", "onCreate: " + e.message)
+            }
+        }
     }
 
     fun removeInterest(item: Item, userId: String): Task<Transaction> {
@@ -170,5 +184,45 @@ class ItemViewModel: ViewModel() {
 
     companion object {
         const val TAG = "MM_ITEM_VM"
+    }
+
+    //NOTIFICATION
+    private fun sendNotification(context: Context, notification: JSONObject) {
+
+        val FCM_API = context.getString(R.string.apiUrl)
+        val serverKey = "key=" + context.getString(R.string.serverKey)
+        val contentType = context.getString(R.string.cloudContentType)
+
+        val jsonObjectRequest = object: JsonObjectRequest (
+            FCM_API,
+            notification,
+            Response.Listener { response ->
+                Log.i("TAG", "onResponse: $response")
+            },
+            Response.ErrorListener {
+                displayMessage(context, "Error request ${it.message.toString()}")
+                Log.i("TAG", "onErrorResponse: Didn't work")
+            }
+        ) {
+            override fun getHeaders(): Map<String, String> {
+                val params = HashMap<String, String>()
+                params["Authorization"] = serverKey
+                params["Content-Type"] = contentType
+                return params
+            }
+        }
+        Volley.newRequestQueue(context).add(jsonObjectRequest)
+    }
+
+    private fun createNotification(item: Item): JSONObject {
+        val topic = "/topics/${item.userId}"
+        val notification = JSONObject()
+        val notificationBody = JSONObject()
+        notificationBody.put("title", "MadMax")
+        notificationBody.put("message", "Someone is interested in your article ${item.title}")
+        notification.put("to", topic)
+        notification.put("data", notificationBody)
+
+        return  notification
     }
 }

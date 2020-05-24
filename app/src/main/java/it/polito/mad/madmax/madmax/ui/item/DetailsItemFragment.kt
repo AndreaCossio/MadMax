@@ -138,14 +138,6 @@ class DetailsItemFragment : Fragment() {
             showProgress(requireActivity())
             findNavController().navigate(DetailsItemFragmentDirections.actionSeeInterestedUsers(itemArg.item))
         }
-
-        // TODO rating system
-        /*item_details_stars.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
-            if (fromUser) {
-                ratingBar.setIsIndicator(true)
-                itemsVM.updateItemRating(itemId, rating)
-            }
-        }*/
     }
 
     override fun onDestroyView() {
@@ -283,7 +275,7 @@ class DetailsItemFragment : Fragment() {
     }
 
     private fun showInterest() {
-        itemsVM.notifyInterest(itemArg.item, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
+        itemsVM.notifyInterest(requireContext(), itemArg.item, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
             displayMessage(requireContext(), "Successfully showed interest")
             requireActivity().main_fab_add_item.setImageDrawable(requireContext().getDrawable(R.drawable.ic_favourite))
             requireActivity().main_fab_add_item.setOnClickListener {removeInterest()}
