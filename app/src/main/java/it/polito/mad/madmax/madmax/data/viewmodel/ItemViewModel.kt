@@ -153,6 +153,8 @@ class ItemViewModel: ViewModel() {
     }
 
     fun notifyInterest(context: Context, item: Item, userId: String): Task<Transaction> {
+        // Subscribe to the item
+        FirebaseMessaging.getInstance().subscribeToTopic("/topics/${item.itemId}")
         return repo.notifyInterest(item, userId).also {
             // Send notification to the owner
             val notification = createInterestedNotification(item)
@@ -161,13 +163,11 @@ class ItemViewModel: ViewModel() {
             } catch (e: JSONException) {
                 Log.e("TAG", "onCreate: " + e.message)
             }
-        }.also {
-            // Subscribe to the item
-            FirebaseMessaging.getInstance().subscribeToTopic("items/${item.itemId}")
         }
     }
 
     fun removeInterest(context: Context, item: Item, userId: String): Task<Transaction> {
+        FirebaseMessaging.getInstance().unsubscribeFromTopic("/topics/${item.itemId}")
         return repo.removeInterest(item, userId).also {
             // Send notification no more interested
             val notification = createNotInterestedNotification(item)
@@ -176,8 +176,6 @@ class ItemViewModel: ViewModel() {
             } catch (e: JSONException) {
                 Log.e("TAG", "onCreate: " + e.message)
             }
-        }.also {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic("items/${item.itemId}")
         }
     }
 
@@ -201,10 +199,9 @@ class ItemViewModel: ViewModel() {
             } catch (e: JSONException) {
                 Log.e("TAG", "onCreate: " + e.message)
             }
-        }.also {
-            val notification = createBuyEverybodyNotification(item)
+            val notification2 = createBuyEverybodyNotification(item)
             try {
-                sendNotification(context, notification)
+                sendNotification(context, notification2)
             } catch (e: JSONException) {
                 Log.e("TAG", "onCreate: " + e.message)
             }
