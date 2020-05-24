@@ -4,6 +4,7 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.ktx.auth
@@ -92,6 +93,15 @@ class ItemAdapter(
                 itemView.item_photo.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_camera_white))
             }
 
+            // Status
+            if (item.status == "Disabled") {
+                itemView.item_card.setCardBackgroundColor(ContextCompat.getColor(itemView.context, R.color.lightGrey))
+            }
+            if (item.status == "Bought") {
+                itemView.item_card.setCardBackgroundColor(ContextCompat.getColor(itemView.context, R.color.lightSecondary))
+            }
+
+            // Button
             if (item.userId != Firebase.auth.currentUser!!.uid) {
                 itemView.item_button.text = itemView.context.getString(R.string.button_buy_item)
                 itemView.item_button.setOnClickListener { actionBuy(item) }

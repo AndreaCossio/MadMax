@@ -12,5 +12,7 @@
     <color name="iconOnPrimary">#FFFFFF</color>
     <color name="iconOnSecondary">#FFFFFF</color>
     <color name="iconOnBackground">#424242</color>
+    <color name="lightGrey">#E0E0E0</color>
+    <color name="lightSecondary">#81C784</color>
     <color name="transparent">#00000000</color>
 </resources>
