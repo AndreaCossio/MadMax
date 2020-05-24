@@ -88,7 +88,7 @@ class DetailsItemFragment : Fragment() {
                                 if (this::userListener.isInitialized) {
                                     userListener.remove()
                                 }
-                                userListener = userVM.listenOtherUser(itemArg.item.boughtBy)
+                                userListener = userVM.listenOtherUser(item.boughtBy)
                                 userVM.getOtherUserData().observe(viewLifecycleOwner, Observer { user ->
                                     updateUserBought(user.name)
                                 })
