@@ -15,14 +15,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "427525694081-3ekua512in7pi5i3q6me9l42j4vml91c.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "it.polito.mad.madmax.madmax",
-            "certificate_hash": "9da98dcf67e94f5b4f924fb56ac0fdfdb5e0540c"
-          }
-        },
-        {
           "client_id": "427525694081-3gq2v2el6our483arb45f5d4m3h6mq2m.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

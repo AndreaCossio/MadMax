@@ -66,7 +66,7 @@ class DetailsItemFragment : Fragment() {
                     updateFields(it)
                 })
                 // If other's item
-                if (itemArg.owned) {
+                if (!itemArg.owned) {
                     // Listen and observe owner
                     userListener = userVM.listenOtherUser(itemArg.item.userId)
                     userVM.getOtherUserData().observe(viewLifecycleOwner, Observer {
@@ -74,16 +74,18 @@ class DetailsItemFragment : Fragment() {
                     })
                     item_details_stars.setIsIndicator(false)
                     requireActivity().main_fab_add_item.setOnClickListener {
-                        TODO ("Interest")
-                        //itemsVM.notifyInterest(args.message.split("-")[2])
+                        itemsVM.notifyInterest(itemArg.item, userVM.getCurrentUserData().value!!.userId)
                     }
                     item_details_owner.setOnClickListener {
                         findNavController().navigate(DetailsItemFragmentDirections.actionVisitProfile(itemArg.item.userId))
                     }
                     requireActivity().main_fab_add_item.setImageDrawable(requireContext().getDrawable(R.drawable.ic_favorite))
+                    showFab(requireActivity())
                 } else {
                     item_details_stars.setIsIndicator(true)
-                    showFab(requireActivity())
+                    item_details_interested_users.setOnClickListener {
+                        findNavController().navigate(DetailsItemFragmentDirections.actionSeeInterestedUsers(itemArg.item))
+                    }
                 }
             }
         }
@@ -143,6 +145,8 @@ class DetailsItemFragment : Fragment() {
         // Other owner
         if (!itemArg.owned) {
             item_details_owner.visibility = View.VISIBLE
+        } else {
+            item_details_interested_users.visibility = View.VISIBLE
         }
 
         // Rating

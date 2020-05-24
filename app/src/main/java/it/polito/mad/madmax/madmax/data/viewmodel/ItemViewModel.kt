@@ -136,11 +136,11 @@ class ItemViewModel: ViewModel() {
         }
     }
 
-    /*fun notifyInterest(itemId: String) {
-        repo.notifyInterest(itemId, userId).addOnSuccessListener {
+    fun notifyInterest(item: Item, userId: String) {
+        repo.notifyInterest(item, userId).addOnSuccessListener {
             Log.d(TAG, "Added user of interest")
-        }
-    }*/
+        }.addOnFailureListener { e -> Log.d(TAG, e.message.toString()) }
+    }
 
     companion object {
         const val TAG = "MM_ITEM_VM"

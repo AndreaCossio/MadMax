@@ -14,5 +14,6 @@ data class Item (
     var location: String = "",
     var expiry: String = "",
     var stars: Double = -1.0,
-    var photo: String = ""
+    var photo: String = "",
+    var interestedUsers: MutableList<String> = mutableListOf<String>()
 ) : Serializable
