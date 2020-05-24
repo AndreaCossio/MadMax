@@ -15,6 +15,7 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.Transaction
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import it.polito.mad.madmax.madmax.R
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.model.ItemFilter
@@ -153,17 +154,31 @@ class ItemViewModel: ViewModel() {
 
     fun notifyInterest(context: Context, item: Item, userId: String): Task<Transaction> {
         return repo.notifyInterest(item, userId).also {
-            val notification = createNotification(item)
+            // Send notification to the owner
+            val notification = createInterestedNotification(item)
             try {
                 sendNotification(context, notification)
             } catch (e: JSONException) {
                 Log.e("TAG", "onCreate: " + e.message)
             }
+        }.also {
+            // Subscribe to the item
+            FirebaseMessaging.getInstance().subscribeToTopic("items/${item.itemId}")
         }
     }
 
-    fun removeInterest(item: Item, userId: String): Task<Transaction> {
-        return repo.removeInterest(item, userId)
+    fun removeInterest(context: Context, item: Item, userId: String): Task<Transaction> {
+        return repo.removeInterest(item, userId).also {
+            // Send notification no more interested
+            val notification = createNotInterestedNotification(item)
+            try {
+                sendNotification(context, notification)
+            } catch (e: JSONException) {
+                Log.e("TAG", "onCreate: " + e.message)
+            }
+        }.also {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("items/${item.itemId}")
+        }
     }
 
     fun checkIfInterested(itemId: String, userId: String): Task<DocumentSnapshot> {
@@ -178,8 +193,22 @@ class ItemViewModel: ViewModel() {
         return repo.disableItem(itemId, userId)
     }
 
-    fun buyItem(item: Item, userId: String): Task<Transaction> {
-        return repo.buyItem(item, userId)
+    fun buyItem(context: Context, item: Item, userId: String): Task<Transaction> {
+        return repo.buyItem(item, userId).also {
+            val notification = createBuyNotification(item)
+            try {
+                sendNotification(context, notification)
+            } catch (e: JSONException) {
+                Log.e("TAG", "onCreate: " + e.message)
+            }
+        }.also {
+            val notification = createBuyEverybodyNotification(item)
+            try {
+                sendNotification(context, notification)
+            } catch (e: JSONException) {
+                Log.e("TAG", "onCreate: " + e.message)
+            }
+        }
     }
 
     companion object {
@@ -193,7 +222,7 @@ class ItemViewModel: ViewModel() {
         val serverKey = "key=" + context.getString(R.string.serverKey)
         val contentType = context.getString(R.string.cloudContentType)
 
-        val jsonObjectRequest = object: JsonObjectRequest (
+        val jsonObjectRequest = object: JsonObjectRequest(
             FCM_API,
             notification,
             Response.Listener { response ->
@@ -214,15 +243,43 @@ class ItemViewModel: ViewModel() {
         Volley.newRequestQueue(context).add(jsonObjectRequest)
     }
 
-    private fun createNotification(item: Item): JSONObject {
-        val topic = "/topics/${item.userId}"
-        val notification = JSONObject()
-        val notificationBody = JSONObject()
-        notificationBody.put("title", "MadMax")
-        notificationBody.put("message", "Someone is interested in your article ${item.title}")
-        notification.put("to", topic)
-        notification.put("data", notificationBody)
+    private fun createInterestedNotification(item: Item): JSONObject {
+        return JSONObject().apply {
+            put("to", "/topics/${item.userId}")
+            put("data", JSONObject().apply {
+                put("title", "MadMax")
+                put("message", "Someone is interested in your article: ${item.title}")
+            })
+        }
+    }
 
-        return  notification
+    private fun createNotInterestedNotification(item: Item): JSONObject {
+        return JSONObject().apply {
+            put("to", "/topics/${item.userId}")
+            put("data", JSONObject().apply {
+                put("title", "MadMax")
+                put("message", "Someone is no more interested in your article: ${item.title}")
+            })
+        }
+    }
+
+    private fun createBuyNotification(item: Item): JSONObject {
+        return JSONObject().apply {
+            put("to", "/topics/${item.userId}")
+            put("data", JSONObject().apply {
+                put("title", "MadMax")
+                put("message", "Someone has bought your article: ${item.title}")
+            })
+        }
+    }
+
+    private fun createBuyEverybodyNotification(item: Item): JSONObject {
+        return JSONObject().apply {
+            put("to", "/topics/${item.itemId}")
+            put("data", JSONObject().apply {
+                put("title", "MadMax")
+                put("message", "Someone has bought the article you were interested in: ${item.title}")
+            })
+        }
     }
 }

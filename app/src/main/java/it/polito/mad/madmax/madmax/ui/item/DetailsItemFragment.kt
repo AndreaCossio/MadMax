@@ -285,7 +285,7 @@ class DetailsItemFragment : Fragment() {
     }
 
     private fun removeInterest() {
-        itemsVM.removeInterest(itemArg.item, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
+        itemsVM.removeInterest(requireContext(), itemArg.item, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
             displayMessage(requireContext(), "Successfully removed interest")
             requireActivity().main_fab_add_item.setImageDrawable(requireContext().getDrawable(R.drawable.ic_unfavourite))
             requireActivity().main_fab_add_item.setOnClickListener {showInterest()}

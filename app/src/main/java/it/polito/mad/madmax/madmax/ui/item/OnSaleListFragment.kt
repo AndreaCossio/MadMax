@@ -147,7 +147,7 @@ class OnSaleListFragment : Fragment() {
     }
 
     private var actionBuyItem = { item: Item ->
-        itemsVM.buyItem(item, userVM.getCurrentUserData().value!!.userId)
+        itemsVM.buyItem(requireContext(), item, userVM.getCurrentUserData().value!!.userId)
             .addOnSuccessListener {
                 displayMessage(requireContext(), "Successfully bought item")
             }.addOnFailureListener {
