@@ -63,7 +63,12 @@ class DetailsItemFragment : Fragment() {
                 // Listen and observe item
                 itemListener = itemsVM.listenSingleItem(itemArg.item.itemId)
                 itemsVM.getSingleItem().observe(viewLifecycleOwner, Observer {
-                    updateFields(it)
+                    it?.also {
+                        updateFields(it)
+                    } ?: run {
+                        displayMessage(requireContext(), "This item has been deleted")
+                        findNavController().navigateUp()
+                    }
                 })
                 // If other's item
                 if (!itemArg.owned) {
@@ -73,21 +78,29 @@ class DetailsItemFragment : Fragment() {
                         updateUserField(it.name)
                     })
                     item_details_stars.setIsIndicator(false)
-                    requireActivity().main_fab_add_item.setOnClickListener {
-                        itemsVM.notifyInterest(itemArg.item, userVM.getCurrentUserData().value!!.userId)
+                    itemsVM.checkIfInterested(itemArg.item.itemId, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
+                        if (!(it["interestedUsers"] as ArrayList<String>).contains(userVM.getCurrentUserData().value!!.userId)) {
+                            requireActivity().main_fab_add_item.setImageDrawable(requireContext().getDrawable(R.drawable.ic_favourite))
+                            requireActivity().main_fab_add_item.setOnClickListener {showInterest()}
+                            showFab(requireActivity())
+                        } else {
+                            requireActivity().main_fab_add_item.setImageDrawable(requireContext().getDrawable(R.drawable.ic_unfavourite))
+                            requireActivity().main_fab_add_item.setOnClickListener {removeInterest()}
+                            showFab(requireActivity())
+                        }
                     }
-                    item_details_owner.setOnClickListener {
-                        findNavController().navigate(DetailsItemFragmentDirections.actionVisitProfile(itemArg.item.userId))
-                    }
-                    requireActivity().main_fab_add_item.setImageDrawable(requireContext().getDrawable(R.drawable.ic_favorite))
-                    showFab(requireActivity())
                 } else {
                     item_details_stars.setIsIndicator(true)
-                    item_details_interested_users.setOnClickListener {
-                        findNavController().navigate(DetailsItemFragmentDirections.actionSeeInterestedUsers(itemArg.item))
-                    }
                 }
             }
+        }
+
+        // Init listeners
+        item_details_owner.setOnClickListener {
+            findNavController().navigate(DetailsItemFragmentDirections.actionVisitProfile(itemArg.item.userId))
+        }
+        item_details_interested_users.setOnClickListener {
+            findNavController().navigate(DetailsItemFragmentDirections.actionSeeInterestedUsers(itemArg.item))
         }
 
         // TODO rating system
@@ -105,8 +118,6 @@ class DetailsItemFragment : Fragment() {
             itemListener.remove()
         if (this::userListener.isInitialized)
             userListener.remove()
-        requireActivity().main_fab_add_item.setOnClickListener(null)
-        item_details_owner.setOnClickListener(null)
     }
 
     override fun onDestroy() {
@@ -118,12 +129,16 @@ class DetailsItemFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         if (itemArg.owned) {
-            inflater.inflate(R.menu.menu_edit, menu)
+            inflater.inflate(R.menu.menu_edit_item, menu)
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.menu_delete -> {
+                itemsVM.deleteItem(itemArg.item)
+                true
+            }
             R.id.menu_edit -> {
                 showProgress(requireActivity())
                 findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(itemArg))
@@ -185,6 +200,26 @@ class DetailsItemFragment : Fragment() {
 
     private fun updateUserField(name: String) {
         item_details_owner.text = name
+    }
+
+    private fun showInterest() {
+        itemsVM.notifyInterest(itemArg.item, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
+            displayMessage(requireContext(), "Successfully showed interest")
+            requireActivity().main_fab_add_item.setImageDrawable(requireContext().getDrawable(R.drawable.ic_unfavourite))
+            requireActivity().main_fab_add_item.setOnClickListener {removeInterest()}
+        }.addOnFailureListener {
+            displayMessage(requireContext(), "Failed to show interest")
+        }
+    }
+
+    private fun removeInterest() {
+        itemsVM.removeInterest(itemArg.item, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
+            displayMessage(requireContext(), "Successfully removed interest")
+            requireActivity().main_fab_add_item.setImageDrawable(requireContext().getDrawable(R.drawable.ic_favourite))
+            requireActivity().main_fab_add_item.setOnClickListener {showInterest()}
+        }.addOnFailureListener {
+            displayMessage(requireContext(), "Failed to remove interest")
+        }
     }
 
     // Companion

@@ -60,6 +60,11 @@
             app:popUpTo="@id/nav_details_item_fragment"
             app:popUpToInclusive="true" />
         <action
+            android:id="@+id/action_cancel_edit"
+            app:destination="@id/nav_details_item_fragment"
+            app:popUpTo="@id/nav_details_item_fragment"
+            app:popUpToInclusive="true" />
+        <action
             android:id="@+id/action_cancel_create"
             app:destination="@id/nav_item_list_fragment"
             app:popUpTo="@id/nav_item_list_fragment"

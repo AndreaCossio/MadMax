@@ -6,6 +6,7 @@ import java.io.Serializable
 data class Item (
     @get:Exclude var itemId: String = "",
     var userId: String = "",
+    var status: String = "",
     var title: String = "",
     var description: String = "",
     var category_main: String = "",

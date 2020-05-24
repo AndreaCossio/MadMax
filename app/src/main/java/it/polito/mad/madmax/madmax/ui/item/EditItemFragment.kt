@@ -41,9 +41,6 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
     // Destination arguments
     private val args: EditItemFragmentArgs by navArgs()
 
-    // Card listener
-    private lateinit var cardListener: View.OnLayoutChangeListener
-
     // Dialogs
     private var openDialog: String = ""
 
@@ -78,8 +75,8 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
         item_edit_change_photo.setOnClickListener {
             openPhotoDialog(requireContext(), requireActivity(), { a: String -> openDialog = a}, {captureImage()}, {getImageFromGallery()}, {removeImage()})
         }
-        item_edit_expiry_button.setOnClickListener { showDatePicker() }
-
+        //item_edit_expiry_button.setOnClickListener { showDatePicker() }
+        item_edit_expiry.setOnClickListener { showDatePicker() }
         // Init categories
         item_edit_main_cat.adapter = getMainCategoryAdapter(requireContext())
         item_edit_main_cat.setSelection(getMainCategories(requireContext()).indexOf(tempItem.category_main))
@@ -92,7 +89,8 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
         super.onDestroyView()
         // Detach listener
         item_edit_change_photo.setOnClickListener(null)
-        item_edit_expiry_button.setOnClickListener(null)
+        //item_edit_expiry_button.setOnClickListener(null)
+        item_edit_expiry.setOnClickListener(null)
     }
 
     override fun onAttach(context: Context) {
@@ -101,13 +99,20 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
             override fun handleOnBackPressed() {
                 updateItem()
                 if (tempItem != itemArg.item) {
-                    openSureDialog(requireContext(), requireActivity()) { a: String -> openDialog = a}
+                    if (itemArg.task == "Create") {
+                        openSureDialog(requireContext(), requireActivity(), { findNavController().navigate(EditItemFragmentDirections.actionCancelCreate()) }, { a: String -> openDialog = a})
+                    } else {
+                        openSureDialog(requireContext(), requireActivity(), {
+                            findNavController().navigate(EditItemFragmentDirections.actionCancelEdit(ItemArg("Details", itemArg.item, itemArg.owned))) }, { a: String -> openDialog = a})
+                    }
                 } else {
                     showProgress(requireActivity())
                     if (itemArg.task == "Create") {
                         findNavController().navigate(EditItemFragmentDirections.actionCancelCreate())
                     } else {
-                        findNavController().navigateUp()
+                        findNavController().navigate(EditItemFragmentDirections.actionCancelEdit(
+                            ItemArg("Details", itemArg.item, itemArg.owned)
+                        ))
                     }
                 }
             }
@@ -130,7 +135,14 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
             state.getString(getString(R.string.edit_item_dialog_state))?.also {
                 openDialog = it
                 when (openDialog) {
-                    "Sure" -> openSureDialog(requireContext(), requireActivity()) { a: String -> openDialog = a}
+                    "Sure" -> {
+                        if (itemArg.task == "Create") {
+                            openSureDialog(requireContext(), requireActivity(), { findNavController().navigate(EditItemFragmentDirections.actionCancelCreate()) }, { a: String -> openDialog = a})
+                        } else {
+                            openSureDialog(requireContext(), requireActivity(), {
+                                findNavController().navigate(EditItemFragmentDirections.actionCancelEdit(ItemArg("Details", itemArg.item, itemArg.owned))) }, { a: String -> openDialog = a})
+                        }
+                    }
                     "Change" -> openPhotoDialog(requireContext(), requireActivity(), { a: String -> openDialog = a}, {captureImage()}, {getImageFromGallery()}, {removeImage()})
                 }
             }
@@ -165,11 +177,11 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                 if (item_edit_expiry.text.toString() != "") {
                     if (SimpleDateFormat("dd MMM yyy", Locale.getDefault()).parse(item_edit_expiry.text.toString())!! < Date()) {
-                        displayMessage(requireContext(), "Date must be future")
+                        item_edit_expiry.error = "Date must be future"
                         invalidFields = true
                     }
                 } else {
-                    displayMessage(requireContext(), "Date must be set")
+                    item_edit_expiry.error = getString(R.string.message_error_field_required)
                     invalidFields = true
                 }
 
@@ -315,7 +327,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val builder = MaterialDatePicker.Builder.datePicker()
         val picker = builder.setCalendarConstraints(CalendarConstraints.Builder().setStart(System.currentTimeMillis()-1000).build()).build()
         picker.addOnPositiveButtonClickListener {
-            item_edit_expiry.text = picker.headerText
+            item_edit_expiry.setText(picker.headerText)
         }
         picker.show(childFragmentManager, picker.toString())
     }
@@ -353,7 +365,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
         item_edit_title.setText(tempItem.title)
         item_edit_description.setText(tempItem.description)
         item_edit_location.setText(tempItem.location)
-        item_edit_expiry.text = tempItem.expiry
+        item_edit_expiry.setText(tempItem.expiry)
         item_edit_price.apply {
             if (tempItem.price == -1.0) {
                 setText("")

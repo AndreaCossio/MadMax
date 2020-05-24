@@ -77,11 +77,29 @@ class FirestoreRepository {
         }
     }
 
+    fun deleteItem(item: Item): Task<Transaction> {
+        return db.runTransaction { transaction ->
+            transaction.delete(db.document("items/${item.itemId}"))
+            transaction.delete(db.document("users/${item.userId}/items/${item.itemId}"))
+        }
+    }
+
     fun notifyInterest(item: Item, userId: String): Task<Transaction> {
         return db.runTransaction { transaction ->
             transaction.update(db.document("items/${item.itemId}"), "interestedUsers", FieldValue.arrayUnion(userId))
             transaction.update(db.document("users/${item.userId}/items/${item.itemId}"), "interestedUsers", FieldValue.arrayUnion(userId))
         }
+    }
+
+    fun removeInterest(item: Item, userId: String): Task<Transaction> {
+        return db.runTransaction { transaction ->
+            transaction.update(db.document("items/${item.itemId}"), "interestedUsers", FieldValue.arrayRemove(userId))
+            transaction.update(db.document("users/${item.userId}/items/${item.itemId}"), "interestedUsers", FieldValue.arrayRemove(userId))
+        }
+    }
+
+    fun checkIfInterested(itemId: String, userId: String): DocumentReference {
+        return db.document("items/$itemId")
     }
 
     fun getInterestedUsersList(itemId: String): Task<DocumentSnapshot> {

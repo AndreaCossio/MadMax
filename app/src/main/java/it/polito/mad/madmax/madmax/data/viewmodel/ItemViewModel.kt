@@ -5,8 +5,10 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.Transaction
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.model.ItemFilter
 import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
@@ -65,13 +67,17 @@ class ItemViewModel: ViewModel() {
         }
     }
 
+    fun deleteItem(item: Item): Task<Transaction> {
+        return repo.deleteItem(item)
+    }
+
     fun listenSingleItem(itemId: String): ListenerRegistration {
         return repo.getItem(itemId).addSnapshotListener { value, e ->
             e?.also {
                 Log.w(TAG, "Listen failed: ${it.message}")
                 return@addSnapshotListener
             }
-            item.value = value!!.toObject(Item::class.java)!!.apply {
+            item.value = value!!.toObject(Item::class.java)?.apply {
                 this.itemId = value.id
             }
         }
@@ -136,10 +142,16 @@ class ItemViewModel: ViewModel() {
         }
     }
 
-    fun notifyInterest(item: Item, userId: String) {
-        repo.notifyInterest(item, userId).addOnSuccessListener {
-            Log.d(TAG, "Added user of interest")
-        }.addOnFailureListener { e -> Log.d(TAG, e.message.toString()) }
+    fun notifyInterest(item: Item, userId: String): Task<Transaction> {
+        return repo.notifyInterest(item, userId)
+    }
+
+    fun removeInterest(item: Item, userId: String): Task<Transaction> {
+        return repo.removeInterest(item, userId)
+    }
+
+    fun checkIfInterested(itemId: String, userId: String): Task<DocumentSnapshot> {
+        return repo.checkIfInterested(itemId, userId).get()
     }
 
     companion object {

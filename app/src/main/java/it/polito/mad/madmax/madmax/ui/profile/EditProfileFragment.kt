@@ -74,7 +74,7 @@ class EditProfileFragment : Fragment() {
             override fun handleOnBackPressed() {
                 updateUser()
                 if (tempUser != userVM.getCurrentUserData().value) {
-                    openSureDialog(requireContext(), requireActivity()) { a: String -> openDialog = a}
+                    openSureDialog(requireContext(), requireActivity(), { findNavController().navigateUp() }, { a: String -> openDialog = a})
                 } else {
                     showProgress(requireActivity())
                     findNavController().navigateUp()
@@ -99,7 +99,7 @@ class EditProfileFragment : Fragment() {
             state.getString(getString(R.string.edit_profile_dialog_state))?.also {
                 openDialog = it
                 when (openDialog) {
-                    "Sure" -> openSureDialog(requireContext(), requireActivity()) { a: String -> openDialog = a}
+                    "Sure" -> openSureDialog(requireContext(), requireActivity(), { findNavController().navigateUp() }, { a: String -> openDialog = a})
                     "Change" -> openPhotoDialog(requireContext(), requireActivity(), { a: String -> openDialog = a}, {captureImage()}, {getImageFromGallery()}, {removeImage()})
                 }
             }

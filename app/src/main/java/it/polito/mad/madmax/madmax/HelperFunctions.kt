@@ -21,7 +21,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Guideline
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
-import androidx.navigation.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
@@ -192,7 +191,7 @@ fun isEmailValid(email: String): Boolean {
     ).matcher(email).matches()
 }
 
-fun openSureDialog(context: Context, activity: Activity, dialogSetter: (String) -> Unit) {
+fun openSureDialog(context: Context, activity: Activity, positiveAction: () -> Unit, dialogSetter: (String) -> Unit) {
     closeKeyboard(activity)
     dialogSetter("Sure")
     MaterialAlertDialogBuilder(context)
@@ -200,7 +199,7 @@ fun openSureDialog(context: Context, activity: Activity, dialogSetter: (String) 
         .setMessage(R.string.photo_dialog_sure_text)
         .setPositiveButton(R.string.photo_dialog_ok) { _, _ ->
             dialogSetter("")
-            activity.findNavController(R.id.nav_host_fragment).navigateUp()
+            positiveAction()
         }
         .setNegativeButton(R.string.photo_dialog_cancel) { _, _ -> dialogSetter("") }
         .setOnCancelListener { dialogSetter("") }
