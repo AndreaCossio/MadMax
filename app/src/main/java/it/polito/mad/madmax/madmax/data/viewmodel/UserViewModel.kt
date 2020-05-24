@@ -13,7 +13,7 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.gson.Gson
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.model.User
-import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
+
 
 class UserViewModel : ViewModel() {
 
@@ -28,6 +28,7 @@ class UserViewModel : ViewModel() {
     private val otherUser: MutableLiveData<User> by lazy {
         MutableLiveData<User>().apply {
             value = User()
+
         }
     }
 

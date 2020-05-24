@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.Transaction
 import it.polito.mad.madmax.madmax.data.model.Item
 import it.polito.mad.madmax.madmax.data.model.ItemFilter
 import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
@@ -136,10 +137,8 @@ class ItemViewModel: ViewModel() {
         }
     }
 
-    fun notifyInterest(item: Item, userId: String) {
-        repo.notifyInterest(item, userId).addOnSuccessListener {
-            Log.d(TAG, "Added user of interest")
-        }.addOnFailureListener { e -> Log.d(TAG, e.message.toString()) }
+    fun notifyInterest(item: Item, userId: String): Task<Transaction> {
+        return repo.notifyInterest(item, userId)
     }
 
     companion object {

@@ -2,12 +2,17 @@ package it.polito.mad.madmax.madmax.ui.item
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.android.volley.RequestQueue
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.google.firebase.firestore.ListenerRegistration
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -18,8 +23,19 @@ import it.polito.mad.madmax.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_details_item.*
+import org.json.JSONException
+import org.json.JSONObject
 
 class DetailsItemFragment : Fragment() {
+
+    private lateinit var FCM_API :String
+    private lateinit var serverKey: String
+    private lateinit var contentType :String
+
+    private val requestQueue: RequestQueue by lazy {
+        Volley.newRequestQueue(requireActivity().applicationContext)
+    }
+
 
     // User
     private val userVM: UserViewModel by activityViewModels()
@@ -40,6 +56,10 @@ class DetailsItemFragment : Fragment() {
         setHasOptionsMenu(true)
 
         itemArg = args.itemArg
+        FCM_API = getString(R.string.apiUrl)
+        serverKey = "key=" + getString(R.string.serverKey)
+        contentType = getString(R.string.cloudContentType)
+        userVM.setItemId(itemArg.item.itemId)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -75,6 +95,19 @@ class DetailsItemFragment : Fragment() {
                     item_details_stars.setIsIndicator(false)
                     requireActivity().main_fab_add_item.setOnClickListener {
                         itemsVM.notifyInterest(itemArg.item, userVM.getCurrentUserData().value!!.userId)
+                            .addOnSuccessListener {
+                                val notification = createNotification();
+
+                                try {
+                                    sendNotification(notification)
+                                } catch (e: JSONException) {
+                                    Log.e("TAG", "onCreate: " + e.message)
+
+                                }
+                            }
+
+
+                    }
                     }
                     item_details_owner.setOnClickListener {
                         findNavController().navigate(DetailsItemFragmentDirections.actionVisitProfile(itemArg.item.userId))
@@ -190,5 +223,40 @@ class DetailsItemFragment : Fragment() {
     // Companion
     companion object {
         const val TAG = "MM_DETAILS_ITEM"
+    }
+
+
+    //NOTIFICATION
+    private fun sendNotification(notification: JSONObject) {
+        val jsonObjectRequest = object : JsonObjectRequest(FCM_API, notification,
+            com.android.volley.Response.Listener{ response ->
+                Log.i("TAG", "onResponse: $response")
+            },
+            com.android.volley.Response.ErrorListener {
+                Toast.makeText(requireContext(), "Request error", Toast.LENGTH_LONG).show()
+                Log.i("TAG", "onErrorResponse: Didn't work")
+            }) {
+
+            override fun getHeaders(): Map<String, String> {
+                val params = HashMap<String, String>()
+                params["Authorization"] = serverKey
+                params["Content-Type"] = contentType
+                return params
+            }
+        }
+        requestQueue.add(jsonObjectRequest)
+    }
+
+    private fun createNotification(): JSONObject{
+        val topic = "/topics/${itemArg.item.userId}" //topic has to match what the receiver subscribed to
+
+        val notification = JSONObject()
+        val notificationBody = JSONObject()
+        notificationBody.put("title", "MadMax")
+        notificationBody.put("message", "Someone is interested in your article ${item!!.title}")   //Enter your notification message
+        notification.put("to", topic)
+        notification.put("data", notificationBody)
+
+        return  notification
     }
 }
