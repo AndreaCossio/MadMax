@@ -176,7 +176,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 }
 
                 if (item_edit_expiry.text.toString() != "") {
-                    if (SimpleDateFormat("dd MMM yyy", Locale.getDefault()).parse(item_edit_expiry.text.toString())!! < Date()) {
+                    if (SimpleDateFormat("dd MMM yyy", Locale.UK).parse(item_edit_expiry.text.toString())!! < Date()) {
                         item_edit_expiry.error = "Date must be future"
                         invalidFields = true
                     }

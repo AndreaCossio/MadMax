@@ -174,7 +174,7 @@ fun rotateImage(bitmap: Bitmap, angle: Int): Bitmap {
 // Create jpeg file using current datetime
 fun createImageFile(context: Context): File {
     return File.createTempFile(
-        "JPEG_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}_",
+        "JPEG_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.UK).format(Date())}_",
         ".jpg",
         context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
     )

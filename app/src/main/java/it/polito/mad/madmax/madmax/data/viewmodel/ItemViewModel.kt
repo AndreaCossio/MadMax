@@ -128,7 +128,7 @@ class ItemViewModel: ViewModel() {
                 if (itemFilter.userId == "" || itemFilter.userId != doc["userId"]) {
                     if (itemFilter.text == "" || doc["title"].toString().contains(itemFilter.text) || doc["description"].toString().contains(itemFilter.text)) {
                         // If not expired
-                        if (SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).parse(doc["expiry"].toString())!! > Date()) {
+                        if (SimpleDateFormat("dd MMM yyyy", Locale.UK).parse(doc["expiry"].toString())!! > Date()) {
                             if (!itemFilter.onlyFavourite || (doc["interestedUsers"] as ArrayList<String>).contains(Firebase.auth.currentUser!!.uid)) {
                                 newItems.add(doc.toObject(Item::class.java).apply {
                                     itemId = doc.id
