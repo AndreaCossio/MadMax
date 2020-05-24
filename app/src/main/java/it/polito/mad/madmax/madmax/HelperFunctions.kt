@@ -15,6 +15,7 @@ import android.os.Environment
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Guideline
@@ -22,8 +23,9 @@ import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
 import androidx.navigation.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
-import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
@@ -44,6 +46,14 @@ fun showProgress(activity: Activity) {
 
 fun hideProgress(activity: Activity) {
     activity.findViewById<ConstraintLayout>(R.id.main_progress).visibility = View.GONE
+}
+
+fun hideFab(activity: Activity) {
+    activity.main_fab_add_item.visibility = View.GONE
+}
+
+fun showFab(activity: Activity) {
+    activity.main_fab_add_item.visibility = View.VISIBLE
 }
 
 fun deletePhoto(context: Context, path: String) {
@@ -74,6 +84,43 @@ fun guidelineConstrain(context: Context, guideline: Guideline) {
 }
 
 fun Int.toPx(): Int = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+fun getMainCategories(context: Context): Array<String> {
+    return context.resources.getStringArray(R.array.item_categories_main)
+}
+
+fun getSubcategories(context: Context, mainCat: String): Array<String> {
+    return when(mainCat) {
+        "Arts & Crafts" -> R.array.item_categories_sub_art_and_crafts
+        "Sports & Hobby" -> R.array.item_categories_sub_sports_and_hobby
+        "Baby" -> R.array.item_categories_sub_baby
+        "Women\'s fashion" -> R.array.item_categories_sub_womens_fashion
+        "Men\'s fashion" -> R.array.item_categories_sub_mens_fashion
+        "Electronics" -> R.array.item_categories_sub_electronics
+        "Games & Videogames" -> R.array.item_categories_sub_games_and_videogames
+        "Automotive" -> R.array.item_categories_sub_automotive
+        else -> -1
+    }.let {
+        if (it == -1)
+            arrayOf("")
+        else
+            context.resources.getStringArray(it)
+    }
+}
+
+// Return an array adapter for the main categories
+fun getMainCategoryAdapter(context: Context): ArrayAdapter<String> {
+    return ArrayAdapter(context, com.google.android.material.R.layout.support_simple_spinner_dropdown_item, getMainCategories(context)).apply {
+        setDropDownViewResource(com.google.android.material.R.layout.support_simple_spinner_dropdown_item)
+    }
+}
+
+// Return an array adapter for the main categories
+fun getSubCategoryAdapter(context: Context, mainCat: String): ArrayAdapter<String> {
+    return ArrayAdapter(context, R.layout.support_simple_spinner_dropdown_item, getSubcategories(context, mainCat)).apply {
+        setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+    }
+}
 
 // Compress an image into a new file
 fun compressImage(context: Context, path: String): Uri {
@@ -128,7 +175,7 @@ fun rotateImage(bitmap: Bitmap, angle: Int): Bitmap {
 // Create jpeg file using current datetime
 fun createImageFile(context: Context): File {
     return File.createTempFile(
-        "JPEG_${DateFormat.getDateTimeInstance().format(Date())}_",
+        "JPEG_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}_",
         ".jpg",
         context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
     )

@@ -8,23 +8,22 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/colorPrimary"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/item_details_guideline">
+        app:layout_constraintEnd_toStartOf="@id/item_details_guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/item_details_card"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="32dp"
             android:layout_marginBottom="16dp"
-            android:visibility="invisible"
             app:cardPreventCornerOverlap="true"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -38,11 +37,10 @@
                     android:id="@+id/item_details_photo"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/transparent"
+                    android:adjustViewBounds="true"
                     android:contentDescription="@string/content_item_photo"
-                    android:src="@drawable/ic_camera_white"
                     android:scaleType="centerCrop"
-                    android:adjustViewBounds="true"/>
+                    android:src="@drawable/ic_camera_white" />
 
             </LinearLayout>
 
@@ -76,9 +74,9 @@
                 android:isIndicator="true"
                 android:numStars="5"
                 android:rating="3.5"
-                android:scaleY="1.5"
                 android:scaleX="1.5"
-                android:stepSize="1"/>
+                android:scaleY="1.5"
+                android:stepSize="1" />
 
         </androidx.cardview.widget.CardView>
 
@@ -89,25 +87,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent=".33"/>
+        app:layout_constraintGuide_begin="0dp" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/item_details_guideline"
+        app:layout_constraintStart_toEndOf="@id/item_details_guideline"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_max="500dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_marginStart="24dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:gravity="center_vertical"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -121,7 +119,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/item_title"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/item_details_price"
@@ -129,8 +127,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="@string/item_price"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/item_details_price_symbol"/>
+                    app:layout_constraintEnd_toStartOf="@id/item_details_price_symbol"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/item_details_price_symbol"
@@ -139,8 +137,8 @@
                     android:layout_height="wrap_content"
                     android:paddingStart="4dp"
                     android:text="€"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -170,8 +168,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:paddingStart="60dp"
-                android:hint="@string/item_category_main" />
+                android:hint="@string/item_category_main"
+                android:paddingStart="60dp" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_details_location"
@@ -201,8 +199,8 @@
                 android:layout_marginTop="32dp"
                 android:drawableStart="@drawable/ic_profile_primary"
                 android:drawablePadding="36dp"
-                android:visibility="gone"
-                android:hint="@string/item_owner" />
+                android:hint="@string/item_owner"
+                android:visibility="gone" />
 
         </LinearLayout>
 

@@ -20,7 +20,6 @@ import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.madmax.*
 import it.polito.mad.madmax.madmax.data.model.User
 import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import java.io.IOException
 
@@ -48,7 +47,7 @@ class EditProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Hide FAB because not used by this fragment
-        requireActivity().main_fab_add_item.visibility = View.GONE
+        hideFab(requireActivity())
 
         // Real 0.33 guideline
         guidelineConstrain(requireContext(), profile_edit_guideline)
@@ -149,8 +148,7 @@ class EditProfileFragment : Fragment() {
                     }
                     true
                 } else false
-            }
-            else -> return super.onOptionsItemSelected(item)
+            } else -> return super.onOptionsItemSelected(item)
         }
     }
 

@@ -11,21 +11,33 @@
         android:padding="32dp">
 
         <com.google.android.material.textview.MaterialTextView
+            style="@style/TextAppearance.MaterialComponents.Headline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Filter results"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            android:text="@string/photo_dialog_filter_title" />
 
+        <com.google.android.material.textview.MaterialTextView
+            style="@style/TextAppearance.MaterialComponents.Headline6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:labelFor="@id/filter_dialog_main_cat"
+            android:text="@string/item_price"
+            android:textColor="@color/colorPrimary" />
+
+        <!-- TODO maybe use sliders? -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="minPrice">
+            android:layout_marginTop="8dp"
+            android:hint="@string/photo_dialog_filter_min_price"
+            app:startIconDrawable="@drawable/ic_price_primary"
+            app:startIconTint="@color/colorPrimary">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/item_edit_minPrice"
+                android:id="@+id/filter_dialog_min_price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="numberDecimal" />
@@ -37,10 +49,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="maxPrice">
+            android:hint="@string/photo_dialog_filter_max_price"
+            app:startIconDrawable="@drawable/ic_price_primary"
+            app:startIconTint="@color/colorPrimary">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/item_edit_maxPrice"
+                android:id="@+id/filter_dialog_max_price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="numberDecimal" />
@@ -48,33 +62,29 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textview.MaterialTextView
+            style="@style/TextAppearance.MaterialComponents.Headline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:labelFor="@id/item_edit_category_main"
+            android:layout_marginTop="32dp"
             android:text="@string/item_category_main"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
             android:textColor="@color/colorPrimary" />
 
         <Spinner
-            android:id="@+id/item_edit_category_main"
+            android:id="@+id/filter_dialog_main_cat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp" />
 
         <com.google.android.material.textview.MaterialTextView
+            style="@style/TextAppearance.MaterialComponents.Headline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:labelFor="@id/item_edit_category_sub"
+            android:layout_marginTop="32dp"
             android:text="@string/item_category_sub"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
             android:textColor="@color/colorPrimary" />
 
         <Spinner
-            android:id="@+id/item_edit_category_sub"
+            android:id="@+id/filter_dialog_sub_cat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp" />
@@ -82,24 +92,25 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp">
+            android:layout_marginTop="48dp">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/cancel_filter"
+                android:id="@+id/filter_dialog_cancel"
+                style="@style/Widget.MaterialComponents.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
                 android:backgroundTint="@android:color/darker_gray"
-                android:text="CANCEL"
+                android:text="@string/photo_dialog_cancel"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/apply_filter"
+                android:id="@+id/filter_dialog_apply"
+                style="@style/Widget.MaterialComponents.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:text="APPLY"
+                android:text="@string/photo_dialog_apply"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -86,25 +85,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId) {
-            android.R.id.home -> {
-                main_drawer_layout.openDrawer(GravityCompat.START)
-                true
-            }
-            R.id.menu_settings -> {
-                true
-            }
-            R.id.menu_logout -> {
-                /*auth.signOut()
-                loggingIn = true
-                login()*/
-                true
-            }
-            else -> true
-        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

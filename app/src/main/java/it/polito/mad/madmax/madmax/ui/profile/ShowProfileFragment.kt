@@ -14,7 +14,6 @@ import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.madmax.*
 import it.polito.mad.madmax.madmax.data.model.User
 import it.polito.mad.madmax.madmax.data.viewmodel.UserViewModel
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 
 class ShowProfileFragment : Fragment() {
@@ -49,7 +48,7 @@ class ShowProfileFragment : Fragment() {
         showProgress(requireActivity())
 
         // Hide FAB because not used by this fragment
-        requireActivity().main_fab_add_item.visibility = View.GONE
+        hideFab(requireActivity())
 
         // Real 0.33 guideline
         guidelineConstrain(requireContext(), profile_guideline)

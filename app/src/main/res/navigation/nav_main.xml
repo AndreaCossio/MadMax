@@ -35,12 +35,12 @@
         <action
             android:id="@+id/action_edit_item"
             app:destination="@id/nav_edit_item_fragment" />
-        <argument
-            android:name="message"
-            app:argType="string" />
         <action
             android:id="@+id/action_visit_profile"
             app:destination="@id/nav_show_profile_fragment" />
+        <argument
+            android:name="itemArg"
+            app:argType="it.polito.mad.madmax.madmax.data.model.ItemArg" />
     </fragment>
 
     <!-- Edit item -->
@@ -50,8 +50,8 @@
         android:label="@string/title_edit_item_fragment"
         tools:layout="@layout/fragment_edit_item">
         <argument
-            android:name="message"
-            app:argType="string" />
+            android:name="itemArg"
+            app:argType="it.polito.mad.madmax.madmax.data.model.ItemArg" />
         <action
             android:id="@+id/action_save_item"
             app:destination="@id/nav_details_item_fragment"
@@ -72,7 +72,7 @@
         tools:layout="@layout/fragment_show_profile">
         <action
             android:id="@+id/action_edit_profile"
-            app:destination="@id/nav_edit_profile_fragment"/>
+            app:destination="@id/nav_edit_profile_fragment" />
         <!--app:enterAnim="@anim/slide_in_right"-->
         <argument
             android:name="user"

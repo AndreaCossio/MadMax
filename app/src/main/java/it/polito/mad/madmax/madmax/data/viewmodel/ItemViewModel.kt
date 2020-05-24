@@ -5,155 +5,142 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.Query
 import it.polito.mad.madmax.madmax.data.model.Item
-import it.polito.mad.madmax.madmax.data.model.ItemKey
+import it.polito.mad.madmax.madmax.data.model.ItemFilter
 import it.polito.mad.madmax.madmax.data.repository.FirestoreRepository
-import it.polito.mad.madmax.madmax.ui.item.ItemAdapter
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class ItemViewModel: ViewModel() {
 
-    private val userId: String = Firebase.auth.currentUser!!.uid
+    //private val userId: String = Firebase.auth.currentUser!!.uid
     private val repo: FirestoreRepository = FirestoreRepository()
 
-    val othersItems: ArrayList<MutableLiveData<ItemKey>> by lazy {
-        ArrayList<MutableLiveData<ItemKey>>()
+    private val item: MutableLiveData<Item> by lazy {
+        MutableLiveData<Item>()
     }
 
-    val myItems: ArrayList<MutableLiveData<ItemKey>> by lazy {
-        ArrayList<MutableLiveData<ItemKey>>()
+    private val items: MutableLiveData<ArrayList<Item>> by lazy {
+        MutableLiveData<ArrayList<Item>>()
     }
 
     fun getNewItemId(): String {
         return repo.getNewItemId()
     }
 
-    fun updateItem(newItem: ItemKey, photoChanged: Boolean): Task<Void> {
-        return if (newItem.item.photo == "" || !photoChanged) {
-            repo.writeItem(newItem.itemId, newItem.item).addOnFailureListener { e ->
-                Log.e(TAG, "Failed to update item", e)
-            }
-        } else {
-            repo.writeItemPhoto(newItem.itemId, Uri.parse(newItem.item.photo)).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    newItem.item.apply { photo = task.result.toString() }
-                }
-            }.continueWithTask {
-                repo.writeItem(newItem.itemId, newItem.item).addOnFailureListener { e ->
-                    Log.e(TAG, "Failed to update item", e)
-                }
-            }
-        }
+    fun getItemList():  MutableLiveData<ArrayList<Item>> {
+        return items
     }
 
-    fun createItem(newId: String, newItem: Item): Task<Void> {
-        return if (newItem.photo == "") {
-            myItems.add(MutableLiveData(ItemKey(newId, newItem)))
-            repo.writeItem(newId, newItem).addOnFailureListener { e ->
+    fun getSingleItem(): MutableLiveData<Item> {
+        return item
+    }
+
+    fun clearSingleItemData() {
+        item.value = Item()
+    }
+
+    fun clearItemsData() {
+        items.value?.clear()
+    }
+
+    fun updateItem(newItem: Item, photoChanged: Boolean): Task<Void> {
+        return if (newItem.photo == "" || !photoChanged) {
+            repo.writeItem(newItem.itemId, newItem).addOnFailureListener { e ->
                 Log.e(TAG, "Failed to update item", e)
             }
         } else {
-            repo.writeItemPhoto(newId, Uri.parse(newItem.photo)).addOnCompleteListener { task ->
+            repo.writeItemPhoto(newItem.itemId, Uri.parse(newItem.photo)).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     newItem.apply { photo = task.result.toString() }
                 }
             }.continueWithTask {
-                myItems.add(MutableLiveData(ItemKey(newId, newItem)))
-                repo.writeItem(newId, newItem).addOnFailureListener { e ->
+                repo.writeItem(newItem.itemId, newItem).addOnFailureListener { e ->
                     Log.e(TAG, "Failed to update item", e)
                 }
             }
         }
     }
 
-    fun listenOnItems(personal: Boolean, itemAdapter: ItemAdapter?): ListenerRegistration {
-        return repo.getItems(userId, personal).addSnapshotListener { snapshots, e ->
+    fun listenSingleItem(itemId: String): ListenerRegistration {
+        return repo.getItem(itemId).addSnapshotListener { value, e ->
+            e?.also {
+                Log.w(TAG, "Listen failed: ${it.message}")
+                return@addSnapshotListener
+            }
+            item.value = value!!.toObject(Item::class.java)!!.apply {
+                this.itemId = value.id
+            }
+        }
+    }
+
+    fun listenMyItems(userId: String): ListenerRegistration {
+        return repo.getItems(true, userId).addSnapshotListener { snapshots, e ->
             e?.also {
                 Log.w(TAG, "Listen failed: ${it.message}")
                 return@addSnapshotListener
             }
 
-            for (dc in snapshots!!.documentChanges) {
-                val itemKey = ItemKey(dc.document.id, dc.document.toObject(Item::class.java))
-                if (personal || (!personal && itemKey.item.userId != userId)) {
-                    when (dc.type) {
-                        DocumentChange.Type.ADDED -> {
-                            var alreadyIn = false
-                            itemAdapter?.addItem(itemKey)
-                            if (personal) {
-                                for (i in myItems) {
-                                    if (i.value!!.itemId == itemKey.itemId) {
-                                        i.value = itemKey
-                                        alreadyIn = true
-                                        break
-                                    }
-                                }
-                                if (!alreadyIn) {
-                                    myItems.add(MutableLiveData(itemKey))
-                                }
-                            } else {
-                                for (i in othersItems) {
-                                    if (i.value!!.itemId == itemKey.itemId) {
-                                        i.value = itemKey
-                                        alreadyIn = true
-                                        break
-                                    }
-                                }
-                                if (!alreadyIn) {
-                                    othersItems.add(MutableLiveData(itemKey))
-                                }
-                            }
-                        }
-                        DocumentChange.Type.MODIFIED -> {
-                            itemAdapter?.changeItem(itemKey)
-                            if (personal) {
-                                for (i in myItems) {
-                                    if (i.value!!.itemId == itemKey.itemId) {
-                                        i.value = itemKey
-                                        break
-                                    }
-                                }
-                            } else {
-                                for (i in othersItems) {
-                                    if (i.value!!.itemId == itemKey.itemId) {
-                                        i.value = itemKey
-                                        break
-                                    }
-                                }
-                            }
-                        }
-                        DocumentChange.Type.REMOVED -> {
-                            itemAdapter?.removeItem(itemKey)
-                            if (personal) {
-                                for (i in myItems) {
-                                    if (i.value!!.itemId == itemKey.itemId) {
-                                        myItems.remove(i)
-                                        break
-                                    }
-                                }
-                            } else {
-                                for (i in othersItems) {
-                                    if (i.value!!.itemId == itemKey.itemId) {
-                                        myItems.remove(i)
-                                        break
-                                    }
-                                }
-                            }
+            val newItems = ArrayList<Item>()
+            for (doc in snapshots!!) {
+                newItems.add(doc.toObject(Item::class.java).apply {
+                    itemId = doc.id
+                })
+            }
+            items.value = newItems
+        }
+    }
+
+    fun listenOthersItems(itemFilter: ItemFilter): ListenerRegistration {
+        var itemRef: Query = repo.getItems(false)
+        if (itemFilter.minPrice != -1.0) {
+            itemRef = itemRef.whereGreaterThan("price", itemFilter.minPrice)
+        }
+        if (itemFilter.maxPrice != -1.0) {
+            itemRef = itemRef.whereLessThan("price", itemFilter.maxPrice)
+        }
+        if (itemFilter.mainCategory != "") {
+            itemRef = itemRef.whereEqualTo("category_main", itemFilter.mainCategory)
+        }
+        if (itemFilter.subCategory != "") {
+            itemRef = itemRef.whereEqualTo("category_sub", itemFilter.subCategory)
+        }
+
+        return itemRef.addSnapshotListener { snapshots, e ->
+            e?.also {
+                Log.w(TAG, "Listen failed: ${it.message}")
+                return@addSnapshotListener
+            }
+
+            val newItems = ArrayList<Item>()
+            for (doc in snapshots!!) {
+                if (itemFilter.userId == "" || itemFilter.userId != doc["userId"]) {
+                    if (itemFilter.text == "" || doc["title"].toString().contains(itemFilter.text) || doc["description"].toString().contains(itemFilter.text)) {
+                        // This if is just to be sure to not display something unwanted
+                        if (/*(itemFilter.mainCategory == "" || itemFilter.mainCategory == doc["category_main"].toString()) &&
+                            (itemFilter.subCategory == "" || itemFilter.subCategory == doc["category_sub"].toString()) &&
+                            (itemFilter.minPrice == -1.0 || itemFilter.minPrice < doc["price"].toString().toDouble()) &&
+                            (itemFilter.maxPrice == -1.0 || itemFilter.maxPrice > doc["price"].toString().toDouble()) &&*/
+                            SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).parse(doc["expiry"].toString())!! > Date()) {
+                                newItems.add(doc.toObject(Item::class.java).apply {
+                                    itemId = doc.id
+                                })
                         }
                     }
                 }
             }
+            items.value = newItems
         }
     }
 
-    fun notifyInterest(itemId: String) {
+    /*fun notifyInterest(itemId: String) {
         repo.notifyInterest(itemId, userId).addOnSuccessListener {
             Log.d(TAG, "Added user of interest")
         }
-    }
+    }*/
 
     companion object {
         const val TAG = "MM_ITEM_VM"

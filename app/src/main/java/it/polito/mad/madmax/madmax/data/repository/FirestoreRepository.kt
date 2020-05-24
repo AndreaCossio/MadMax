@@ -43,7 +43,11 @@ class FirestoreRepository {
     //
     // ITEM
     //
-    fun getItems(userId: String, personal: Boolean): Query {
+    fun getItem(itemId: String): DocumentReference {
+        return db.document("items/$itemId")
+    }
+
+    fun getItems(personal: Boolean, userId: String = ""): Query {
         return if (personal) {
             db.collection("users/$userId/items")
         } else {

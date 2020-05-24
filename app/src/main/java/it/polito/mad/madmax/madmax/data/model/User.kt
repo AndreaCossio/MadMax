@@ -4,7 +4,6 @@ import com.google.firebase.firestore.Exclude
 import java.io.Serializable
 
 data class User (
-    // This prevent firestore to write this field but remember to always set the id
     @get:Exclude var userId: String = "",
     var name: String = "",
     var nickname: String = "",
