@@ -40,7 +40,7 @@
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/content_profile_photo"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_profile_white" />
+                    android:src="@drawable/ic_profile" />
 
             </LinearLayout>
 
@@ -87,7 +87,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:drawableStart="@drawable/ic_nickname_primary"
+            android:drawableStart="@drawable/ic_nickname"
             android:drawablePadding="36dp"
             android:hint="@string/profile_nickname" />
 
@@ -97,7 +97,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:drawableStart="@drawable/ic_email_primary"
+            android:drawableStart="@drawable/ic_email"
             android:drawablePadding="36dp"
             android:hint="@string/profile_email" />
 
@@ -107,7 +107,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:drawableStart="@drawable/ic_location_primary"
+            android:drawableStart="@drawable/ic_location"
             android:drawablePadding="36dp"
             android:hint="@string/profile_location" />
 
@@ -117,7 +117,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:drawableStart="@drawable/ic_phone_primary"
+            android:drawableStart="@drawable/ic_phone"
             android:drawablePadding="36dp"
             android:hint="@string/profile_phone" />
 

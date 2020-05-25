@@ -43,7 +43,7 @@
                         android:adjustViewBounds="true"
                         android:contentDescription="@string/content_item_photo"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/ic_camera_white" />
+                        android:src="@drawable/ic_camera" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -55,7 +55,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="bottom|end"
                 android:layout_margin="16dp"
-                android:src="@drawable/ic_camera_white" />
+                android:src="@drawable/ic_camera" />
 
         </FrameLayout>
 
@@ -101,7 +101,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/item_title"
-                app:startIconDrawable="@drawable/ic_title_primary"
+                app:startIconDrawable="@drawable/ic_title"
                 app:startIconTint="@color/colorPrimary">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -118,7 +118,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:hint="@string/item_description"
-                app:startIconDrawable="@drawable/ic_description_primary"
+                app:startIconDrawable="@drawable/ic_description"
                 app:startIconTint="@color/colorPrimary">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -135,7 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:hint="@string/item_price"
-                app:startIconDrawable="@drawable/ic_price_primary"
+                app:startIconDrawable="@drawable/ic_price"
                 app:startIconTint="@color/colorPrimary">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -152,7 +152,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:hint="@string/item_location"
-                app:startIconDrawable="@drawable/ic_location_primary"
+                app:startIconDrawable="@drawable/ic_location"
                 app:startIconTint="@color/colorPrimary">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -169,7 +169,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:hint="@string/item_expiry"
-                app:startIconDrawable="@drawable/ic_expiry_primary"
+                app:startIconDrawable="@drawable/ic_expiry"
                 app:startIconTint="@color/colorPrimary">
 
                 <com.google.android.material.textfield.TextInputEditText

@@ -2,17 +2,18 @@
 <resources>
     <color name="colorPrimary">#2196F3</color>
     <color name="colorPrimaryDark">#1976D2</color>
-    <color name="colorSecondary">#009688</color>
-    <color name="colorSecondaryDark">#00796B</color>
-    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorPrimaryVariant">#1976D2</color>
+    <color name="colorSecondary">#4CAF50</color>
+    <color name="colorSecondaryVariant">#087F23</color>
+    <!--<color name="colorWhite">#FFFFFF</color>-->
     <color name="colorError">#F44336</color>
-    <color name="colorTextBlack">#000000</color>
-    <color name="colorTextGrey">#424242</color>
-    <color name="colorTextWhite">#FFFFFF</color>
-    <color name="iconOnPrimary">#FFFFFF</color>
-    <color name="iconOnSecondary">#FFFFFF</color>
-    <color name="iconOnBackground">#424242</color>
-    <color name="lightGrey">#E0E0E0</color>
-    <color name="lightSecondary">#81C784</color>
-    <color name="transparent">#00000000</color>
+    <!--<color name="colorPrimaryLight">#6EC6FF</color>
+    <color name="colorSecondaryLight">#80E27E</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorGreyDark">#424242</color>
+    <color name="colorGrey">#E0E0E0</color>
+    <color name="colorSurface">#FFFFFF</color>-->
+    <color name="iconOnPrimary">@android:color/white</color>
+    <color name="iconOnSecondary">@android:color/white</color>
+    <color name="iconOnBackground">@android:color/black</color>
 </resources>

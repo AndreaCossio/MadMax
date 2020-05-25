@@ -18,7 +18,6 @@
         android:id="@+id/item_list_empty"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/colorTextWhite"
         android:padding="64dp"
         android:translationZ="1dp"
         android:visibility="gone"

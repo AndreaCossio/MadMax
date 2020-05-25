@@ -1,30 +1,25 @@
 <resources>
-
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light">
+    <!-- Base application theme. -->
+    <style name="Theme.MadMax" parent="Theme.MaterialComponents.Light">
         <!-- COLORS -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
         <item name="colorSecondary">@color/colorSecondary</item>
-        <item name="colorSecondaryVariant">@color/colorSecondaryDark</item>
-        <!--<item name="colorButtonNormal">@color/colorSecondaryDark</item>-->
+        <item name="colorSecondaryVariant">@color/colorSecondaryVariant</item>
+        <item name="colorOnSecondary">@android:color/white</item>
+        <item name="colorError">@color/colorError</item>
+        <!--<item name="colorOnPrimary">@color/colorWhite</item>
+        <item name="colorOnSecondary">@color/colorWhite</item>
         <item name="colorSurface">@color/colorSurface</item>
         <item name="colorError">@color/colorError</item>
-        <item name="colorOnPrimary">@color/colorTextWhite</item>
-        <item name="colorOnSecondary">@color/colorTextWhite</item>
-        <item name="colorOnBackground">@color/colorTextBlack</item>
-        <item name="colorOnSurface">@color/colorTextBlack</item>
-        <item name="colorOnError">@color/colorTextWhite</item>
-
-        <!-- FONTS -->
-        <item name="fontFamily">@font/roboto</item>
-        <item name="android:fontFamily">@font/roboto_mono</item>
+        <item name="colorOnBackground">@color/colorGreyDark</item>
+        <item name="colorOnSurface">@color/colorGreyDark</item>-->
     </style>
 
-    <style name="AppTheme.NoActionBar" >
+    <style name="Theme.MadMax.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
 </resources>

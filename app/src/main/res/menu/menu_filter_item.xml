@@ -7,13 +7,13 @@
         android:contentDescription="@string/content_filter"
         android:icon="@drawable/ic_search"
         android:title="@string/menu_search"
-        app:showAsAction="ifRoom|collapseActionView"
-        app:actionViewClass="androidx.appcompat.widget.SearchView" />
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="always|collapseActionView" />
 
     <item
         android:id="@+id/menu_filter"
         android:contentDescription="@string/content_filter"
-        android:icon="@drawable/ic_filter_list_white"
+        android:icon="@drawable/ic_filter_list"
         android:title="@string/menu_filter"
         app:showAsAction="always" />
 

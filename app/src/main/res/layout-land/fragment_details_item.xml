@@ -40,7 +40,7 @@
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/content_item_photo"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_camera_white" />
+                    android:src="@drawable/ic_camera" />
 
             </LinearLayout>
 
@@ -148,7 +148,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:drawableStart="@drawable/ic_description_primary"
+                android:drawableStart="@drawable/ic_description"
                 android:drawablePadding="36dp"
                 android:hint="@string/item_description" />
 
@@ -158,7 +158,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:drawableStart="@drawable/ic_bookmark_primary"
+                android:drawableStart="@drawable/ic_bookmark"
                 android:drawablePadding="36dp"
                 android:hint="@string/item_category_main" />
 
@@ -177,7 +177,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:drawableStart="@drawable/ic_location_primary"
+                android:drawableStart="@drawable/ic_location"
                 android:drawablePadding="36dp"
                 android:hint="@string/item_location" />
 
@@ -187,7 +187,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:drawableStart="@drawable/ic_expiry_primary"
+                android:drawableStart="@drawable/ic_expiry"
                 android:drawablePadding="36dp"
                 android:hint="@string/item_expiry" />
 

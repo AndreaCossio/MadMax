@@ -8,25 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:427525694081:android:8b30069ffbae5b5ab7e380",
+        "mobilesdk_app_id": "1:427525694081:android:ecc18e9fbcb5ae76b7e380",
         "android_client_info": {
-          "package_name": "it.polito.mad.madmax.madmax"
+          "package_name": "it.polito.mad.madmax"
         }
       },
       "oauth_client": [
         {
-          "client_id": "427525694081-3gq2v2el6our483arb45f5d4m3h6mq2m.apps.googleusercontent.com",
+          "client_id": "427525694081-cd4pe8vc417i7gheliso9844s3vt2774.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "it.polito.mad.madmax.madmax",
-            "certificate_hash": "7a08331235d59eb4f1270f2b2e8b2bf43f1612be"
-          }
-        },
-        {
-          "client_id": "427525694081-bkkvhu7gu3gfd50a0b46nj028hmkf3ke.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "it.polito.mad.madmax.madmax",
+            "package_name": "it.polito.mad.madmax",
             "certificate_hash": "dd59ad7eb8f36708057bf730e3fad62e6697437d"
           }
         },

@@ -40,7 +40,7 @@
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/content_item_photo"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_profile_white" />
+                    android:src="@drawable/ic_profile" />
 
             </LinearLayout>
 

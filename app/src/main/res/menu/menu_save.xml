@@ -4,8 +4,8 @@
 
     <item
         android:id="@+id/menu_save"
-        android:title="@string/menu_save"
         android:contentDescription="@string/content_save"
+        android:title="@string/menu_save"
         app:showAsAction="ifRoom" />
 
 </menu>
