@@ -148,24 +148,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun removeTopLevelProfile() {
-        appBarConfig = AppBarConfiguration(
-            setOf(
-                R.id.nav_item_list_fragment,
-                R.id.nav_on_sale_list_fragment
-            ), main_drawer_layout
-        )
-        setupActionBarWithNavController(navController, appBarConfig)
+        setupActionBarWithNavController(navController, appBarConfig.apply {
+            topLevelDestinations.remove(R.id.nav_show_profile_fragment)
+        })
     }
 
     fun addTopLevelProfile() {
-        appBarConfig = AppBarConfiguration(
-            setOf(
-                R.id.nav_item_list_fragment,
-                R.id.nav_on_sale_list_fragment,
-                R.id.nav_show_profile_fragment
-            ), main_drawer_layout
-        )
-        setupActionBarWithNavController(navController, appBarConfig)
+        setupActionBarWithNavController(navController, appBarConfig.apply {
+            topLevelDestinations.add(R.id.nav_show_profile_fragment)
+        })
     }
 
     // Companion

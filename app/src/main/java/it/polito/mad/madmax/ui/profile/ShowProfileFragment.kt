@@ -15,7 +15,6 @@ import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.User
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 
 class ShowProfileFragment : Fragment() {
@@ -33,9 +32,6 @@ class ShowProfileFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        /*args.user?.also {
-            requireActivity().main_toolbar.title = ""
-        }*/
         return inflater.inflate(R.layout.fragment_show_profile, container, false)
     }
 

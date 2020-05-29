@@ -1,29 +1,24 @@
 package it.polito.mad.madmax.ui.profile
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.*
 import androidx.activity.OnBackPressedCallback
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.card.MaterialCardView
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.User
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
-import java.io.IOException
 
 class EditProfileFragment : Fragment() {
 
@@ -165,47 +160,27 @@ class EditProfileFragment : Fragment() {
         }
     }
 
-    // Compresses selected images and deletes, if necessary, old files
-    // Variable tempUser updated accordingly and fields updated
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            RC_CAPTURE -> {
-                when (resultCode) {
-                    // Image taken correctly
-                    Activity.RESULT_OK -> {
-                        // Compress Image
-                        tempUser.apply { photo = compressImage(requireContext(), tempUser.photo).toString() }
-                        updateFields()
-                        displayMessage(requireContext(), getString(R.string.message_taken_photo))
-                    }
-                    // Capturing image aborted
-                    else -> {
-                        // Delete destination file
-                        deletePhoto(requireContext(), tempUser.photo)
-                        // Restore tempUser field
-                        tempUser.apply { photo = userVM.getCurrentUserData().value!!.photo }
-                        updateFields()
-                        displayMessage(requireContext(), getString(R.string.message_error_intent))
-                    }
-                }
-            }
-            RC_GALLERY -> {
-                when (resultCode) {
-                    // Image selected correctly
-                    Activity.RESULT_OK -> {
-                        data?.data?.also {
-                            // Compress the image and update tempUser field
-                            tempUser.apply { photo = compressImage(requireContext(), it.toString()).toString() }
-                            updateFields()
-                            displayMessage(requireContext(), getString(R.string.message_chosen_photo))
-                        } ?: displayMessage(requireContext(), getString(R.string.message_error_intent))
-                    }
-                    // Error
-                    else -> displayMessage(requireContext(), getString(R.string.message_error_intent))
-                }
-            }
+    private val takePicture = registerForActivityResult(ActivityResultContracts.TakePicture()) { taken ->
+        if (taken) {
+            tempUser.apply { photo = compressImage(requireContext(), tempUser.photo).toString() }
+            updateFields()
+            displayMessage(requireContext(), getString(R.string.message_taken_photo))
+        } else {
+            // Delete destination file
+            deletePhoto(requireContext(), tempUser.photo)
+            // Restore tempUser field
+            tempUser.apply { photo = userVM.getCurrentUserData().value!!.photo }
+            updateFields()
+            displayMessage(requireContext(), getString(R.string.message_error_intent))
         }
+    }
+
+    private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.also {
+            tempUser.apply { photo = compressImage(requireContext(), it.toString()).toString() }
+            updateFields()
+            displayMessage(requireContext(), getString(R.string.message_chosen_photo))
+        } ?: displayMessage(requireContext(), getString(R.string.message_error_intent))
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -229,23 +204,14 @@ class EditProfileFragment : Fragment() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.CAMERA), RP_CAMERA)
         } else {
-            Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-                activity?.packageManager?.also { pm ->
-                    takePictureIntent.resolveActivity(pm)?.also {
-                        try {
-                            // Create the File where the photo should go
-                            createImageFile(requireContext()).also { file ->
-                                val photoUri = FileProvider.getUriForFile(requireContext(), getString(R.string.file_provider), file)
-                                tempUser.apply { photo = photoUri.toString() }
-                                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-                                showProgress(requireActivity())
-                                startActivityForResult(takePictureIntent, RC_CAPTURE)
-                            }
-                        } catch (ex: IOException) {
-                            ex.printStackTrace()
-                        }
-                    }
-                }
+            createImageFile(requireContext()).also { file ->
+                val photoUri = FileProvider.getUriForFile(
+                    requireContext(),
+                    getString(R.string.file_provider),
+                    file
+                )
+                tempUser.apply { photo = photoUri.toString() }
+                takePicture.launch(photoUri)
             }
         }
     }
@@ -255,15 +221,7 @@ class EditProfileFragment : Fragment() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), RP_READ_STORAGE)
         } else {
-            Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also { pickPhoto ->
-                pickPhoto.type = "image/*"
-                if (activity?.packageManager?.queryIntentActivities(pickPhoto, 0)?.isNotEmpty() == true) {
-                    showProgress(requireActivity())
-                    startActivityForResult(pickPhoto, RC_GALLERY)
-                } else {
-                    displayMessage(requireContext(), getString(R.string.message_error_gallery_app))
-                }
-            }
+            getContent.launch("image/*")
         }
     }
 
