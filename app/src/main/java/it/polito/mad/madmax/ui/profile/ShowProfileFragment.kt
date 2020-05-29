@@ -15,6 +15,7 @@ import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.User
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 
 class ShowProfileFragment : Fragment() {
@@ -32,9 +33,9 @@ class ShowProfileFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        args.user?.also {
+        /*args.user?.also {
             requireActivity().main_toolbar.title = ""
-        }
+        }*/
         return inflater.inflate(R.layout.fragment_show_profile, container, false)
     }
 
@@ -47,6 +48,9 @@ class ShowProfileFragment : Fragment() {
 
         // Real 0.33 guideline
         guidelineConstrain(requireContext(), profile_guideline)
+
+        // Card radius
+        profile_card.addOnLayoutChangeListener(cardRadiusConstrain)
 
         // Observer user data
         args.user?.also { userId ->
@@ -70,7 +74,10 @@ class ShowProfileFragment : Fragment() {
             userListenerRegistration.remove()
         }
         // Restore top level destination
-        (requireActivity() as MainActivity).addTopLevelProfile()
+        args.user?.also {
+            (requireActivity() as MainActivity).addTopLevelProfile()
+        }
+        profile_card.removeOnLayoutChangeListener(cardRadiusConstrain)
     }
 
     override fun onDestroy() {
@@ -108,29 +115,25 @@ class ShowProfileFragment : Fragment() {
             profile_phone.visibility = View.GONE
         }
 
-        profile_photo.post {
-            profile_card.apply {
-                radius = measuredHeight * 0.5F
-            }
-            profile_photo.apply {
-                if (user.photo != "") {
-                    Picasso.get().load(Uri.parse(user.photo)).into(this, object : Callback {
-                        override fun onSuccess() {
-                            translationY = 0F
-                            hideProgress(requireActivity())
-                        }
+        // Profile photo
+        profile_photo.apply {
+            if (user.photo != "") {
+                Picasso.get().load(Uri.parse(user.photo)).into(this, object : Callback {
+                    override fun onSuccess() {
+                        translationY = 0F
+                        hideProgress(requireActivity())
+                    }
 
-                        override fun onError(e: Exception?) {
-                            translationY = measuredHeight / 6F
-                            setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
-                            hideProgress(requireActivity())
-                        }
-                    })
-                } else {
-                    translationY = measuredHeight / 6F
-                    setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
-                    hideProgress(requireActivity())
-                }
+                    override fun onError(e: Exception?) {
+                        translationY = measuredHeight / 6F
+                        setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
+                        hideProgress(requireActivity())
+                    }
+                })
+            } else {
+                translationY = measuredHeight / 6F
+                setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
+                hideProgress(requireActivity())
             }
         }
     }

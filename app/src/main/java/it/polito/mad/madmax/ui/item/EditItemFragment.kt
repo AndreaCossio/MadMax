@@ -63,12 +63,16 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        showProgress(requireActivity())
 
         // Hide FAB because not used by this fragment
         hideFab(requireActivity())
 
         // Real 0.33 guideline
         guidelineConstrain(requireContext(), item_edit_guideline)
+
+        // Card radius
+        item_edit_card.addOnLayoutChangeListener(cardRadiusConstrain)
 
         // Attach listeners
         item_edit_main_cat.onItemSelectedListener = this
@@ -89,8 +93,8 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
         super.onDestroyView()
         // Detach listener
         item_edit_change_photo.setOnClickListener(null)
-        //item_edit_expiry_button.setOnClickListener(null)
         item_edit_expiry.setOnClickListener(null)
+        item_edit_card.removeOnLayoutChangeListener(cardRadiusConstrain)
     }
 
     override fun onAttach(context: Context) {
@@ -394,26 +398,21 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }*/
 
         // Update photo
-        item_edit_photo.post {
-            item_edit_card.apply {
-                radius = measuredHeight * 0.5F
-            }
-            item_edit_photo.apply {
-                if (tempItem.photo != "") {
-                    Picasso.get().load(Uri.parse(tempItem.photo)).into(item_edit_photo, object : Callback {
-                        override fun onSuccess() {
-                            hideProgress(requireActivity())
-                        }
+        item_edit_photo.apply {
+            if (tempItem.photo != "") {
+                Picasso.get().load(Uri.parse(tempItem.photo)).into(item_edit_photo, object : Callback {
+                    override fun onSuccess() {
+                        hideProgress(requireActivity())
+                    }
 
-                        override fun onError(e: Exception?) {
-                            setImageDrawable(requireContext().getDrawable(R.drawable.ic_camera))
-                            hideProgress(requireActivity())
-                        }
-                    })
-                } else {
-                    setImageDrawable(requireContext().getDrawable(R.drawable.ic_camera))
-                    hideProgress(requireActivity())
-                }
+                    override fun onError(e: Exception?) {
+                        setImageDrawable(requireContext().getDrawable(R.drawable.ic_camera))
+                        hideProgress(requireActivity())
+                    }
+                })
+            } else {
+                setImageDrawable(requireContext().getDrawable(R.drawable.ic_camera))
+                hideProgress(requireActivity())
             }
         }
     }

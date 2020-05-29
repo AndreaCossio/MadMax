@@ -21,6 +21,7 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.Guideline
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
@@ -72,17 +73,23 @@ fun getFragmentSpaceSize(context: Context): Point {
 }
 
 fun guidelineConstrain(context: Context, guideline: Guideline) {
+    val begin: Int = if (context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        getFragmentSpaceSize(context).x
+    } else {
+        getFragmentSpaceSize(context).y
+    }
     guideline.apply {
-        val begin = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            getFragmentSpaceSize(context).x
-        } else {
-            getFragmentSpaceSize(context).y
-        }
         if (begin > 0) {
             setGuidelineBegin((0.33 * begin).toInt())
         } else {
             setGuidelinePercent(0.33F)
         }
+    }
+}
+
+var cardRadiusConstrain = View.OnLayoutChangeListener { v: View, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int ->
+    (v as MaterialCardView).apply {
+        radius = measuredHeight / 2F
     }
 }
 

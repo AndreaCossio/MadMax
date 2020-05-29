@@ -10,11 +10,13 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.*
 import androidx.activity.OnBackPressedCallback
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.card.MaterialCardView
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.*
@@ -53,7 +55,10 @@ class EditProfileFragment : Fragment() {
         // Real 0.33 guideline
         guidelineConstrain(requireContext(), profile_edit_guideline)
 
-        // Attach listener
+        // Card radius
+        profile_edit_card.addOnLayoutChangeListener(cardRadiusConstrain)
+
+        // Attach change photo listener
         profile_edit_change_photo.setOnClickListener {
             openPhotoDialog(requireContext(), requireActivity(), { a: String -> openDialog = a}, {captureImage()}, {getImageFromGallery()}, {removeImage()})
         }
@@ -66,6 +71,7 @@ class EditProfileFragment : Fragment() {
         super.onDestroyView()
         // Detach listener
         profile_edit_change_photo.setOnClickListener(null)
+        profile_edit_card.removeOnLayoutChangeListener(cardRadiusConstrain)
     }
 
     override fun onAttach(context: Context) {
@@ -104,7 +110,10 @@ class EditProfileFragment : Fragment() {
             state.getString(getString(R.string.edit_profile_dialog_state))?.also {
                 openDialog = it
                 when (openDialog) {
-                    "Sure" -> openSureDialog(requireContext(), requireActivity(), { findNavController().navigateUp() }, { a: String -> openDialog = a})
+                    "Sure" -> openSureDialog(requireContext(), requireActivity(), {
+                        showProgress(requireActivity())
+                        findNavController().navigateUp()
+                    }, { a: String -> openDialog = a})
                     "Change" -> openPhotoDialog(requireContext(), requireActivity(), { a: String -> openDialog = a}, {captureImage()}, {getImageFromGallery()}, {removeImage()})
                 }
             }
@@ -284,29 +293,24 @@ class EditProfileFragment : Fragment() {
         profile_edit_phone.setText(tempUser.phone)
 
         // Update photo
-        profile_edit_photo.post {
-            profile_edit_card.apply {
-                radius = measuredHeight * 0.5F
-            }
-            profile_edit_photo.apply {
-                if (tempUser.photo != "") {
-                    Picasso.get().load(Uri.parse(tempUser.photo)).into(profile_edit_photo, object : Callback {
-                        override fun onSuccess() {
-                            translationY = 0F
-                            hideProgress(requireActivity())
-                        }
+        profile_edit_photo.apply {
+            if (tempUser.photo != "") {
+                Picasso.get().load(Uri.parse(tempUser.photo)).into(profile_edit_photo, object : Callback {
+                    override fun onSuccess() {
+                        translationY = 0F
+                        hideProgress(requireActivity())
+                    }
 
-                        override fun onError(e: Exception?) {
-                            translationY = measuredHeight / 6F
-                            setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
-                            hideProgress(requireActivity())
-                        }
-                    })
-                } else {
-                    translationY = measuredHeight / 6F
-                    setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
-                    hideProgress(requireActivity())
-                }
+                    override fun onError(e: Exception?) {
+                        translationY = measuredHeight / 6F
+                        setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
+                        hideProgress(requireActivity())
+                    }
+                })
+            } else {
+                translationY = measuredHeight / 6F
+                setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
+                hideProgress(requireActivity())
             }
         }
     }

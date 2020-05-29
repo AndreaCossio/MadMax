@@ -51,12 +51,16 @@ class DetailsItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         showProgress(requireActivity())
+
+        // Hide FAB because not used by this fragment
         hideFab(requireActivity())
 
         // Real 0.33 guideline
         guidelineConstrain(requireContext(), item_details_guideline)
+
+        // Card radius
+        item_details_card.addOnLayoutChangeListener(cardRadiusConstrain)
 
         // Create
         when (itemArg.task) {
@@ -146,6 +150,7 @@ class DetailsItemFragment : Fragment() {
             itemListener.remove()
         if (this::userListener.isInitialized)
             userListener.remove()
+        item_details_card.removeOnLayoutChangeListener(cardRadiusConstrain)
     }
 
     override fun onDestroy() {
@@ -241,29 +246,23 @@ class DetailsItemFragment : Fragment() {
         }
 
         // Photo
-        item_details_photo.post {
-            item_details_card.apply {
-                radius = measuredHeight * 0.5F
-            }
-            item_details_photo.apply {
-                if (item.photo != "") {
-                    Picasso.get().load(Uri.parse(item.photo)).into(item_details_photo, object: Callback {
-                        override fun onSuccess() {
-                            hideProgress(requireActivity())
-                        }
+        item_details_photo.apply {
+            if (item.photo != "") {
+                Picasso.get().load(Uri.parse(item.photo)).into(item_details_photo, object: Callback {
+                    override fun onSuccess() {
+                        hideProgress(requireActivity())
+                    }
 
-                        override fun onError(e: Exception?) {
-                            item_details_photo.setImageDrawable(requireContext().getDrawable(R.drawable.ic_camera))
-                            hideProgress(requireActivity())
-                        }
-                    })
-                } else {
-                    item_details_photo.setImageDrawable(requireContext().getDrawable(R.drawable.ic_camera))
-                    hideProgress(requireActivity())
-                }
+                    override fun onError(e: Exception?) {
+                        item_details_photo.setImageDrawable(requireContext().getDrawable(R.drawable.ic_camera))
+                        hideProgress(requireActivity())
+                    }
+                })
+            } else {
+                item_details_photo.setImageDrawable(requireContext().getDrawable(R.drawable.ic_camera))
+                hideProgress(requireActivity())
             }
         }
-
     }
 
     private fun updateUserField(name: String) {
