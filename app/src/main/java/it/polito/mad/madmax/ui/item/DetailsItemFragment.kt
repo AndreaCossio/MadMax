@@ -114,13 +114,13 @@ class DetailsItemFragment : Fragment() {
                     item_details_stars.setIsIndicator(false)
                     itemsVM.checkIfInterested(itemArg.item.itemId, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
                         if (!(it["interestedUsers"] as ArrayList<String>).contains(userVM.getCurrentUserData().value!!.userId)) {
-                            requireActivity().main_fab_add_item.setImageDrawable(requireContext().getDrawable(R.drawable.ic_unfavourite))
-                            requireActivity().main_fab_add_item.setOnClickListener {showInterest()}
-                            showFab(requireActivity())
+                            showFab(requireActivity(), View.OnClickListener {
+                                showInterest()
+                            }, requireContext().getDrawable(R.drawable.ic_favourite_out))
                         } else {
-                            requireActivity().main_fab_add_item.setImageDrawable(requireContext().getDrawable(R.drawable.ic_favourite))
-                            requireActivity().main_fab_add_item.setOnClickListener {removeInterest()}
-                            showFab(requireActivity())
+                            showFab(requireActivity(), View.OnClickListener {
+                                removeInterest()
+                            }, requireContext().getDrawable(R.drawable.ic_favourite_out))
                         }
                     }
                 } else {
@@ -277,8 +277,10 @@ class DetailsItemFragment : Fragment() {
     private fun showInterest() {
         itemsVM.notifyInterest(requireContext(), itemArg.item, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
             displayMessage(requireContext(), "Successfully showed interest")
-            requireActivity().main_fab_add_item.setImageDrawable(requireContext().getDrawable(R.drawable.ic_favourite))
-            requireActivity().main_fab_add_item.setOnClickListener {removeInterest()}
+            requireActivity().main_fab.apply {
+                setImageDrawable(requireContext().getDrawable(R.drawable.ic_favourite))
+                setOnClickListener {removeInterest()}
+            }
         }.addOnFailureListener {
             displayMessage(requireContext(), "Failed to show interest")
         }
@@ -287,8 +289,10 @@ class DetailsItemFragment : Fragment() {
     private fun removeInterest() {
         itemsVM.removeInterest(requireContext(), itemArg.item, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
             displayMessage(requireContext(), "Successfully removed interest")
-            requireActivity().main_fab_add_item.setImageDrawable(requireContext().getDrawable(R.drawable.ic_unfavourite))
-            requireActivity().main_fab_add_item.setOnClickListener {showInterest()}
+            requireActivity().main_fab.apply {
+                setImageDrawable(requireContext().getDrawable(R.drawable.ic_favourite_out))
+                setOnClickListener {showInterest()}
+            }
         }.addOnFailureListener {
             displayMessage(requireContext(), "Failed to remove interest")
         }

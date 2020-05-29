@@ -1,19 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorPrimaryLight">#6EC6FF</color>
     <color name="colorPrimary">#2196F3</color>
     <color name="colorPrimaryDark">#1976D2</color>
-    <color name="colorPrimaryVariant">#1976D2</color>
+    <color name="colorSecondaryLight">#80E27E</color>
     <color name="colorSecondary">#4CAF50</color>
     <color name="colorSecondaryVariant">#087F23</color>
-    <!--<color name="colorWhite">#FFFFFF</color>-->
     <color name="colorError">#F44336</color>
-    <!--<color name="colorPrimaryLight">#6EC6FF</color>
-    <color name="colorSecondaryLight">#80E27E</color>
     <color name="colorBlack">#000000</color>
     <color name="colorGreyDark">#424242</color>
-    <color name="colorGrey">#E0E0E0</color>
-    <color name="colorSurface">#FFFFFF</color>-->
+    <color name="colorGrey">#E0E0E0</color>-->
+    <color name="colorSurface">@android:color/white</color>
     <color name="iconOnPrimary">@android:color/white</color>
     <color name="iconOnSecondary">@android:color/white</color>
     <color name="iconOnBackground">@android:color/black</color>
+
+    <color name="cat_0">#52c7b8</color>
+    <color name="cat_1">#ffc947</color>
+    <color name="cat_2">#ff6090</color>
+    <color name="cat_3">#d05ce3</color>
+    <color name="cat_4">#8eacbb</color>
+    <color name="cat_5">#cfcfcf</color>
+    <color name="cat_6">#ff8a50</color>
+    <color name="cat_7">#757de8</color>
+
+    <color name="colorHot">#ff5722</color>
 </resources>

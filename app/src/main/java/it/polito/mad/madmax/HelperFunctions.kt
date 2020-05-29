@@ -9,6 +9,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.Point
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -17,7 +18,6 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Guideline
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
@@ -40,19 +40,23 @@ fun closeKeyboard(activity: Activity) {
 
 fun showProgress(activity: Activity) {
     closeKeyboard(activity)
-    activity.findViewById<ConstraintLayout>(R.id.main_progress).visibility = View.VISIBLE
+    activity.main_progress.visibility = View.VISIBLE
 }
 
 fun hideProgress(activity: Activity) {
-    activity.findViewById<ConstraintLayout>(R.id.main_progress).visibility = View.GONE
+    activity.main_progress.visibility = View.GONE
+}
+
+fun showFab(activity: Activity, clickListener: View.OnClickListener, drawable: Drawable?) {
+    activity.main_fab.apply {
+        setOnClickListener(clickListener)
+        setImageDrawable(drawable)
+        visibility = View.VISIBLE
+    }
 }
 
 fun hideFab(activity: Activity) {
-    activity.main_fab_add_item.visibility = View.GONE
-}
-
-fun showFab(activity: Activity) {
-    activity.main_fab_add_item.visibility = View.VISIBLE
+    activity.main_fab.visibility = View.GONE
 }
 
 fun deletePhoto(context: Context, path: String) {
@@ -61,18 +65,18 @@ fun deletePhoto(context: Context, path: String) {
     }
 }
 
-fun getScreenSize(context: Context): Point {
+fun getFragmentSpaceSize(context: Context): Point {
     return Point().also {
-        (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getRealSize(it)
+        (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getSize(it)
     }
 }
 
 fun guidelineConstrain(context: Context, guideline: Guideline) {
     guideline.apply {
         val begin = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            getScreenSize(context).x
+            getFragmentSpaceSize(context).x
         } else {
-            getScreenSize(context).y
+            getFragmentSpaceSize(context).y
         }
         if (begin > 0) {
             setGuidelineBegin((0.33 * begin).toInt())
@@ -206,20 +210,20 @@ fun openSureDialog(context: Context, activity: Activity, positiveAction: () -> U
         .show()
 }
 
-fun openPhotoDialog(context: Context, activity: Activity, dialogSetter: (String) -> Unit, captureImage: () -> Unit, getImageFromGallery: () -> Unit, removeImage: () -> Unit) {
+fun openPhotoDialog(context: Context, activity: Activity, dialogSetter: (String) -> Unit, captureImage: () -> Unit, getImageFromGallery: () -> Unit, removeImage: () -> Unit){
     closeKeyboard(activity)
-    dialogSetter("Change")
     activity.packageManager?.also { pm ->
         val items = if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
             arrayOf<CharSequence>(context.getString(R.string.dialog_change_take), context.getString(R.string.dialog_change_gallery), context.getString(R.string.dialog_change_remove))
         } else {
             arrayOf<CharSequence>(context.getString(R.string.dialog_change_gallery), context.getString(R.string.dialog_change_remove))
         }
+        dialogSetter("Change")
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.dialog_change_title)
             .setItems(items) { _, which ->
                 dialogSetter("")
-                when(items[which]) {
+                when (items[which]) {
                     context.getString(R.string.dialog_change_take) -> captureImage()
                     context.getString(R.string.dialog_change_gallery) -> getImageFromGallery()
                     else -> removeImage()
@@ -227,5 +231,19 @@ fun openPhotoDialog(context: Context, activity: Activity, dialogSetter: (String)
             }
             .setOnCancelListener { dialogSetter("") }
             .show()
+    }
+}
+
+fun getColorIdCategory(category: String): Int {
+    return when(category) {
+        "Arts & Crafts" -> R.color.cat_0
+        "Sports & Hobby" -> R.color.cat_1
+        "Baby" -> R.color.cat_2
+        "Women\'s fashion" -> R.color.cat_3
+        "Men\'s fashion" -> R.color.cat_4
+        "Electronics" -> R.color.cat_5
+        "Games & Videogames" -> R.color.cat_6
+        "Automotive" -> R.color.cat_7
+        else -> -1
     }
 }

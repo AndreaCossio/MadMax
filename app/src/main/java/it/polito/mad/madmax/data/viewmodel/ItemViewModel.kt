@@ -9,12 +9,10 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.Transaction
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import it.polito.mad.madmax.R
 import it.polito.mad.madmax.data.model.Item
@@ -137,12 +135,10 @@ class ItemViewModel: ViewModel() {
                     if (itemFilter.text == "" || doc["title"].toString().contains(itemFilter.text) || doc["description"].toString().contains(itemFilter.text)) {
                         // If not expired
                         if (SimpleDateFormat("dd MMM yyyy", Locale.UK).parse(doc["expiry"].toString())!! > Date()) {
-                            if (!itemFilter.onlyFavourite || (doc["interestedUsers"] as ArrayList<String>).contains(Firebase.auth.currentUser!!.uid)) {
-                                if (doc["status"].toString() == "Enabled") {
-                                    newItems.add(doc.toObject(Item::class.java).apply {
-                                        itemId = doc.id
-                                    })
-                                }
+                            if (doc["status"].toString() == "Enabled") {
+                                newItems.add(doc.toObject(Item::class.java).apply {
+                                    itemId = doc.id
+                                })
                             }
                         }
                     }

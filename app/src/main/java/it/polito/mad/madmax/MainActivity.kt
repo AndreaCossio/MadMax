@@ -25,7 +25,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.nav_header_main.view.*
+import kotlinx.android.synthetic.main.main_nav_header.view.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -48,8 +48,10 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(main_toolbar)
 
         // Setup Navigation
-        navController = findNavController(R.id.nav_host_fragment)
-        nav_view.setupWithNavController(navController)
+        navController = findNavController(R.id.main_nav_host_fragment)
+        main_nav.apply {
+            setupWithNavController(navController)
+        }
         appBarConfig = AppBarConfiguration(setOf(
             R.id.nav_item_list_fragment,
             R.id.nav_on_sale_list_fragment,
@@ -59,17 +61,21 @@ class MainActivity : AppCompatActivity() {
 
         // Observe user data
         userVM.getCurrentUserData().observe(this, Observer { user ->
-            nav_view.getHeaderView(0).apply {
-                nav_header_nickname.text = user.name
-                nav_header_email.text = user.email
-                nav_header_profile_photo.post {
-                    nav_header_profile_photo.apply {
+            main_nav.getHeaderView(0).apply {
+                main_nav_header_nickname.text = user.name
+                main_nav_header_email.text = user.email
+                main_nav_header_photo.post {
+                    main_nav_header_photo.apply {
                         if (user.photo != "") {
                             translationY = 0F
                             Picasso.get().load(Uri.parse(user.photo)).into(this)
                         } else {
                             translationY = measuredHeight / 6F
                             setImageDrawable(getDrawable(R.drawable.ic_profile))
+                        }
+                        setOnClickListener {
+                            closeDrawer()
+                            navController.navigate(R.id.action_global_show_profile)
                         }
                     }
                 }
@@ -89,13 +95,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        return findNavController(R.id.nav_host_fragment).navigateUp(appBarConfig) || super.onSupportNavigateUp()
+        return navController.navigateUp(appBarConfig) || super.onSupportNavigateUp()
     }
 
     override fun onBackPressed() {
         // Close drawer instead of exiting
         if (main_drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            main_drawer_layout.closeDrawer(GravityCompat.START)
+            closeDrawer()
         } else {
             super.onBackPressed()
         }
@@ -135,6 +141,10 @@ class MainActivity : AppCompatActivity() {
             )
             startActivityForResult(googleSignInClient.signInIntent, RC_GOOGLE_SIGN_IN)
         }
+    }
+
+    private fun closeDrawer() {
+        main_drawer_layout.closeDrawer(GravityCompat.START)
     }
 
     fun removeTopLevelProfile() {

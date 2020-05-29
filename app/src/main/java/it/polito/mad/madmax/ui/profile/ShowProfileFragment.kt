@@ -8,22 +8,19 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.firebase.firestore.ListenerRegistration
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.User
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 
 class ShowProfileFragment : Fragment() {
 
-    // User VM
+    // User
     private val userVM: UserViewModel by activityViewModels()
-
-    // Other user
-    private var otherUserId: String? = null
     private lateinit var userListenerRegistration: ListenerRegistration
 
     // Destination arguments
@@ -32,21 +29,17 @@ class ShowProfileFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-
-        // If any argument, we are visiting the profile of another user
-        args.user?.also {
-            otherUserId = it
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        args.user ?: activity?.findViewById<MaterialToolbar>(R.id.main_toolbar)?.setTitle(R.string.title_show_profile_fragment_mine)
+        args.user?.also {
+            requireActivity().main_toolbar.title = ""
+        }
         return inflater.inflate(R.layout.fragment_show_profile, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         showProgress(requireActivity())
 
         // Hide FAB because not used by this fragment
@@ -56,10 +49,14 @@ class ShowProfileFragment : Fragment() {
         guidelineConstrain(requireContext(), profile_guideline)
 
         // Observer user data
-        otherUserId?.also { userId ->
+        args.user?.also { userId ->
+            // If another user
             // Don't show as top level destination
             (requireActivity() as MainActivity).removeTopLevelProfile()
-            userVM.getOtherUserData().observe(viewLifecycleOwner, Observer { updateFields(it) })
+            userVM.getOtherUserData().observe(viewLifecycleOwner, Observer {
+                requireActivity().main_toolbar.title = it.name.split(" ")[0] + "'s Profile"
+                updateFields(it)
+            })
             userListenerRegistration = userVM.listenOtherUser(userId)
         } ?: run {
             userVM.getCurrentUserData().observe(viewLifecycleOwner, Observer { updateFields(it) })
@@ -81,10 +78,10 @@ class ShowProfileFragment : Fragment() {
         userVM.clearOtherUserData()
     }
 
-    // Show the possibility to edit profile
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        otherUserId ?: inflater.inflate(R.menu.menu_edit, menu)
+        // Show the possibility to edit profile
+        args.user ?: inflater.inflate(R.menu.menu_edit, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -107,8 +104,7 @@ class ShowProfileFragment : Fragment() {
         profile_phone.text = user.phone
 
         // Hide some fields for privacy
-        otherUserId?.also {
-            profile_location.visibility = View.GONE
+        args.user?.also {
             profile_phone.visibility = View.GONE
         }
 

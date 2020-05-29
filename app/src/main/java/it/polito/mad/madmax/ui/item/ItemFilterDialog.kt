@@ -7,10 +7,10 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.google.android.material.button.MaterialButton
 import it.polito.mad.madmax.R
 import it.polito.mad.madmax.data.model.ItemFilter
 import it.polito.mad.madmax.data.viewmodel.FilterViewModel
+import it.polito.mad.madmax.getFragmentSpaceSize
 import it.polito.mad.madmax.getMainCategoryAdapter
 import it.polito.mad.madmax.getSubCategoryAdapter
 import kotlinx.android.synthetic.main.filter_layout.*
@@ -28,15 +28,17 @@ class ItemFilterDialog : DialogFragment(), AdapterView.OnItemClickListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        // Resize the dialog when the keyboard opens
+        dialog?.window?.apply {
+            setLayout(getFragmentSpaceSize(requireContext()).x, getFragmentSpaceSize(requireContext()).y)
+            setBackgroundDrawableResource(android.R.color.transparent)
+            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        }
         return inflater.inflate(R.layout.filter_layout, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Transparent background behind the cardview
-        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-        (filter_dialog_clear as MaterialButton).setIconTintResource(R.color.colorPrimary)
 
         // Init price
         filters.minPrice?.also {
@@ -51,9 +53,8 @@ class ItemFilterDialog : DialogFragment(), AdapterView.OnItemClickListener {
         filter_dialog_sub_cat.setAdapter(getSubCategoryAdapter(requireContext(), filters.mainCategory))
         filter_dialog_main_cat.setText(filters.mainCategory, false)
         filter_dialog_sub_cat.setText(filters.subCategory, false)
-        filter_dialog_favourites.isChecked = filters.onlyFavourite
 
-        // Prevent keyboard showing for categories
+        // When focusing a drop down, close the keyboard if open
         val focusListener = View.OnFocusChangeListener { v: View, b: Boolean ->
             if (b) (v.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(view.windowToken, 0)
         }
@@ -68,6 +69,12 @@ class ItemFilterDialog : DialogFragment(), AdapterView.OnItemClickListener {
         filter_dialog_clear.setOnClickListener { clearFilters() }
     }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        filter_dialog_main_cat.setAdapter(getMainCategoryAdapter(requireContext()))
+        filter_dialog_sub_cat.setAdapter(getSubCategoryAdapter(requireContext(), filter_dialog_main_cat.text.toString()))
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_filter_item, menu)
     }
@@ -77,22 +84,24 @@ class ItemFilterDialog : DialogFragment(), AdapterView.OnItemClickListener {
         filter_dialog_sub_cat.setText("", false)
     }
 
-    private fun applyFilters() {
-        filterVM.setFiltersNoUserId(
-            ItemFilter(
-                filter_dialog_min_price.text.toString().toDoubleOrNull(),
-                filter_dialog_max_price.text.toString().toDoubleOrNull(),
-                filter_dialog_main_cat.text.toString(),
-                filter_dialog_sub_cat.text.toString(),
-                onlyFavourite = filter_dialog_favourites.isChecked
-            )
-        )
-        dismiss()
-    }
-
     private fun clearFilters() {
         filter_dialog_max_price.setText("")
         filter_dialog_min_price.setText("")
         filter_dialog_main_cat.setText("")
+        filter_dialog_sub_cat.setText("")
+        filter_dialog_sub_cat.setAdapter(getSubCategoryAdapter(requireContext(), ""))
+        dialog?.window?.currentFocus?.clearFocus()
+    }
+
+    private fun applyFilters() {
+        filterVM.updateDialogFilters(
+            ItemFilter(
+                filter_dialog_min_price.text.toString().toDoubleOrNull(),
+                filter_dialog_max_price.text.toString().toDoubleOrNull(),
+                filter_dialog_main_cat.text.toString(),
+                filter_dialog_sub_cat.text.toString()
+            )
+        )
+        dismiss()
     }
 }

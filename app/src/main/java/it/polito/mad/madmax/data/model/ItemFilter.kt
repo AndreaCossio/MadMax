@@ -8,6 +8,5 @@ data class ItemFilter(
     var mainCategory: String = "",
     var subCategory: String = "",
     var userId: String = "",
-    var text: String = "",
-    var onlyFavourite: Boolean = false
+    var text: String = ""
 ) : Serializable

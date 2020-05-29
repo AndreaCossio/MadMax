@@ -2,6 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation_graph"
     app:startDestination="@id/nav_on_sale_list_fragment">
 
     <!-- Home -->
@@ -114,5 +115,9 @@
             android:name="item"
             app:argType="it.polito.mad.madmax.data.model.Item" />
     </fragment>
+
+    <action
+        android:id="@+id/action_global_show_profile"
+        app:destination="@id/nav_show_profile_fragment" />
 
 </navigation>

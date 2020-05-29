@@ -4,22 +4,43 @@
         <!-- COLORS -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorSecondaryVariant">@color/colorSecondaryVariant</item>
         <item name="colorOnSecondary">@android:color/white</item>
         <item name="colorError">@color/colorError</item>
-        <!--<item name="colorOnPrimary">@color/colorWhite</item>
-        <item name="colorOnSecondary">@color/colorWhite</item>
-        <item name="colorSurface">@color/colorSurface</item>
-        <item name="colorError">@color/colorError</item>
-        <item name="colorOnBackground">@color/colorGreyDark</item>
-        <item name="colorOnSurface">@color/colorGreyDark</item>-->
     </style>
 
     <style name="Theme.MadMax.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <!-- DIALOG -->
+    <style name="Theme.MadMax.Dialog" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorSecondaryVariant">@color/colorSecondaryVariant</item>
+        <item name="colorOnSecondary">@android:color/white</item>
+        <item name="colorError">@color/colorError</item>
+    </style>
+
+    <style name="Theme.MadMax.ProgressBar" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:indeterminateTintMode">src_atop</item>
+        <item name="android:indeterminateTint">@color/colorPrimaryDark</item>
+        <item name="android:translationY">-7dp</item>
+    </style>
+
+    <style name="Theme.MadMax.Button.OutlinedButton.IconOnly" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="iconPadding">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">48dp</item>
     </style>
 
 </resources>

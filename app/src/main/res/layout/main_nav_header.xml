@@ -20,7 +20,7 @@
             android:background="#e0e0e0">
 
             <ImageView
-                android:id="@+id/nav_header_profile_photo"
+                android:id="@+id/main_nav_header_photo"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:adjustViewBounds="true"
@@ -28,7 +28,7 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_profile"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintDimensionRatio="H,1:1"
+                app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -38,7 +38,7 @@
     </com.google.android.material.card.MaterialCardView>
 
     <TextView
-        android:id="@+id/nav_header_nickname"
+        android:id="@+id/main_nav_header_nickname"
         style="@style/TextAppearance.MaterialComponents.Headline6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -47,8 +47,8 @@
         android:paddingTop="16dp" />
 
     <TextView
-        android:id="@+id/nav_header_email"
-        style="@style/TextAppearance.MaterialComponents.Subtitle2"
+        android:id="@+id/main_nav_header_email"
+        style="@style/TextAppearance.MaterialComponents.Body2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"

@@ -39,6 +39,10 @@ class UserViewModel : ViewModel() {
         return currentUser
     }
 
+    fun getCurrentUserId(): String {
+        return currentUser.value!!.userId
+    }
+
     fun getOtherUserData(): MutableLiveData<User> {
         return otherUser
     }

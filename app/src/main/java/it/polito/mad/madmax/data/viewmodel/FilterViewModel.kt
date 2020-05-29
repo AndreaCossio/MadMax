@@ -16,24 +16,24 @@ class FilterViewModel: ViewModel() {
         return filter
     }
 
-    fun setFiltersNoUserId(itemFilter: ItemFilter) {
-        filter.value = itemFilter.apply {
-            filter.value?.also {
-                userId = it.userId
-                text = it.text
-            }
-        }
+    fun updateDialogFilters(itemFilter: ItemFilter) {
+        filter.value = filter.value?.apply {
+            this.minPrice = itemFilter.minPrice
+            this.maxPrice = itemFilter.maxPrice
+            this.mainCategory = itemFilter.mainCategory
+            this.subCategory = itemFilter.subCategory
+        } ?: itemFilter
     }
 
-    fun setText(text: String) {
-        filter.value?.apply {
+    fun updateText(text: String) {
+        filter.value = filter.value?.apply {
             this.text = text
-        } ?: run { filter.value = ItemFilter(text = text) }
+        } ?: ItemFilter(text = text)
     }
 
-    fun setUserId(userId: String) {
-        filter.value?.apply {
+    fun updateUserId(userId: String) {
+        filter.value = filter.value?.apply {
             this.userId = userId
-        } ?: run { filter.value = ItemFilter(userId = userId) }
+        } ?: ItemFilter(userId = userId)
     }
 }

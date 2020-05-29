@@ -5,7 +5,7 @@
     <!-- SHARED PREFERENCES -->
 
     <!-- FILE PROVIDER -->
-    <string name="file_provider">it.polito.mad.madmax.madmax.fileprovider</string>
+    <string name="file_provider">it.polito.mad.madmax.fileprovider</string>
 
     <!-- SAVED STATES -->
     <string name="edit_profile_state">edit_profile_state</string>
@@ -14,8 +14,7 @@
     <string name="edit_item_dialog_state">edit_item_dialog_state</string>
 
     <!-- NAVIGATION -->
-    <string name="title_show_profile_fragment">Profile</string>
-    <string name="title_show_profile_fragment_mine">My Profile</string>
+    <string name="title_show_profile_fragment">My Profile</string>
     <string name="title_edit_profile_fragment">Edit profile</string>
     <string name="title_details_item_fragment">Item</string>
     <string name="title_edit_item_fragment">Edit item</string>
@@ -55,14 +54,13 @@
     <string name="photo_dialog_ok">OK</string>
     <string name="photo_dialog_apply">Apply</string>
     <string name="photo_dialog_cancel">Cancel</string>
-    <string name="photo_dialog_sure_title">Are you sure?</string>
-    <string name="photo_dialog_sure_text">If you continue, the changes will be discarded.</string>
+    <string name="photo_dialog_sure_title">Unsaved changes</string>
+    <string name="photo_dialog_sure_text">It looks like there are unsaved changes that will be discarded if you proceed.\n\nContinue anyway?</string>
     <string name="dialog_filter_title">Item filter</string>
     <string name="dialog_filter_description">Select how you want to filter the items</string>
     <string name="dialog_filter_clear">Filters</string>
     <string name="dialog_filter_min_price">Minimum price</string>
     <string name="dialog_filter_max_price">Maximum price</string>
-    <string name="dialog_filter_favourites">Show only favourite items</string>
     <string name="dialog_change_title">Select a method to change the photo</string>
     <string name="dialog_change_take">Take picture</string>
     <string name="dialog_change_gallery">Choose from gallery</string>
@@ -79,6 +77,7 @@
     <string name="content_item_photo">Photo item</string>
     <string name="content_filter">Filter</string>
     <string name="content_search">Search</string>
+    <string name="content_hot">Hot</string>
 
     <!-- PROFILE -->
     <string name="profile_general_info">Profile Information</string>

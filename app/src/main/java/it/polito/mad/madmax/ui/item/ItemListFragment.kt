@@ -1,14 +1,18 @@
 package it.polito.mad.madmax.ui.item
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.ViewPropertyAnimatorListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.ListenerRegistration
 import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.Item
@@ -21,18 +25,18 @@ import kotlinx.android.synthetic.main.fragment_item_list.*
 
 class ItemListFragment : Fragment() {
 
-    // User
+    // View models
     private val userVM: UserViewModel by activityViewModels()
-
-    // Items VM
     private val itemsVM: ItemViewModel by activityViewModels()
-    private lateinit var itemAdapter: ItemAdapter
 
-    // Item listener
+    // Items
+    private lateinit var itemAdapter: ItemAdapter
     private lateinit var itemListener: ListenerRegistration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Init adapter
         itemAdapter = ItemAdapter(itemDetails, actionEditItem, {null})
     }
 
@@ -43,41 +47,78 @@ class ItemListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        hideProgress(requireActivity())
+        // Show loading here because top level destination
+        showProgress(requireActivity())
 
+        // Show add item FAB
+        showFab(requireActivity(), View.OnClickListener {
+            showProgress(requireActivity())
+            findNavController().navigate(ItemListFragmentDirections.actionEditOrCreateItem(ItemArg("Create", Item(userId = userVM.getCurrentUserData().value!!.userId), true)))
+        }, requireContext().getDrawable(R.drawable.ic_add))
+
+        // Init recyclerview
         item_list_rv.apply {
             setHasFixedSize(false)
             layoutManager = AutoFitGridLayoutManager(requireContext(), 300.toPx())
             adapter = itemAdapter
         }
+        item_list_rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+            private var animatingOut: Boolean = false
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0 && !animatingOut && requireActivity().main_fab.visibility == View.VISIBLE) {
+                    ViewCompat.animate(requireActivity().main_fab).scaleX(0.0f).scaleY(0.0f).alpha(0.0f)
+                        .setInterpolator(FastOutSlowInInterpolator()).withLayer()
+                        .setListener(object : ViewPropertyAnimatorListener {
+                            override fun onAnimationStart(view: View?) {
+                                animatingOut = true
+                            }
+
+                            override fun onAnimationCancel(view: View?) {
+                                animatingOut = false
+                            }
+
+                            override fun onAnimationEnd(view: View) {
+                                animatingOut = false
+                                view.visibility = View.GONE
+                            }
+                        }).start()
+                } else if (dy < 0 && requireActivity().main_fab.visibility != View.VISIBLE) {
+                    requireActivity().main_fab.visibility = View.VISIBLE
+                    ViewCompat.animate(requireActivity().main_fab).scaleX(1.0f).scaleY(1.0f).alpha(1.0f)
+                        .setInterpolator(FastOutSlowInInterpolator()).withLayer().setListener(null)
+                        .start()
+                }
+            }
+        })
+        item_list_empty_tv.text = getString(R.string.message_empty_list)
 
         // Observe the list of items
         itemsVM.getItemList().observe(viewLifecycleOwner, Observer {
             itemAdapter.setItems(it)
-            if (itemAdapter.itemCount == 0) {
-                item_list_empty.visibility = View.VISIBLE
+            if (it.size == 0) {
+                item_list_empty.animate().alpha(1F).startDelay = 300
             } else {
-                item_list_empty.visibility = View.GONE
-                // TODO check (better layout text? padding?)
-                (item_list_empty.getChildAt(0) as TextView).text = getString(R.string.message_empty_list_others)
+                item_list_empty.animate().alpha(0F).startDelay = 300
             }
         })
 
         // Observe userId
         userVM.getCurrentUserData().observe(viewLifecycleOwner, Observer {
             if (it.userId == "") {
+                Log.d(TAG, "Not logged user clicked on an item")
+                showProgress(requireActivity())
                 if (this::itemListener.isInitialized) {
                     itemListener.remove()
                 }
             } else {
                 itemListener = itemsVM.listenMyItems(it.userId)
+                hideProgress(requireActivity())
             }
         })
 
-        // Init FAB
-        requireActivity().main_fab_add_item.setOnClickListener { findNavController().navigate(ItemListFragmentDirections.actionEditOrCreateItem(ItemArg("Create", Item(userId = userVM.getCurrentUserData().value!!.userId), true))) }
-        requireActivity().main_fab_add_item.setImageDrawable(requireContext().getDrawable(R.drawable.ic_add))
-        showFab(requireActivity())
         hideProgress(requireActivity())
     }
 
@@ -86,17 +127,20 @@ class ItemListFragment : Fragment() {
         if (this::itemListener.isInitialized) {
             itemListener.remove()
         }
-        requireActivity().main_fab_add_item.setOnClickListener(null)
-        itemsVM.clearItemsData()
     }
 
     private var itemDetails = { item: Item ->
         showProgress(requireActivity())
-        findNavController().navigate(ItemListFragmentDirections.actionEditOrCreateItem(ItemArg("Details", item, item.userId == userVM.getCurrentUserData().value!!.userId)))
+        findNavController().navigate(ItemListFragmentDirections.actionEditOrCreateItem(ItemArg("Details", item, item.userId == userVM.getCurrentUserId())))
     }
 
     private var actionEditItem = { item: Item ->
         showProgress(requireActivity())
-        findNavController().navigate(ItemListFragmentDirections.actionEditOrCreateItem(ItemArg("Edit", item, item.userId == userVM.getCurrentUserData().value!!.userId)))
+        findNavController().navigate(ItemListFragmentDirections.actionEditOrCreateItem(ItemArg("Edit", item, item.userId == userVM.getCurrentUserId())))
+    }
+
+    // Companion
+    companion object {
+        const val TAG = "MM_MY_LIST"
     }
 }

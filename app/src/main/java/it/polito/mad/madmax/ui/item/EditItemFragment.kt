@@ -168,7 +168,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                 // Validate fields
                 var invalidFields = false
-                for (field in setOf(item_edit_title, item_edit_price)) {
+                for (field in setOf(item_edit_title, item_edit_price/* TODO item_edit_main_cat*/)) {
                     if (field.text.toString() == "") {
                         invalidFields = true
                         field.error = getString(R.string.message_error_field_required)

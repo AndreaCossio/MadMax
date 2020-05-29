@@ -45,6 +45,7 @@ class EditProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        showProgress(requireActivity())
 
         // Hide FAB because not used by this fragment
         hideFab(requireActivity())
@@ -74,7 +75,10 @@ class EditProfileFragment : Fragment() {
             override fun handleOnBackPressed() {
                 updateUser()
                 if (tempUser != userVM.getCurrentUserData().value) {
-                    openSureDialog(requireContext(), requireActivity(), { findNavController().navigateUp() }, { a: String -> openDialog = a})
+                    openSureDialog(requireContext(), requireActivity(), {
+                        showProgress(requireActivity())
+                        findNavController().navigateUp()
+                    }, { a: String -> openDialog = a})
                 } else {
                     showProgress(requireActivity())
                     findNavController().navigateUp()
@@ -95,6 +99,7 @@ class EditProfileFragment : Fragment() {
         savedInstanceState?.also { state ->
             state.getSerializable(getString(R.string.edit_profile_state))?.also {
                 tempUser = it as User
+                updateFields()
             }
             state.getString(getString(R.string.edit_profile_dialog_state))?.also {
                 openDialog = it
@@ -103,7 +108,6 @@ class EditProfileFragment : Fragment() {
                     "Change" -> openPhotoDialog(requireContext(), requireActivity(), { a: String -> openDialog = a}, {captureImage()}, {getImageFromGallery()}, {removeImage()})
                 }
             }
-            updateFields()
         }
     }
 
@@ -114,7 +118,7 @@ class EditProfileFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            // Custom back navigation
+            // Custom back navigation to check unsaved changes
             android.R.id.home -> {
                 requireActivity().onBackPressedDispatcher.onBackPressed()
                 true
@@ -141,7 +145,7 @@ class EditProfileFragment : Fragment() {
                     // Show progress before uploading user data to the db
                     showProgress(requireActivity())
 
-                    // // Load user data to the db and go back
+                    // Load user data to the db and go back
                     userVM.updateUser(tempUser.copy()).addOnCompleteListener {
                         deletePhoto(requireContext(), tempUser.photo)
                         findNavController().navigate(EditProfileFragmentDirections.actionSaveProfile())
