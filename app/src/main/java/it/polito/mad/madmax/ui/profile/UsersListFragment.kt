@@ -24,7 +24,7 @@ class UsersListFragment : Fragment() {
     private lateinit var usersAdapter: UserAdapter
 
     // User listener
-    private lateinit var userListener: ListenerRegistration
+    private lateinit var interestedUsersListener: ListenerRegistration
 
     // Args
     private val args: UsersListFragmentArgs by navArgs()
@@ -58,13 +58,13 @@ class UsersListFragment : Fragment() {
             }
         })
 
-        userListener = userVM.listenInterestedUsers(args.item.itemId)
+        interestedUsersListener = userVM.listenInterestedUsers(args.item.itemId)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        if (this::userListener.isInitialized) {
-            userListener.remove()
+        if (this::interestedUsersListener.isInitialized) {
+            interestedUsersListener.remove()
         }
         userVM.clearInterestedUsersData()
     }

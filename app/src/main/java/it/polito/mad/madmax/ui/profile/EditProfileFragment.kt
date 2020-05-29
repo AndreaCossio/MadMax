@@ -107,7 +107,9 @@ class EditProfileFragment : Fragment() {
                         showProgress(requireActivity())
                         findNavController().navigateUp()
                     }, { a: String -> openDialog = a})
-                    "Change" -> openPhotoDialog(requireContext(), requireActivity(), { a: String -> openDialog = a}, {captureImage()}, {getImageFromGallery()}, {removeImage()})
+                    "Change" -> openPhotoDialog(requireContext(), requireActivity(), {
+                            a: String -> openDialog = a
+                    }, {captureImage()}, {getImageFromGallery()}, {removeImage()})
                 }
             }
         }
@@ -126,24 +128,8 @@ class EditProfileFragment : Fragment() {
                 true
             }
             R.id.menu_save -> {
-                // Load modified user data
-                updateUser()
-
                 // Validate fields
-                var invalidFields = false
-                for (field in setOf(profile_edit_email, profile_edit_name)) {
-                    if (field == profile_edit_email && !isEmailValid(field.text.toString())) {
-                        invalidFields = true
-                        field.error = getString(R.string.message_error_field_invalid_email)
-                    } else {
-                        if (field.text.toString() == "") {
-                            invalidFields = true
-                            field.error = getString(R.string.message_error_field_required)
-                        }
-                    }
-                }
-
-                if (!invalidFields) {
+                if (validateFields()) {
                     // Show progress before uploading user data to the db
                     showProgress(requireActivity())
 
@@ -158,15 +144,30 @@ class EditProfileFragment : Fragment() {
         }
     }
 
+    private fun validateFields(): Boolean {
+        // Load modified user data
+        updateUser()
+
+        var valid = true
+        for (field in setOf(profile_edit_email, profile_edit_name)) {
+            if (field == profile_edit_email && !isEmailValid(field.text.toString())) {
+                valid = false
+                field.error = getString(R.string.message_error_field_invalid_email)
+            } else {
+                if (field.text.toString() == "") {
+                    valid = false
+                    field.error = getString(R.string.message_error_field_required)
+                }
+            }
+        }
+        return valid
+    }
+
     private fun captureImage() {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {
             if (it) {
                 createImageFile(requireContext()).also { file ->
-                    val photoUri = FileProvider.getUriForFile(
-                        requireContext(),
-                        getString(R.string.file_provider),
-                        file
-                    )
+                    val photoUri = FileProvider.getUriForFile(requireContext(), getString(R.string.file_provider), file)
                     tempUser.apply { photo = photoUri.toString() }
                     registerForActivityResult(ActivityResultContracts.TakePicture()) { taken ->
                         if (taken) {
@@ -227,25 +228,27 @@ class EditProfileFragment : Fragment() {
         profile_edit_phone.setText(tempUser.phone)
 
         // Update photo
-        profile_edit_photo.apply {
-            if (tempUser.photo != "") {
-                Picasso.get().load(Uri.parse(tempUser.photo)).into(profile_edit_photo, object : Callback {
-                    override fun onSuccess() {
-                        translationY = 0F
-                        hideProgress(requireActivity())
-                    }
+        if (tempUser.photo != "") {
+            Picasso.get().load(Uri.parse(tempUser.photo)).into(profile_edit_photo, object : Callback {
+                override fun onSuccess() {
+                    profile_edit_photo.translationY = 0F
+                    hideProgress(requireActivity())
+                }
 
-                    override fun onError(e: Exception?) {
+                override fun onError(e: Exception?) {
+                    profile_edit_photo.apply {
                         translationY = measuredHeight / 6F
                         setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
-                        hideProgress(requireActivity())
                     }
-                })
-            } else {
+                    hideProgress(requireActivity())
+                }
+            })
+        } else {
+            profile_edit_photo.apply {
                 translationY = measuredHeight / 6F
                 setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
-                hideProgress(requireActivity())
             }
+            hideProgress(requireActivity())
         }
     }
 

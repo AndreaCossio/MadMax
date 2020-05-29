@@ -21,7 +21,7 @@ class ShowProfileFragment : Fragment() {
 
     // User
     private val userVM: UserViewModel by activityViewModels()
-    private lateinit var userListenerRegistration: ListenerRegistration
+    private lateinit var userListener: ListenerRegistration
 
     // Destination arguments
     private val args: ShowProfileFragmentArgs by navArgs()
@@ -48,16 +48,13 @@ class ShowProfileFragment : Fragment() {
         // Card radius
         profile_card.addOnLayoutChangeListener(cardRadiusConstrain)
 
-        // Observer user data
         args.user?.also { userId ->
-            // If another user
-            // Don't show as top level destination
             (requireActivity() as MainActivity).removeTopLevelProfile()
             userVM.getOtherUserData().observe(viewLifecycleOwner, Observer {
                 requireActivity().main_toolbar.title = it.name.split(" ")[0] + "'s Profile"
                 updateFields(it)
             })
-            userListenerRegistration = userVM.listenOtherUser(userId)
+            userListener = userVM.listenOtherUser(userId)
         } ?: run {
             userVM.getCurrentUserData().observe(viewLifecycleOwner, Observer { updateFields(it) })
         }
@@ -66,19 +63,18 @@ class ShowProfileFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         // Stop listening to other user data
-        if (this::userListenerRegistration.isInitialized) {
-            userListenerRegistration.remove()
+        if (this::userListener.isInitialized) {
+            userListener.remove()
         }
         // Restore top level destination
-        args.user?.also {
-            (requireActivity() as MainActivity).addTopLevelProfile()
-        }
+        args.user?.also { (requireActivity() as MainActivity).addTopLevelProfile() }
+        // Detach layout listener
         profile_card.removeOnLayoutChangeListener(cardRadiusConstrain)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        userVM.clearOtherUserData()
+        args.user?.also { userVM.clearOtherUserData() }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -112,25 +108,27 @@ class ShowProfileFragment : Fragment() {
         }
 
         // Profile photo
-        profile_photo.apply {
-            if (user.photo != "") {
-                Picasso.get().load(Uri.parse(user.photo)).into(this, object : Callback {
-                    override fun onSuccess() {
-                        translationY = 0F
-                        hideProgress(requireActivity())
-                    }
+        if (user.photo != "") {
+            Picasso.get().load(Uri.parse(user.photo)).into(profile_photo, object : Callback {
+                override fun onSuccess() {
+                    profile_photo.translationY = 0F
+                    hideProgress(requireActivity())
+                }
 
-                    override fun onError(e: Exception?) {
+                override fun onError(e: Exception?) {
+                    profile_photo.apply {
                         translationY = measuredHeight / 6F
                         setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
-                        hideProgress(requireActivity())
                     }
-                })
-            } else {
+                    hideProgress(requireActivity())
+                }
+            })
+        } else {
+            profile_photo.apply {
                 translationY = measuredHeight / 6F
                 setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
-                hideProgress(requireActivity())
             }
+            hideProgress(requireActivity())
         }
     }
 

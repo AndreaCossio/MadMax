@@ -21,16 +21,12 @@ import kotlinx.android.synthetic.main.fragment_details_item.*
 
 class DetailsItemFragment : Fragment() {
 
-    // User
+    // Models
     private val userVM: UserViewModel by activityViewModels()
-
-    // Items
-    private lateinit var itemArg: ItemArg
     private val itemsVM: ItemViewModel by activityViewModels()
-
-    // Realtime listener
-    private lateinit var itemListener: ListenerRegistration
     private lateinit var userListener: ListenerRegistration
+    private lateinit var itemListener: ListenerRegistration
+    private lateinit var itemArg: ItemArg
 
     // Destination arguments
     private val args: DetailsItemFragmentArgs by navArgs()
@@ -53,7 +49,7 @@ class DetailsItemFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         showProgress(requireActivity())
 
-        // Hide FAB because not used by this fragment
+        // Hide FAB
         hideFab(requireActivity())
 
         // Real 0.33 guideline
@@ -62,7 +58,8 @@ class DetailsItemFragment : Fragment() {
         // Card radius
         item_details_card.addOnLayoutChangeListener(cardRadiusConstrain)
 
-        // Create
+        // Kind of detail
+        // When
         when (itemArg.task) {
             "Create" -> {
                 showProgress(requireActivity())

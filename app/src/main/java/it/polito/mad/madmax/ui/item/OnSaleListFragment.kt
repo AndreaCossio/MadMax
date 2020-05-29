@@ -22,14 +22,14 @@ import kotlinx.android.synthetic.main.fragment_item_list.*
 
 class OnSaleListFragment : Fragment() {
 
-    // View Models
+    // Models
     private val userVM: UserViewModel by activityViewModels()
     private val itemsVM: ItemViewModel by activityViewModels()
     private val filterVM: FilterViewModel by activityViewModels()
-
-    // Item
-    private lateinit var itemAdapter: ItemAdapter
     private lateinit var itemListener: ListenerRegistration
+
+    // Adapter
+    private lateinit var itemAdapter: ItemAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
