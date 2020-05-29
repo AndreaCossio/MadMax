@@ -2,13 +2,11 @@ package it.polito.mad.madmax.ui.profile
 
 import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -160,69 +158,47 @@ class EditProfileFragment : Fragment() {
         }
     }
 
-    private val takePicture = registerForActivityResult(ActivityResultContracts.TakePicture()) { taken ->
-        if (taken) {
-            tempUser.apply { photo = compressImage(requireContext(), tempUser.photo).toString() }
-            updateFields()
-            displayMessage(requireContext(), getString(R.string.message_taken_photo))
-        } else {
-            // Delete destination file
-            deletePhoto(requireContext(), tempUser.photo)
-            // Restore tempUser field
-            tempUser.apply { photo = userVM.getCurrentUserData().value!!.photo }
-            updateFields()
-            displayMessage(requireContext(), getString(R.string.message_error_intent))
-        }
-    }
-
-    private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.also {
-            tempUser.apply { photo = compressImage(requireContext(), it.toString()).toString() }
-            updateFields()
-            displayMessage(requireContext(), getString(R.string.message_chosen_photo))
-        } ?: displayMessage(requireContext(), getString(R.string.message_error_intent))
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        when (requestCode) {
-            RP_CAMERA -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    captureImage()
-                }
-            }
-            RP_READ_STORAGE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    getImageFromGallery()
-                }
-            }
-        }
-    }
-
-    // Intent to take a picture with the camera
-    // Destination saved in tempUser and handled in return
     private fun captureImage() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.CAMERA), RP_CAMERA)
-        } else {
-            createImageFile(requireContext()).also { file ->
-                val photoUri = FileProvider.getUriForFile(
-                    requireContext(),
-                    getString(R.string.file_provider),
-                    file
-                )
-                tempUser.apply { photo = photoUri.toString() }
-                takePicture.launch(photoUri)
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            if (it) {
+                createImageFile(requireContext()).also { file ->
+                    val photoUri = FileProvider.getUriForFile(
+                        requireContext(),
+                        getString(R.string.file_provider),
+                        file
+                    )
+                    tempUser.apply { photo = photoUri.toString() }
+                    registerForActivityResult(ActivityResultContracts.TakePicture()) { taken ->
+                        if (taken) {
+                            tempUser.apply { photo = compressImage(requireContext(), tempUser.photo).toString() }
+                            updateFields()
+                            displayMessage(requireContext(), getString(R.string.message_taken_photo))
+                        } else {
+                            // Delete destination file
+                            deletePhoto(requireContext(), tempUser.photo)
+                            // Restore tempItem field
+                            tempUser.apply { photo = userVM.getCurrentUserData().value!!.photo }
+                            updateFields()
+                            displayMessage(requireContext(), getString(R.string.message_error_intent))
+                        }
+                    }.also { picture -> picture.launch(photoUri) }
+                }
             }
-        }
+        }.also { permission -> permission.launch(Manifest.permission.CAMERA) }
     }
 
-    // Intent to choose an image from the gallery
     private fun getImageFromGallery() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), RP_READ_STORAGE)
-        } else {
-            getContent.launch("image/*")
-        }
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            if (it) {
+                registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+                    uri?.also {
+                        tempUser.apply { photo = compressImage(requireContext(), it.toString()).toString() }
+                        updateFields()
+                        displayMessage(requireContext(), getString(R.string.message_chosen_photo))
+                    } ?: displayMessage(requireContext(), getString(R.string.message_error_intent))
+                }.also { content -> content.launch("image/*") }
+            }
+        }.also { permission -> permission.launch(Manifest.permission.READ_EXTERNAL_STORAGE) }
     }
 
     // Delete image of the user
@@ -276,9 +252,5 @@ class EditProfileFragment : Fragment() {
     // Companion
     companion object {
         const val TAG = "MM_EDIT_PROFILE"
-        private const val RP_CAMERA = 0
-        private const val RP_READ_STORAGE = 1
-        private const val RC_CAPTURE = 2
-        private const val RC_GALLERY = 3
     }
 }

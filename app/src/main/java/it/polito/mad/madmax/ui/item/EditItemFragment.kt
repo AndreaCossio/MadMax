@@ -1,17 +1,13 @@
 package it.polito.mad.madmax.ui.item
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.*
 import android.widget.AdapterView
 import androidx.activity.OnBackPressedCallback
-import androidx.core.content.ContextCompat
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -27,7 +23,6 @@ import it.polito.mad.madmax.data.model.Item
 import it.polito.mad.madmax.data.model.ItemArg
 import it.polito.mad.madmax.data.viewmodel.ItemViewModel
 import kotlinx.android.synthetic.main.fragment_edit_item.*
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -213,115 +208,49 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
     }
 
-    // Compresses selected images and deletes, if necessary, old files
-    // Variable tempItem updated accordingly and fields updated
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            RC_CAPTURE -> {
-                when (resultCode) {
-                    // Image taken correctly
-                    Activity.RESULT_OK -> {
-                        // Compress taken image
-                        tempItem.apply { photo = compressImage(requireContext(), tempItem.photo).toString() }
-                        updateFields()
-                        displayMessage(requireContext(), getString(R.string.message_taken_photo))
-                    }
-                    // Capturing image aborted
-                    else -> {
-                        // Delete destination file
-                        deletePhoto(requireContext(), tempItem.photo)
-                        // Restore tempUser field
-                        tempItem.apply { photo = itemArg.item.photo }
-                        updateFields()
-                        displayMessage(requireContext(), getString(R.string.message_error_intent))
-                    }
-                }
-            }
-            RC_GALLERY -> {
-                when (resultCode) {
-                    // Image selected correctly
-                    Activity.RESULT_OK -> {
-                        data?.data?.also {
-                            // Compress the image and update tempUser field
-                            tempItem.apply { photo = compressImage(requireContext(), it.toString()).toString() }
+    private fun captureImage() {
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            if (it) {
+                createImageFile(requireContext()).also { file ->
+                    val photoUri = FileProvider.getUriForFile(
+                        requireContext(),
+                        getString(R.string.file_provider),
+                        file
+                    )
+                    tempItem.apply { photo = photoUri.toString() }
+                    registerForActivityResult(ActivityResultContracts.TakePicture()) { taken ->
+                        if (taken) {
+                            tempItem.apply { photo = compressImage(requireContext(), tempItem.photo).toString() }
                             updateFields()
-                            displayMessage(requireContext(), getString(R.string.message_chosen_photo))
-                        } ?: run {
-                            hideProgress(requireActivity())
+                            displayMessage(requireContext(), getString(R.string.message_taken_photo))
+                        } else {
+                            // Delete destination file
+                            deletePhoto(requireContext(), tempItem.photo)
+                            // Restore tempItem field
+                            tempItem.apply { photo = itemArg.item.photo }
+                            updateFields()
                             displayMessage(requireContext(), getString(R.string.message_error_intent))
                         }
-                    }
-                    // Error
-                    else -> {
-                        hideProgress(requireActivity())
-                        displayMessage(requireContext(), getString(R.string.message_error_intent))
-                    }
+                    }.also { picture -> picture.launch(photoUri) }
                 }
             }
-        }
+        }.also { permission -> permission.launch(Manifest.permission.CAMERA) }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        when (requestCode) {
-            RP_CAMERA -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    captureImage()
-                }
-            }
-            RP_READ_STORAGE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    getImageFromGallery()
-                }
-            }
-        }
-    }
-
-    // Intent to take a picture with the camera
-    // Destination saved in tempItem and handled in return
-    private fun captureImage() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.CAMERA), RP_CAMERA)
-        } else {
-            Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-                activity?.packageManager?.also { pm ->
-                    takePictureIntent.resolveActivity(pm)?.also {
-                        try {
-                            // Create the File where the photo should go
-                            createImageFile(requireContext()).also { file ->
-                                val photoUri = FileProvider.getUriForFile(requireContext(), getString(R.string.file_provider), file)
-                                tempItem.apply { photo = photoUri.toString() }
-                                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-                                showProgress(requireActivity())
-                                startActivityForResult(takePictureIntent, RC_CAPTURE)
-                            }
-                        } catch (ex: IOException) {
-                            ex.printStackTrace()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Intent to choose an image from the gallery
     private fun getImageFromGallery() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), RP_READ_STORAGE)
-        } else {
-            Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also { pickPhoto ->
-                pickPhoto.type = "image/*"
-                if (activity?.packageManager?.queryIntentActivities(pickPhoto, 0)?.isNotEmpty() == true) {
-                    showProgress(requireActivity())
-                    startActivityForResult(pickPhoto, RC_GALLERY)
-                } else {
-                    displayMessage(requireContext(), getString(R.string.message_error_gallery_app))
-                }
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            if (it) {
+                registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+                    uri?.also {
+                        tempItem.apply { photo = compressImage(requireContext(), it.toString()).toString() }
+                        updateFields()
+                        displayMessage(requireContext(), getString(R.string.message_chosen_photo))
+                    } ?: displayMessage(requireContext(), getString(R.string.message_error_intent))
+                }.also { content -> content.launch("image/*") }
             }
-        }
+        }.also { permission -> permission.launch(Manifest.permission.READ_EXTERNAL_STORAGE) }
     }
 
-    // Delete image of the user
     private fun removeImage() {
         tempItem.apply { photo = "" }
         updateFields()
@@ -420,9 +349,5 @@ class EditItemFragment : Fragment(), AdapterView.OnItemSelectedListener {
     // Companion
     companion object {
         const val TAG = "MM_EDIT_ITEM"
-        private const val RP_CAMERA = 0
-        private const val RP_READ_STORAGE = 1
-        private const val RC_CAPTURE = 2
-        private const val RC_GALLERY = 3
     }
 }
