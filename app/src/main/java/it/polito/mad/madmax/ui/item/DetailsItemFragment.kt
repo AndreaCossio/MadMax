@@ -13,7 +13,6 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.Item
-import it.polito.mad.madmax.data.model.ItemArg
 import it.polito.mad.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -26,7 +25,6 @@ class DetailsItemFragment : Fragment() {
     private val itemsVM: ItemViewModel by activityViewModels()
     private lateinit var userListener: ListenerRegistration
     private lateinit var itemListener: ListenerRegistration
-    private lateinit var itemArg: ItemArg
 
     // Destination arguments
     private val args: DetailsItemFragmentArgs by navArgs()
@@ -37,8 +35,7 @@ class DetailsItemFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        itemArg = args.itemArg
-        status = itemArg.item.status
+        status = args.item.status
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -58,86 +55,73 @@ class DetailsItemFragment : Fragment() {
         // Card radius
         item_details_card.addOnLayoutChangeListener(cardRadiusConstrain)
 
-        // Kind of detail
-        // When
-        when (itemArg.task) {
-            "Create" -> {
-                showProgress(requireActivity())
-                findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(itemArg))
-            }
-            "Edit" -> {
-                showProgress(requireActivity())
-                findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(itemArg))
-            }
-            "Details" -> {
-                // Listen and observe item
-                itemListener = itemsVM.listenSingleItem(itemArg.item.itemId)
-                itemsVM.getSingleItem().observe(viewLifecycleOwner, Observer { it ->
-                    it?.also { item ->
-                        updateFields(item)
-                        status = item.status
-                        if (!itemArg.owned) {
-                            if (item.status == "Disabled" || item.status == "Bought") {
-                                displayMessage(requireContext(), "This item is no longer available")
-                                showProgress(requireActivity())
-                                findNavController().navigateUp()
-                            }
-                        } else {
-                            requireActivity().invalidateOptionsMenu()
-                            if (item.status == "Bought") {
-                                // Listen and observe owner
-                                if (this::userListener.isInitialized) {
-                                    userListener.remove()
-                                }
-                                userListener = userVM.listenOtherUser(item.boughtBy)
-                                userVM.getOtherUserData().observe(viewLifecycleOwner, Observer { user ->
-                                    updateUserBought(user.name)
-                                })
-                                item_details_bought_by.setOnClickListener {
-                                    showProgress(requireActivity())
-                                    findNavController().navigate(DetailsItemFragmentDirections.actionVisitProfile(item.boughtBy))
-                                }
-                            }
-                        }
-                    } ?: run {
+        // Listen and observe item
+        itemListener = itemsVM.listenSingleItem(args.item.itemId)
+
+        itemsVM.getSingleItem().observe(viewLifecycleOwner, Observer {
+            it?.also { item ->
+                updateFields(item)
+                status = item.status
+                if (args.item.itemId != userVM.getCurrentUserId()) {
+                    if (item.status == "Disabled" || item.status == "Bought") {
                         displayMessage(requireContext(), "This item is no longer available")
                         showProgress(requireActivity())
                         findNavController().navigateUp()
                     }
-                })
-                // If other's item
-                if (!itemArg.owned) {
-                    // Listen and observe owner
-                    userListener = userVM.listenOtherUser(itemArg.item.userId)
-                    userVM.getOtherUserData().observe(viewLifecycleOwner, Observer {
-                        updateUserField(it.name)
-                    })
-                    item_details_stars.setIsIndicator(false)
-                    itemsVM.checkIfInterested(itemArg.item.itemId, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
-                        if (!(it["interestedUsers"] as ArrayList<String>).contains(userVM.getCurrentUserData().value!!.userId)) {
-                            showFab(requireActivity(), View.OnClickListener {
-                                showInterest()
-                            }, requireContext().getDrawable(R.drawable.ic_favourite_out))
-                        } else {
-                            showFab(requireActivity(), View.OnClickListener {
-                                removeInterest()
-                            }, requireContext().getDrawable(R.drawable.ic_favourite_out))
+                } else {
+                    requireActivity().invalidateOptionsMenu()
+                    if (item.status == "Bought") {
+                        // Listen and observe owner
+                        if (this::userListener.isInitialized) {
+                            userListener.remove()
+                        }
+                        userListener = userVM.listenOtherUser(item.boughtBy)
+                        userVM.getOtherUserData().observe(viewLifecycleOwner, Observer { user ->
+                            updateUserBought(user.name)
+                        })
+                        item_details_bought_by.setOnClickListener {
+                            showProgress(requireActivity())
+                            findNavController().navigate(MainNavigationDirections.actionGlobalShowProfile(item.boughtBy))
                         }
                     }
+                }
+            } ?: run {
+                displayMessage(requireContext(), "This item is no longer available")
+                showProgress(requireActivity())
+                findNavController().navigateUp()
+            }
+        })
+        // If other's item
+        if (args.item.itemId != userVM.getCurrentUserId()) {
+            // Listen and observe owner
+            userListener = userVM.listenOtherUser(args.item.userId)
+            userVM.getOtherUserData().observe(viewLifecycleOwner, Observer {
+                updateUserField(it.name)
+            })
+            item_details_stars.setIsIndicator(false)
+            itemsVM.checkIfInterested(args.item.itemId, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
+                if (!(it["interestedUsers"] as ArrayList<String>).contains(userVM.getCurrentUserData().value!!.userId)) {
+                    showFab(requireActivity(), View.OnClickListener {
+                        showInterest()
+                    }, requireContext().getDrawable(R.drawable.ic_favourite_out))
                 } else {
-                    item_details_stars.setIsIndicator(true)
+                    showFab(requireActivity(), View.OnClickListener {
+                        removeInterest()
+                    }, requireContext().getDrawable(R.drawable.ic_favourite_out))
                 }
             }
+        } else {
+            item_details_stars.setIsIndicator(true)
         }
 
         // Init listeners
         item_details_owner.setOnClickListener {
             showProgress(requireActivity())
-            findNavController().navigate(DetailsItemFragmentDirections.actionVisitProfile(itemArg.item.userId))
+            findNavController().navigate(MainNavigationDirections.actionGlobalShowProfile(args.item.userId))
         }
         item_details_interested_users.setOnClickListener {
             showProgress(requireActivity())
-            findNavController().navigate(DetailsItemFragmentDirections.actionSeeInterestedUsers(itemArg.item))
+            findNavController().navigate(DetailsItemFragmentDirections.actionSeeInterestedUsers(args.item))
         }
     }
 
@@ -158,7 +142,7 @@ class DetailsItemFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        if (itemArg.owned) {
+        if (args.item.itemId == userVM.getCurrentUserId()) {
             inflater.inflate(R.menu.menu_edit_item, menu)
             when (status) {
                 "Enabled" -> menu.findItem(R.id.menu_disable).title = "Disable"
@@ -170,7 +154,7 @@ class DetailsItemFragment : Fragment() {
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        if (itemArg.owned) {
+        if (args.item.itemId == userVM.getCurrentUserId()) {
             when (status) {
                 "Enabled" -> menu.findItem(R.id.menu_disable).title = "Disable"
                 "Disabled" -> menu.findItem(R.id.menu_disable).title = "Enable"
@@ -184,14 +168,14 @@ class DetailsItemFragment : Fragment() {
             R.id.menu_disable -> {
                 when (item.title) {
                     "Enable" -> {
-                        itemsVM.enableItem(itemArg.item.itemId, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
+                        itemsVM.enableItem(args.item.itemId, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
                             displayMessage(requireContext(), "Successfully enabled item")
                         }.addOnFailureListener {
                             displayMessage(requireContext(), "Error enabling item")
                         }
                     }
                     "Disable" -> {
-                        itemsVM.disableItem(itemArg.item.itemId, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
+                        itemsVM.disableItem(args.item.itemId, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
                             displayMessage(requireContext(), "Successfully enabled item")
                         }.addOnFailureListener {
                             displayMessage(requireContext(), "Error enabling item")
@@ -201,12 +185,12 @@ class DetailsItemFragment : Fragment() {
                 true
             }
             R.id.menu_delete -> {
-                itemsVM.deleteItem(itemArg.item)
+                itemsVM.deleteItem(args.item)
                 true
             }
             R.id.menu_edit -> {
                 showProgress(requireActivity())
-                findNavController().navigate(DetailsItemFragmentDirections.actionEditItem(itemArg))
+                findNavController().navigate(DetailsItemFragmentDirections.actionGlobalEditItem(args.item))
                 true
             } else -> super.onOptionsItemSelected(item)
         }
@@ -216,14 +200,14 @@ class DetailsItemFragment : Fragment() {
     private fun updateFields(item: Item) {
         item_details_title.text = item.title
         item_details_description.text = item.description
-        item_details_category_main.text = item.category_main
-        item_details_category_sub.text = item.category_sub
+        item_details_category_main.text = item.categoryMain
+        item_details_category_sub.text = item.categorySub
         item_details_price.text = item.price.toString()
         item_details_location.text = item.location
         item_details_expiry.text = item.expiry
 
         // Other owner
-        if (!itemArg.owned) {
+        if (args.item.itemId != userVM.getCurrentUserId()) {
             item_details_owner.visibility = View.VISIBLE
         } else {
             item_details_interested_users.visibility = View.VISIBLE
@@ -271,7 +255,7 @@ class DetailsItemFragment : Fragment() {
     }
 
     private fun showInterest() {
-        itemsVM.notifyInterest(requireContext(), itemArg.item, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
+        itemsVM.notifyInterest(requireContext(), args.item, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
             displayMessage(requireContext(), "Successfully showed interest")
             requireActivity().main_fab.apply {
                 setImageDrawable(requireContext().getDrawable(R.drawable.ic_favourite))
@@ -283,7 +267,7 @@ class DetailsItemFragment : Fragment() {
     }
 
     private fun removeInterest() {
-        itemsVM.removeInterest(requireContext(), itemArg.item, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
+        itemsVM.removeInterest(requireContext(), args.item, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
             displayMessage(requireContext(), "Successfully removed interest")
             requireActivity().main_fab.apply {
                 setImageDrawable(requireContext().getDrawable(R.drawable.ic_favourite_out))

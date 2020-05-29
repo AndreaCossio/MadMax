@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.firebase.firestore.ListenerRegistration
+import it.polito.mad.madmax.MainNavigationDirections
 import it.polito.mad.madmax.R
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
 import it.polito.mad.madmax.hideProgress
@@ -70,6 +71,6 @@ class UsersListFragment : Fragment() {
     }
 
     private var actionVisit = { userId: String ->
-        findNavController().navigate(UsersListFragmentDirections.actionVisitProfile(userId))
+        findNavController().navigate(MainNavigationDirections.actionGlobalShowProfile(userId))
     }
 }

@@ -103,13 +103,15 @@ class EditProfileFragment : Fragment() {
             state.getString(getString(R.string.edit_profile_dialog_state))?.also {
                 openDialog = it
                 when (openDialog) {
-                    "Sure" -> openSureDialog(requireContext(), requireActivity(), {
-                        showProgress(requireActivity())
-                        findNavController().navigateUp()
-                    }, { a: String -> openDialog = a})
-                    "Change" -> openPhotoDialog(requireContext(), requireActivity(), {
+                    "Sure" ->
+                        openSureDialog(requireContext(), requireActivity(), {
+                            showProgress(requireActivity())
+                            findNavController().navigateUp()
+                        }, { a: String -> openDialog = a})
+                    "Change" ->
+                        openPhotoDialog(requireContext(), requireActivity(), {
                             a: String -> openDialog = a
-                    }, {captureImage()}, {getImageFromGallery()}, {removeImage()})
+                        }, {captureImage()}, {getImageFromGallery()}, {removeImage()})
                 }
             }
         }
@@ -132,8 +134,6 @@ class EditProfileFragment : Fragment() {
                 if (validateFields()) {
                     // Show progress before uploading user data to the db
                     showProgress(requireActivity())
-
-                    // Load user data to the db and go back
                     userVM.updateUser(tempUser.copy()).addOnCompleteListener {
                         deletePhoto(requireContext(), tempUser.photo)
                         findNavController().navigate(EditProfileFragmentDirections.actionSaveProfile())
@@ -175,9 +175,7 @@ class EditProfileFragment : Fragment() {
                             updateFields()
                             displayMessage(requireContext(), getString(R.string.message_taken_photo))
                         } else {
-                            // Delete destination file
                             deletePhoto(requireContext(), tempUser.photo)
-                            // Restore tempItem field
                             tempUser.apply { photo = userVM.getCurrentUserData().value!!.photo }
                             updateFields()
                             displayMessage(requireContext(), getString(R.string.message_error_intent))
@@ -228,27 +226,29 @@ class EditProfileFragment : Fragment() {
         profile_edit_phone.setText(tempUser.phone)
 
         // Update photo
-        if (tempUser.photo != "") {
-            Picasso.get().load(Uri.parse(tempUser.photo)).into(profile_edit_photo, object : Callback {
-                override fun onSuccess() {
-                    profile_edit_photo.translationY = 0F
-                    hideProgress(requireActivity())
-                }
-
-                override fun onError(e: Exception?) {
-                    profile_edit_photo.apply {
-                        translationY = measuredHeight / 6F
-                        setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
+        profile_edit_photo.post {
+            if (tempUser.photo != "") {
+                Picasso.get().load(Uri.parse(tempUser.photo)).into(profile_edit_photo, object : Callback {
+                    override fun onSuccess() {
+                        profile_edit_photo.translationY = 0F
+                        hideProgress(requireActivity())
                     }
-                    hideProgress(requireActivity())
+
+                    override fun onError(e: Exception?) {
+                        profile_edit_photo.apply {
+                            translationY = measuredHeight / 6F
+                            setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
+                        }
+                        hideProgress(requireActivity())
+                    }
+                })
+            } else {
+                profile_edit_photo.apply {
+                    translationY = measuredHeight / 6F
+                    setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
                 }
-            })
-        } else {
-            profile_edit_photo.apply {
-                translationY = measuredHeight / 6F
-                setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
+                hideProgress(requireActivity())
             }
-            hideProgress(requireActivity())
         }
     }
 

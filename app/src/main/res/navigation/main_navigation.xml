@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_navigation_graph"
+    android:id="@+id/main_navigation"
     app:startDestination="@id/nav_on_sale_list_fragment">
 
     <!-- Home -->
@@ -10,22 +10,14 @@
         android:id="@+id/nav_on_sale_list_fragment"
         android:name="it.polito.mad.madmax.ui.item.OnSaleListFragment"
         android:label="@string/title_on_sale_item_fragment"
-        tools:layout="@layout/fragment_item_list">
-        <action
-            android:id="@+id/action_details_item"
-            app:destination="@id/nav_details_item_fragment" />
-    </fragment>
+        tools:layout="@layout/fragment_item_list" />
 
     <!-- ItemListFragment -->
     <fragment
         android:id="@+id/nav_item_list_fragment"
         android:name="it.polito.mad.madmax.ui.item.ItemListFragment"
         android:label="@string/title_item_list_fragment"
-        tools:layout="@layout/fragment_item_list">
-        <action
-            android:id="@+id/action_edit_or_create_item"
-            app:destination="@id/nav_details_item_fragment" />
-    </fragment>
+        tools:layout="@layout/fragment_item_list" />
 
     <!-- Details item -->
     <fragment
@@ -34,17 +26,11 @@
         android:label="@string/title_details_item_fragment"
         tools:layout="@layout/fragment_details_item">
         <action
-            android:id="@+id/action_edit_item"
-            app:destination="@id/nav_edit_item_fragment" />
-        <action
-            android:id="@+id/action_visit_profile"
-            app:destination="@id/nav_show_profile_fragment" />
-        <action
             android:id="@+id/action_see_interested_users"
             app:destination="@id/nav_users_list_fragment" />
         <argument
-            android:name="itemArg"
-            app:argType="it.polito.mad.madmax.data.model.ItemArg" />
+            android:name="item"
+            app:argType="it.polito.mad.madmax.data.model.Item" />
     </fragment>
 
     <!-- Edit item -->
@@ -54,23 +40,12 @@
         android:label="@string/title_edit_item_fragment"
         tools:layout="@layout/fragment_edit_item">
         <argument
-            android:name="itemArg"
-            app:argType="it.polito.mad.madmax.data.model.ItemArg" />
+            android:name="item"
+            app:argType="it.polito.mad.madmax.data.model.Item" />
         <action
             android:id="@+id/action_save_item"
             app:destination="@id/nav_details_item_fragment"
-            app:popUpTo="@id/nav_details_item_fragment"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_cancel_edit"
-            app:destination="@id/nav_details_item_fragment"
-            app:popUpTo="@id/nav_details_item_fragment"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_cancel_create"
-            app:destination="@id/nav_item_list_fragment"
-            app:popUpTo="@id/nav_item_list_fragment"
-            app:popUpToInclusive="true" />
+            app:popUpTo="@id/nav_item_list_fragment" />
     </fragment>
 
     <!-- Show profile -->
@@ -108,9 +83,6 @@
         android:name="it.polito.mad.madmax.ui.profile.UsersListFragment"
         android:label="Users List"
         tools:layout="@layout/fragment_users_list">
-        <action
-            android:id="@+id/action_visit_profile"
-            app:destination="@id/nav_show_profile_fragment" />
         <argument
             android:name="item"
             app:argType="it.polito.mad.madmax.data.model.Item" />
@@ -119,5 +91,13 @@
     <action
         android:id="@+id/action_global_show_profile"
         app:destination="@id/nav_show_profile_fragment" />
+
+    <action
+        android:id="@+id/action_global_details_item"
+        app:destination="@id/nav_details_item_fragment" />
+
+    <action
+        android:id="@+id/action_global_edit_item"
+        app:destination="@id/nav_edit_item_fragment" />
 
 </navigation>

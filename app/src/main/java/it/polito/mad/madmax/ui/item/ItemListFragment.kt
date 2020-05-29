@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.ListenerRegistration
 import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.Item
-import it.polito.mad.madmax.data.model.ItemArg
 import it.polito.mad.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
 import it.polito.mad.madmax.ui.AutoFitGridLayoutManager
@@ -53,7 +52,7 @@ class ItemListFragment : Fragment() {
         // Show add item FAB
         showFab(requireActivity(), View.OnClickListener {
             showProgress(requireActivity())
-            findNavController().navigate(ItemListFragmentDirections.actionEditOrCreateItem(ItemArg("Create", Item(userId = userVM.getCurrentUserData().value!!.userId), true)))
+            findNavController().navigate(ItemListFragmentDirections.actionGlobalEditItem(Item(userId = userVM.getCurrentUserId())))
         }, requireContext().getDrawable(R.drawable.ic_add))
 
         // Init recyclerview
@@ -131,12 +130,12 @@ class ItemListFragment : Fragment() {
 
     private var itemDetails = { item: Item ->
         showProgress(requireActivity())
-        findNavController().navigate(ItemListFragmentDirections.actionEditOrCreateItem(ItemArg("Details", item, item.userId == userVM.getCurrentUserId())))
+        findNavController().navigate(ItemListFragmentDirections.actionGlobalDetailsItem(item))
     }
 
     private var actionEditItem = { item: Item ->
         showProgress(requireActivity())
-        findNavController().navigate(ItemListFragmentDirections.actionEditOrCreateItem(ItemArg("Edit", item, item.userId == userVM.getCurrentUserId())))
+        findNavController().navigate(ItemListFragmentDirections.actionGlobalEditItem(item))
     }
 
     // Companion

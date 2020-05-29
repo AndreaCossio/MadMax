@@ -13,7 +13,6 @@ import androidx.navigation.fragment.findNavController
 import com.google.firebase.firestore.ListenerRegistration
 import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.Item
-import it.polito.mad.madmax.data.model.ItemArg
 import it.polito.mad.madmax.data.viewmodel.FilterViewModel
 import it.polito.mad.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
@@ -141,7 +140,7 @@ class OnSaleListFragment : Fragment() {
         val userId = userVM.getCurrentUserId()
         if (userId != "") {
             showProgress(requireActivity())
-            findNavController().navigate(OnSaleListFragmentDirections.actionDetailsItem(ItemArg("Details", item, item.userId == userVM.getCurrentUserId())))
+            findNavController().navigate(MainNavigationDirections.actionGlobalDetailsItem(item))
         } else {
             Log.d(TAG, "Not logged user clicked on an item")
         }
