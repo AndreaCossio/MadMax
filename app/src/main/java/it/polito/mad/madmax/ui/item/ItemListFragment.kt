@@ -94,6 +94,9 @@ class ItemListFragment : Fragment() {
             }
         })
         item_list_empty_tv.text = getString(R.string.message_empty_list)
+        item_list_empty_tv.setOnClickListener {
+            findNavController().navigate(ItemListFragmentDirections.actionOpenMap())
+        }
 
         // Observe the list of items
         itemsVM.getItemList().observe(viewLifecycleOwner, Observer {

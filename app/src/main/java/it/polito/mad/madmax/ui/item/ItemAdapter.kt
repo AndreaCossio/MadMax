@@ -52,7 +52,7 @@ class ItemAdapter(
             itemV.item_price.text = item.price.toInt().toString() + " €"
 
             // Category
-            itemV.item_category.setCardBackgroundColor(itemV.resources.getColor(getColorIdCategory(item.category_main)))
+//            itemV.item_category.setCardBackgroundColor(itemV.resources.getColor(getColorIdCategory(item.category_main)))
             itemV.item_category.post {
                 itemV.item_category.apply {
                     if (radius == 0F) {

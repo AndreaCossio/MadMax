@@ -5,6 +5,14 @@
     android:id="@+id/main_navigation_graph"
     app:startDestination="@id/nav_on_sale_list_fragment">
 
+
+    <fragment
+        android:id="@+id/map_fragment"
+        android:label="MapFragment"
+        android:name="it.polito.mad.madmax.MapsFragment"
+        tools:layout="@layout/fragment_maps">
+    </fragment>
+
     <!-- Home -->
     <fragment
         android:id="@+id/nav_on_sale_list_fragment"
@@ -25,6 +33,9 @@
         <action
             android:id="@+id/action_edit_or_create_item"
             app:destination="@id/nav_details_item_fragment" />
+        <action
+            android:id="@+id/action_open_map"
+            app:destination="@id/map_fragment" />
     </fragment>
 
     <!-- Details item -->
