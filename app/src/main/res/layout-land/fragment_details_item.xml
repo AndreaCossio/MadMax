@@ -192,37 +192,13 @@
                 android:hint="@string/item_expiry" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/item_details_owner"
+                android:id="@+id/item_details_extra"
                 style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:drawableStart="@drawable/ic_profile_primary"
-                android:drawablePadding="36dp"
-                android:hint="@string/item_owner"
-                android:visibility="gone" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/item_details_interested_users"
-                style="@style/TextAppearance.MaterialComponents.Body1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:drawableStart="@drawable/ic_profile_primary"
-                android:drawablePadding="36dp"
-                android:text="See interested users"
-                android:visibility="gone" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/item_details_bought_by"
-                style="@style/TextAppearance.MaterialComponents.Body1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:drawableStart="@drawable/ic_profile_primary"
-                android:drawablePadding="36dp"
-                android:text="Bought by: "
-                android:visibility="gone" />
+                android:drawablePadding="36dp" />
 
         </LinearLayout>
 

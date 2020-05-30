@@ -50,9 +50,11 @@ class ShowProfileFragment : Fragment() {
 
         args.user?.also { userId ->
             (requireActivity() as MainActivity).removeTopLevelProfile()
-            userVM.getOtherUserData().observe(viewLifecycleOwner, Observer {
-                requireActivity().main_toolbar.title = it.name.split(" ")[0] + "'s Profile"
-                updateFields(it)
+            userVM.getOtherUserData().observe(viewLifecycleOwner, Observer { user ->
+                if (user.userId != "") {
+                    requireActivity().main_toolbar.title = user.name.split(" ")[0] + "'s Profile"
+                    updateFields(user)
+                }
             })
             userListener = userVM.listenOtherUser(userId)
         } ?: run {
