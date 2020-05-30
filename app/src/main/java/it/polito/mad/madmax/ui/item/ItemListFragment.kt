@@ -36,7 +36,7 @@ class ItemListFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         // Init adapter
-        itemAdapter = ItemAdapter(itemDetails, actionEditItem, {null})
+        itemAdapter = ItemAdapter(actionDetails, actionEdit)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -128,12 +128,12 @@ class ItemListFragment : Fragment() {
         }
     }
 
-    private var itemDetails = { item: Item ->
+    private var actionDetails = { item: Item ->
         showProgress(requireActivity())
         findNavController().navigate(ItemListFragmentDirections.actionGlobalDetailsItem(item))
     }
 
-    private var actionEditItem = { item: Item ->
+    private var actionEdit = { item: Item ->
         showProgress(requireActivity())
         findNavController().navigate(ItemListFragmentDirections.actionGlobalEditItem(item))
     }

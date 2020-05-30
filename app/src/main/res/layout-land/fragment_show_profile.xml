@@ -74,7 +74,7 @@
             android:layout_marginBottom="24dp"
             android:orientation="vertical">
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:id="@+id/profile_name"
                 style="@style/TextAppearance.MaterialComponents.Headline6"
                 android:layout_width="wrap_content"
@@ -85,7 +85,7 @@
 
             <include layout="@layout/divider" />
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:id="@+id/profile_nickname"
                 style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="match_parent"
@@ -95,7 +95,7 @@
                 android:drawablePadding="36dp"
                 android:hint="@string/profile_nickname" />
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:id="@+id/profile_email"
                 style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="match_parent"
@@ -105,7 +105,7 @@
                 android:drawablePadding="36dp"
                 android:hint="@string/profile_email" />
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:id="@+id/profile_location"
                 style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="match_parent"
@@ -115,7 +115,7 @@
                 android:drawablePadding="36dp"
                 android:hint="@string/profile_location" />
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:id="@+id/profile_phone"
                 style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="match_parent"

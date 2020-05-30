@@ -3,7 +3,6 @@ package it.polito.mad.madmax.ui.item
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.CompoundButton
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -35,7 +34,7 @@ class OnSaleListFragment : Fragment() {
         setHasOptionsMenu(true)
 
         // Init adapter
-        itemAdapter = ItemAdapter(itemDetails, {}, interestListener)
+        itemAdapter = ItemAdapter(actionDetails, actionInterest)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -136,7 +135,7 @@ class OnSaleListFragment : Fragment() {
         filterDialog.show(requireFragmentManager(), TAG)
     }
 
-    private var itemDetails = { item: Item ->
+    private var actionDetails = { item: Item ->
         val userId = userVM.getCurrentUserId()
         if (userId != "") {
             showProgress(requireActivity())
@@ -146,12 +145,18 @@ class OnSaleListFragment : Fragment() {
         }
     }
 
-    private var interestListener = { item: Item ->
-        CompoundButton.OnCheckedChangeListener { view: CompoundButton, checked: Boolean ->
-            if (checked) {
-                itemsVM.notifyInterest(requireContext(), item, userVM.getCurrentUserId())
-            } else {
-                itemsVM.removeInterest(requireContext(), item, userVM.getCurrentUserId())
+    private var actionInterest = { item: Item ->
+        if (!item.interestedUsers.contains(userVM.getCurrentUserId())) {
+            itemsVM.notifyInterest(requireContext(), item, userVM.getCurrentUserId()).addOnSuccessListener {
+                displayMessage(requireContext(), "Successfully showed interest")
+            }.addOnFailureListener {
+                displayMessage(requireContext(), "Failed to show interest")
+            }
+        } else {
+            itemsVM.removeInterest(requireContext(), item, userVM.getCurrentUserId()).addOnSuccessListener {
+                displayMessage(requireContext(), "Successfully removed interest")
+            }.addOnFailureListener {
+                displayMessage(requireContext(), "Failed to remove interest")
             }
         }
     }

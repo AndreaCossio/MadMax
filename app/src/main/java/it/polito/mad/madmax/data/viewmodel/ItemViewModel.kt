@@ -180,10 +180,12 @@ class ItemViewModel: ViewModel() {
     }
 
     fun enableItem(itemId: String, userId: String): Task<Transaction> {
+        // TODO notify interested users
         return repo.enableItem(itemId, userId)
     }
 
     fun disableItem(itemId: String, userId: String): Task<Transaction> {
+        // TODO notify interested users
         return repo.disableItem(itemId, userId)
     }
 

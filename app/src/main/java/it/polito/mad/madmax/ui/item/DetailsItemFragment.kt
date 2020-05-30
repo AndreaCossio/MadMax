@@ -15,7 +15,6 @@ import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.Item
 import it.polito.mad.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_details_item.*
 
 class DetailsItemFragment : Fragment() {
@@ -168,18 +167,9 @@ class DetailsItemFragment : Fragment() {
         item_details_description.text = item.description
         item_details_category_main.text = item.categoryMain
         item_details_category_sub.text = item.categorySub
-        item_details_price.text = item.price.toString()
+        item_details_price.text = getString(R.string.item_price_set, item.price)
         item_details_location.text = item.location
         item_details_expiry.text = item.expiry
-
-        // Rating
-        if (item.stars.toFloat() == -1.0F /*&& itemArg.owned*/) {
-            item_details_stars_container.visibility = View.GONE
-        } else {
-            item_details_stars_container.visibility = View.VISIBLE
-            item_details_stars.rating = item.stars.toFloat()
-        }
-        item_details_stars.setIsIndicator(item.userId == userVM.getCurrentUserId())
 
         // Photo
         item_details_photo.apply {
@@ -232,24 +222,16 @@ class DetailsItemFragment : Fragment() {
     }
 
     private fun showInterest() {
-        itemsVM.notifyInterest(requireContext(), args.item, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
+        itemsVM.notifyInterest(requireContext(), args.item, userVM.getCurrentUserId()).addOnSuccessListener {
             displayMessage(requireContext(), "Successfully showed interest")
-            requireActivity().main_fab.apply {
-                setImageDrawable(requireContext().getDrawable(R.drawable.ic_favourite))
-                setOnClickListener {removeInterest()}
-            }
         }.addOnFailureListener {
             displayMessage(requireContext(), "Failed to show interest")
         }
     }
 
     private fun removeInterest() {
-        itemsVM.removeInterest(requireContext(), args.item, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
+        itemsVM.removeInterest(requireContext(), args.item, userVM.getCurrentUserId()).addOnSuccessListener {
             displayMessage(requireContext(), "Successfully removed interest")
-            requireActivity().main_fab.apply {
-                setImageDrawable(requireContext().getDrawable(R.drawable.ic_favourite_out))
-                setOnClickListener {showInterest()}
-            }
         }.addOnFailureListener {
             displayMessage(requireContext(), "Failed to remove interest")
         }

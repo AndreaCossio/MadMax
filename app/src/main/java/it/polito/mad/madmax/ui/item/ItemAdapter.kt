@@ -4,9 +4,9 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
@@ -17,8 +17,7 @@ import kotlinx.android.synthetic.main.item_card.view.*
 
 class ItemAdapter(
     private val cardClickListener: (Item) -> Any,
-    private val actionListener: (Item) -> Any,
-    private val onCheckedChangeListener: (Item) -> CompoundButton.OnCheckedChangeListener?
+    private val actionListener: (Item) -> Any
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     private var items: ArrayList<Item> = ArrayList()
@@ -28,7 +27,7 @@ class ItemAdapter(
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.bind(items[position], cardClickListener, actionListener, onCheckedChangeListener)
+        holder.bind(items[position], cardClickListener, actionListener)
     }
 
     override fun getItemCount() = items.size
@@ -41,7 +40,7 @@ class ItemAdapter(
 
     class ItemViewHolder(private val itemV: View) : RecyclerView.ViewHolder(itemV) {
 
-        fun bind(item: Item, cardClickListener: (Item) -> Any, actionEdit: (Item) -> Any, onCheckedChangeListener: (Item) -> CompoundButton.OnCheckedChangeListener?) {
+        fun bind(item: Item, cardClickListener: (Item) -> Any, action: (Item) -> Any) {
             // Title
             itemV.item_title.text = item.title
 
@@ -49,7 +48,7 @@ class ItemAdapter(
             itemV.item_description.text = item.description
 
             // Price
-            itemV.item_price.text = item.price.toInt().toString() + " €"
+            itemV.item_price.text = itemV.context.getString(R.string.item_price_set, item.price.toFloat())
 
             // Category
             itemV.item_category.setCardBackgroundColor(itemV.resources.getColor(getColorIdCategory(item.categoryMain)))
@@ -82,14 +81,13 @@ class ItemAdapter(
 
             // Button
             if (item.userId != Firebase.auth.currentUser?.uid) {
-                itemV.item_button_like.visibility = View.VISIBLE
-                itemV.item_button_like.setOnCheckedChangeListener(null)
-                itemV.item_button_like.isChecked = item.interestedUsers.contains(Firebase.auth.currentUser?.uid)
-                itemV.item_button_like.setOnCheckedChangeListener(onCheckedChangeListener(item))
-            } else {
-                itemV.item_button_edit.visibility = View.VISIBLE
-                itemV.item_button_edit.setOnClickListener { actionEdit(item) }
+                if (item.interestedUsers.contains(Firebase.auth.currentUser?.uid)) {
+                    (itemV.item_action as MaterialButton).icon = itemV.context.getDrawable(R.drawable.ic_favourite)
+                } else {
+                    (itemV.item_action as MaterialButton).icon = itemV.context.getDrawable(R.drawable.ic_favourite_out)
+                }
             }
+            itemV.item_action.setOnClickListener { action(item) }
             itemV.item_card.setOnClickListener { cardClickListener(item) }
         }
     }

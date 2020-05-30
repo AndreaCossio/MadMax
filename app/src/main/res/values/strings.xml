@@ -2,8 +2,6 @@
     <!-- APPLICATION -->
     <string name="app_name">MadMax</string>
 
-    <!-- SHARED PREFERENCES -->
-
     <!-- FILE PROVIDER -->
     <string name="file_provider">it.polito.mad.madmax.fileprovider</string>
 
@@ -98,6 +96,9 @@
     <string name="item_expiry">Expiry Date</string>
     <string name="item_owner">Item Owner</string>
     <string name="item_expiry_change">Change</string>
+    <string name="item_price_set">%.2f €</string>
+
+    <string name="dot">&#8226;</string>
 
     <!-- CLOUD MESSAGING-->
     <string name="apiUrl">https://fcm.googleapis.com/fcm/send</string>
