@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.fragment_maps.*
 class MapsFragment : Fragment(),OnMapReadyCallback {
 
     private lateinit var googleMap:GoogleMap
+    private lateinit var markerOptions: MarkerOptions
 
 
     override fun onCreateView(
@@ -22,19 +23,27 @@ class MapsFragment : Fragment(),OnMapReadyCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_maps, container, false)
+        val layout = inflater.inflate(R.layout.fragment_maps, container, false)
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map_view) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+        return layout
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        map_view.getMapAsync(this)
-    }
 
     override fun onMapReady(p0: GoogleMap?) {
         googleMap = p0!!
-        val sydney = LatLng(-34.0, 151.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        googleMap.uiSettings.apply {
+            this.setAllGesturesEnabled(true)
+        }
+        googleMap.setOnMapClickListener {
+            clickOnMap(it)
+        }
+
     }
 
+
+    private fun clickOnMap(latLng: LatLng){
+        markerOptions = MarkerOptions().position(latLng).draggable(true)
+        googleMap.addMarker(markerOptions)
+    }
 }
