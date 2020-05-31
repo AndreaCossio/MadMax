@@ -19,6 +19,8 @@
     <string name="title_create_item_fragment">Create item</string>
     <string name="title_on_sale_item_fragment">Home</string>
     <string name="title_item_list_fragment">My Items</string>
+    <string name="title_item_of_interest_fragment">My Favourite Items</string>
+    <string name="title_bought_items_list_fragment">Bought Items</string>
 
     <!-- MENU -->
     <string name="menu_settings">Settings</string>
@@ -40,6 +42,8 @@
     <string name="message_chosen_photo">Picture loaded correctly</string>
     <string name="message_empty_list">There are no items! Please create one</string>
     <string name="message_empty_list_others">There are no items! Please try to change the filter</string>
+    <string name="message_empty_list_favourite">There are no favourite items!</string>
+    <string name="message_empty_list_bought">There are no bought items!</string>
     <string name="message_empty_interested_users">Sorry, there are no interested users!</string>
     <!-- Error -->
     <string name="message_error_field_required">Sorry, this field is required</string>
@@ -101,6 +105,7 @@
     <string name="dot">&#8226;</string>
 
     <!-- CLOUD MESSAGING-->
+    <string name="fcm_notification_channel_id">fcm_default_channel</string>
     <string name="apiUrl">https://fcm.googleapis.com/fcm/send</string>
     <string name="serverKey">AAAAY4qEYoE:APA91bE8SyfjBdnCMjkHqT63CLcuZw_0OY-51XlUCy5kgTw4e5-GRDwyYKsLGVGeCP_DG6DIwDzcPSXefAkZrO6-r4dOZxLroVFYkrbbgiT35gf4MIfaemo4w-1RzcnFacpI2cw9_j6i</string>
     <string name="cloudContentType">application/json</string>

@@ -146,7 +146,7 @@ fun compressImage(context: Context, path: String): Uri {
             // Decode the bitmap and compress it
             // Also rotate if necessary
             BitmapFactory.decodeStream(stream, null, options)?.also { bitmap ->
-                rotateImageIfRequired(context, bitmap, path).compress(Bitmap.CompressFormat.JPEG, 25, file.outputStream())
+                rotateImageIfRequired(context, bitmap, path).compress(Bitmap.CompressFormat.JPEG, 50, file.outputStream())
             }
             stream?.close()
         }

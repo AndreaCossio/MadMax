@@ -59,7 +59,6 @@ dependencies {
 
     // Recycler view for item list
     implementation "androidx.recyclerview:recyclerview:1.2.0-alpha03"
-    //implementation "androidx.recyclerview:recyclerview-selection:1.1.0-rc01"
 
     // Google play services auth
     implementation 'com.google.android.gms:play-services-auth:18.0.0'
@@ -76,12 +75,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage-ktx:19.1.1'
     implementation 'com.google.firebase:firebase-messaging:20.2.0'
 
-    // FirebaseUI for Cloud Firestore
-    implementation 'com.firebaseui:firebase-ui-firestore:6.2.1'
-
     // Picasso
     implementation 'com.squareup.picasso:picasso:2.71828'
 
-    //Volley
+    // Volley
     implementation 'com.android.volley:volley:1.1.1'
 }

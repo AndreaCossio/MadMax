@@ -12,7 +12,21 @@
         android:label="@string/title_on_sale_item_fragment"
         tools:layout="@layout/fragment_item_list" />
 
-    <!-- ItemListFragment -->
+    <!-- Item of interest -->
+    <fragment
+        android:id="@+id/nav_items_of_interest_fragment"
+        android:name="it.polito.mad.madmax.ui.item.ItemsOfInterestFragment"
+        android:label="@string/title_item_of_interest_fragment"
+        tools:layout="@layout/fragment_item_list" />
+
+    <!-- Bought items -->
+    <fragment
+        android:id="@+id/nav_bought_items_list_fragment"
+        android:name="it.polito.mad.madmax.ui.item.BoughtItemsListFragment"
+        android:label="@string/title_bought_items_list_fragment"
+        tools:layout="@layout/fragment_item_list" />
+
+    <!-- My items -->
     <fragment
         android:id="@+id/nav_item_list_fragment"
         android:name="it.polito.mad.madmax.ui.item.ItemListFragment"

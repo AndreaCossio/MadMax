@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <group android:checkableBehavior="single">
         <item
             android:id="@id/nav_on_sale_list_fragment"
             android:icon="@drawable/ic_home"
             android:title="@string/title_on_sale_item_fragment" />
+        <item
+            android:id="@id/nav_items_of_interest_fragment"
+            android:icon="@drawable/ic_favourite"
+            android:title="@string/title_item_of_interest_fragment" />
+        <item
+            android:id="@id/nav_bought_items_list_fragment"
+            android:icon="@drawable/ic_cart"
+            android:title="@string/title_bought_items_list_fragment" />
         <item
             android:id="@id/nav_item_list_fragment"
             android:icon="@drawable/ic_bullet_list"
@@ -15,5 +22,4 @@
             android:icon="@drawable/ic_profile_primary"
             android:title="@string/title_show_profile_fragment" />
     </group>
-
 </menu>

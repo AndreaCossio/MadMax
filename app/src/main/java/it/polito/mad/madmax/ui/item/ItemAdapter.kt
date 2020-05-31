@@ -17,7 +17,8 @@ import kotlinx.android.synthetic.main.item_card.view.*
 
 class ItemAdapter(
     private val cardClickListener: (Item) -> Any,
-    private val actionListener: (Item) -> Any
+    private val actionListener: (Item) -> Any = {},
+    private val showAction: Boolean = true
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     private var items: ArrayList<Item> = ArrayList()
@@ -27,7 +28,7 @@ class ItemAdapter(
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.bind(items[position], cardClickListener, actionListener)
+        holder.bind(items[position], cardClickListener, actionListener, showAction)
     }
 
     override fun getItemCount() = items.size
@@ -40,7 +41,7 @@ class ItemAdapter(
 
     class ItemViewHolder(private val itemV: View) : RecyclerView.ViewHolder(itemV) {
 
-        fun bind(item: Item, cardClickListener: (Item) -> Any, action: (Item) -> Any) {
+        fun bind(item: Item, cardClickListener: (Item) -> Any, action: (Item) -> Any, showAction: Boolean) {
             // Title
             itemV.item_title.text = item.title
 
@@ -79,15 +80,19 @@ class ItemAdapter(
                 itemV.item_card.setCardBackgroundColor(ContextCompat.getColor(itemV.context, R.color.colorSecondaryLight))
             }*/
 
-            // Button
-            if (item.userId != Firebase.auth.currentUser?.uid) {
-                if (item.interestedUsers.contains(Firebase.auth.currentUser?.uid)) {
-                    (itemV.item_action as MaterialButton).icon = itemV.context.getDrawable(R.drawable.ic_favourite)
-                } else {
-                    (itemV.item_action as MaterialButton).icon = itemV.context.getDrawable(R.drawable.ic_favourite_out)
+            // Action
+            if (showAction) {
+                if (item.userId != Firebase.auth.currentUser?.uid) {
+                    if (item.interestedUsers.contains(Firebase.auth.currentUser?.uid)) {
+                        (itemV.item_action as MaterialButton).icon = itemV.context.getDrawable(R.drawable.ic_favourite)
+                    } else {
+                        (itemV.item_action as MaterialButton).icon = itemV.context.getDrawable(R.drawable.ic_favourite_out)
+                    }
                 }
+                itemV.item_action.setOnClickListener { action(item) }
+            } else {
+                itemV.item_action.visibility = View.INVISIBLE
             }
-            itemV.item_action.setOnClickListener { action(item) }
             itemV.item_card.setOnClickListener { cardClickListener(item) }
         }
     }

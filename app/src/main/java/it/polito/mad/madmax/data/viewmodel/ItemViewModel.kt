@@ -148,6 +148,40 @@ class ItemViewModel: ViewModel() {
         }
     }
 
+    fun listenInterestedItems(userId: String): ListenerRegistration {
+        return repo.getItems(false).whereArrayContains("interestedUsers", userId).addSnapshotListener { snapshots, e ->
+            e?.also {
+                Log.w(TAG, "Listen failed: ${it.message}")
+                return@addSnapshotListener
+            }
+
+            val newItems = ArrayList<Item>()
+            for (doc in snapshots!!) {
+                newItems.add(doc.toObject(Item::class.java).apply {
+                    itemId = doc.id
+                })
+            }
+            items.value = newItems
+        }
+    }
+
+    fun listenBoughtItems(userId: String): ListenerRegistration {
+        return repo.getItems(false).whereEqualTo("boughtBy", userId).addSnapshotListener { snapshots, e ->
+            e?.also {
+                Log.w(TAG, "Listen failed: ${it.message}")
+                return@addSnapshotListener
+            }
+
+            val newItems = ArrayList<Item>()
+            for (doc in snapshots!!) {
+                newItems.add(doc.toObject(Item::class.java).apply {
+                    itemId = doc.id
+                })
+            }
+            items.value = newItems
+        }
+    }
+
     fun notifyInterest(context: Context, item: Item, userId: String): Task<Transaction> {
         // Subscribe to the item
         FirebaseMessaging.getInstance().subscribeToTopic("/topics/${item.itemId}")

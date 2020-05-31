@@ -9,7 +9,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.media.RingtoneManager
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -21,14 +20,11 @@ import java.util.*
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
-    private val ADMIN_CHANNEL_ID = "admin_channel"
-
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
-        Log.d(TAG, "From: ${remoteMessage.from}")
 
-
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             setupChannels(notificationManager)
@@ -40,7 +36,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
 
         val notificationSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val notificationBuilder = NotificationCompat.Builder(this, ADMIN_CHANNEL_ID)
+        val notificationBuilder = NotificationCompat.Builder(this, getString(R.string.fcm_notification_channel_id))
             .setContentTitle(remoteMessage.data["title"])
             .setContentText(remoteMessage.data["message"])
             .setAutoCancel(true)
@@ -55,13 +51,45 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         notificationManager.notify(Random().nextInt(3000), notificationBuilder.build())
     }
 
+    private fun sendNotification(messageBody: String) {
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            RC_NOTIFICATION,
+            Intent(this, MainActivity::class.java).apply { addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP) },
+            PendingIntent.FLAG_ONE_SHOT
+        )
+
+        val channelId = getString(R.string.fcm_notification_channel_id)
+        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+            //.setSmallIcon(R.mipmap.ic_launcher_round)
+            //.setContentTitle(remoteMessage.data["title"])
+            .setContentText(messageBody)
+            .setAutoCancel(true)
+            .setSound(defaultSoundUri)
+            .setContentIntent(pendingIntent)
+
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(channelId, "Channel human readable title", NotificationManager.IMPORTANCE_DEFAULT)
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        notificationManager.notify(0 , notificationBuilder.build())
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private fun setupChannels(notificationManager: NotificationManager?) {
         val adminChannelName = "New notification"
         val adminChannelDescription = "Device to device notification"
 
-        val adminChannel = NotificationChannel(ADMIN_CHANNEL_ID, adminChannelName, NotificationManager.IMPORTANCE_HIGH).apply {
+        val adminChannel = NotificationChannel(
+            getString(R.string.fcm_notification_channel_id),
+            adminChannelName,
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
             description = adminChannelDescription
             enableLights(true)
             lightColor = Color.RED
@@ -73,5 +101,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     // Companion
     companion object {
         const val TAG = "MM_NOTIFICATIONS"
+        const val RC_NOTIFICATION = 0
     }
 }

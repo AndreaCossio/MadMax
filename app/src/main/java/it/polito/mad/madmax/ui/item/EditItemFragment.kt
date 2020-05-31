@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
@@ -163,12 +162,6 @@ class EditItemFragment : Fragment(), AdapterView.OnItemClickListener {
                     tempItem.apply {
                         if (tempItem.itemId == "") {
                             itemId = itemsVM.getNewItemId()
-                            status = "Enabled"
-                        } else {
-                            Log.d(TAG, "$itemId new: ${args.item.itemId}")
-                            itemId = args.item.itemId
-                            Log.d(TAG, "$status new: ${args.item.status}")
-                            status = args.item.status
                         }
                     }
                     itemsVM.updateItem(tempItem.copy(), tempItem.photo != args.item.photo).addOnCompleteListener {
