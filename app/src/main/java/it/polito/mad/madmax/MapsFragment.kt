@@ -14,7 +14,9 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.setFragmentResult
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
@@ -58,7 +60,7 @@ class MapsFragment : DialogFragment(),OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         confirm_location_btn.setOnClickListener{
-            Log.d("XXX",getAddressFromLocation())
+            setFragmentResult("MAP_ADDRESS", bundleOf("address" to getAddressFromLocation()))
             dismiss()
         }
     }

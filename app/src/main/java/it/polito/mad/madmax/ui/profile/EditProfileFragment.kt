@@ -8,14 +8,17 @@ import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.User
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
+import it.polito.mad.madmax.ui.item.OnSaleListFragment
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 
 class EditProfileFragment : Fragment() {
@@ -32,6 +35,8 @@ class EditProfileFragment : Fragment() {
         setHasOptionsMenu(true)
         // Create a copy of the user data
         tempUser = userVM.getCurrentUserData().value!!.copy()
+
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -54,6 +59,20 @@ class EditProfileFragment : Fragment() {
         // Attach change photo listener
         profile_edit_change_photo.setOnClickListener {
             openPhotoDialog(requireContext(), requireActivity(), { a: String -> openDialog = a}, {captureImage()}, {getImageFromGallery()}, {removeImage()})
+        }
+
+        show_map.setOnClickListener {
+            val filterDialog = MapsFragment().apply {
+                setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
+            }
+            filterDialog.show(requireFragmentManager(), OnSaleListFragment.TAG)
+        }
+
+        setFragmentResultListener("MAP_ADDRESS") { key, bundle ->
+            // We use a String here, but any type that can be put in a Bundle is supported
+            val result = bundle.getString("address")
+            profile_edit_location.setText(result)
+            // Do something with the result...
         }
 
         // Display user data
