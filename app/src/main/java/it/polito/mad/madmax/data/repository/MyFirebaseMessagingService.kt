@@ -61,6 +61,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         notificationManager.notify(Random().nextInt(3000), notificationBuilder.build())
     }
 
+    override fun onNewToken(p0: String) {
+        super.onNewToken(p0)
+        Log.d(TAG, "New token")
+    }
+
     // Companion
     companion object {
         const val TAG = "MM_NOTIFICATIONS"
