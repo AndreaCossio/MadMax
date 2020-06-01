@@ -70,7 +70,7 @@ class ShowProfileFragment : Fragment() {
         }
         // Restore top level destination
         args.user?.also { (requireActivity() as MainActivity).addTopLevelProfile() }
-        // Detach layout listener
+        // Detach rate_dialog listener
         profile_card.removeOnLayoutChangeListener(cardRadiusConstrain)
     }
 

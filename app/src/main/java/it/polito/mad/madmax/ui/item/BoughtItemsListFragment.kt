@@ -24,11 +24,11 @@ class BoughtItemsListFragment : Fragment() {
     private lateinit var itemListener: ListenerRegistration
 
     // Adapter
-    private lateinit var itemAdapter: ItemAdapter
+    private lateinit var boughtItemAdapter: BoughtItemAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        itemAdapter = ItemAdapter(actionDetails, showAction = false)
+        boughtItemAdapter = BoughtItemAdapter(actionDetails, showAction =true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -44,13 +44,13 @@ class BoughtItemsListFragment : Fragment() {
         item_list_rv.apply {
             setHasFixedSize(false)
             layoutManager = AutoFitGridLayoutManager(requireContext(), 300.toPx())
-            adapter = itemAdapter
+            adapter = boughtItemAdapter
         }
         item_list_empty_tv.text = getString(R.string.message_empty_list_bought)
 
         // Observe the list of items and update the recycler view accordingly
         itemsVM.getItemList().observe(viewLifecycleOwner, Observer {
-            itemAdapter.setItems(it)
+            boughtItemAdapter.setItems(it)
             hideProgress(requireActivity())
             if (it.size == 0) {
                 item_list_empty.animate().alpha(1F).startDelay = 300
