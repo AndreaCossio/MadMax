@@ -67,7 +67,7 @@ class OnSaleListFragment : Fragment() {
             if (this::itemListener.isInitialized) {
                 itemListener.remove()
             }
-            itemListener = itemsVM.listenOthersItems(it)
+            itemListener = itemsVM.listenItems(itemFilter = it)
         })
 
         // Observe userId

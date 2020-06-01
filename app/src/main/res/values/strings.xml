@@ -104,15 +104,19 @@
 
     <string name="dot">&#8226;</string>
 
-    <!-- CLOUD MESSAGING-->
-    <string name="fcm_notification_channel_id">fcm_default_channel</string>
-    <string name="apiUrl">https://fcm.googleapis.com/fcm/send</string>
-    <string name="serverKey">AAAAY4qEYoE:APA91bE8SyfjBdnCMjkHqT63CLcuZw_0OY-51XlUCy5kgTw4e5-GRDwyYKsLGVGeCP_DG6DIwDzcPSXefAkZrO6-r4dOZxLroVFYkrbbgiT35gf4MIfaemo4w-1RzcnFacpI2cw9_j6i</string>
-    <string name="cloudContentType">application/json</string>
+    <!-- FIREBASE CLOUD MESSAGING-->
+    <string name="fcm_interest_channel_id">fcm_madmax_item_interest</string>
+    <string name="fcm_interest_channel_name">Item\'s interest</string>
+    <string name="fcm_interest_channel_description">Receive notifications about interest in your items.</string>
+    <string name="fcm_status_channel_id">fcm_madmax_item_status</string>
+    <string name="fcm_status_channel_name">Item\'s status</string>
+    <string name="fcm_status_channel_description">Receive notifications about the status of the items I\'m interested in.</string>
+    <string name="fcm_api_url">https://fcm.googleapis.com/fcm/send</string>
+    <string name="fcm_server_key">AAAAY4qEYoE:APA91bE8SyfjBdnCMjkHqT63CLcuZw_0OY-51XlUCy5kgTw4e5-GRDwyYKsLGVGeCP_DG6DIwDzcPSXefAkZrO6-r4dOZxLroVFYkrbbgiT35gf4MIfaemo4w-1RzcnFacpI2cw9_j6i</string>
+    <string name="fcm_content_type">application/json</string>
 
     <!-- Categories -->
     <string-array name="item_categories_main">
-        <item></item>
         <item>Arts &amp; Crafts</item>
         <item>Sports &amp; Hobby</item>
         <item>Baby</item>
@@ -124,7 +128,6 @@
     </string-array>
 
     <string-array name="item_categories_sub_art_and_crafts">
-        <item></item>
         <item>Painting, Drawing &amp; Art Supplies</item>
         <item>Sewing</item>
         <item>Scrapbooking &amp; Stamping</item>
@@ -132,7 +135,6 @@
     </string-array>
 
     <string-array name="item_categories_sub_sports_and_hobby">
-        <item></item>
         <item>Sports and Outdoors</item>
         <item>Outdoor Recreation</item>
         <item>Sports &amp; Fitness</item>
@@ -140,7 +142,6 @@
     </string-array>
 
     <string-array name="item_categories_sub_baby">
-        <item></item>
         <item>Apparel &amp; Accessories</item>
         <item>Baby &amp; Toddler Toys</item>
         <item>Car Seats &amp; Accessories</item>
@@ -149,7 +150,6 @@
     </string-array>
 
     <string-array name="item_categories_sub_womens_fashion">
-        <item></item>
         <item>Clothing</item>
         <item>Shoes</item>
         <item>Watches</item>
@@ -158,7 +158,6 @@
     </string-array>
 
     <string-array name="item_categories_sub_mens_fashion">
-        <item></item>
         <item>Clothing</item>
         <item>Shoes</item>
         <item>Watches</item>
@@ -166,7 +165,6 @@
     </string-array>
 
     <string-array name="item_categories_sub_electronics">
-        <item></item>
         <item>Computers</item>
         <item>Monitors</item>
         <item>Printers &amp; Scanners</item>
@@ -182,7 +180,6 @@
     </string-array>
 
     <string-array name="item_categories_sub_games_and_videogames">
-        <item></item>
         <item>Action Figures &amp; Statues</item>
         <item>Arts &amp; Crafts</item>
         <item>Building Toys</item>
@@ -194,7 +191,6 @@
     </string-array>
 
     <string-array name="item_categories_sub_automotive">
-        <item></item>
         <item>Car Electronics &amp; Accessories</item>
         <item>Accessories</item>
         <item>Motorcycle &amp; Powersports</item>

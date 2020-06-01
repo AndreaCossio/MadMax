@@ -59,7 +59,7 @@ class BoughtItemsListFragment : Fragment() {
             }
         })
 
-        itemListener = itemsVM.listenBoughtItems(userVM.getCurrentUserId())
+        itemListener = itemsVM.listenItems(userId = userVM.getCurrentUserId(), bought = true)
     }
 
     override fun onDestroyView() {

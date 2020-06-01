@@ -59,7 +59,7 @@ class ItemsOfInterestFragment : Fragment() {
             }
         })
 
-        itemListener = itemsVM.listenInterestedItems(userVM.getCurrentUserId())
+        itemListener = itemsVM.listenItems(userId = userVM.getCurrentUserId(), interested = true)
     }
 
     override fun onDestroyView() {

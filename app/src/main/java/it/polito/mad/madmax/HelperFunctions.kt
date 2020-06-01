@@ -96,7 +96,7 @@ var cardRadiusConstrain = View.OnLayoutChangeListener { v: View, _: Int, _: Int,
 fun Int.toPx(): Int = (this * Resources.getSystem().displayMetrics.density).toInt()
 
 fun getMainCategories(context: Context): Array<String> {
-    return context.resources.getStringArray(R.array.item_categories_main)
+    return arrayOf("") + context.resources.getStringArray(R.array.item_categories_main)
 }
 
 fun getSubcategories(context: Context, mainCat: String): Array<String> {
@@ -114,7 +114,7 @@ fun getSubcategories(context: Context, mainCat: String): Array<String> {
         if (it == -1)
             arrayOf("")
         else
-            context.resources.getStringArray(it)
+            arrayOf("") + context.resources.getStringArray(it)
     }
 }
 

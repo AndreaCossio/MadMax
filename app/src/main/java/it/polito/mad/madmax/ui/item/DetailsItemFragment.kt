@@ -44,8 +44,6 @@ class DetailsItemFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         showProgress(requireActivity())
-
-        // Hide FAB
         hideFab(requireActivity())
 
         // Real 0.33 guideline
@@ -92,7 +90,7 @@ class DetailsItemFragment : Fragment() {
         })
 
         // Listen and observe item
-        itemListener = itemsVM.listenSingleItem(args.item.itemId)
+        itemListener = itemsVM.listenItem(args.item.itemId)
     }
 
     override fun onDestroyView() {
@@ -107,7 +105,6 @@ class DetailsItemFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         userVM.clearOtherUserData()
-        itemsVM.clearSingleItemData()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -133,14 +130,14 @@ class DetailsItemFragment : Fragment() {
             R.id.menu_disable -> {
                 when (item.title) {
                     "Enable" -> {
-                        itemsVM.enableItem(args.item.itemId, userVM.getCurrentUserId()).addOnSuccessListener {
+                        itemsVM.enableItem(requireContext(), args.item, userVM.getCurrentUserId()).addOnSuccessListener {
                             displayMessage(requireContext(), "Successfully enabled item")
                         }.addOnFailureListener {
                             displayMessage(requireContext(), "Error enabling item")
                         }
                     }
                     "Disable" -> {
-                        itemsVM.disableItem(args.item.itemId, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
+                        itemsVM.disableItem(requireContext(), args.item, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
                             displayMessage(requireContext(), "Successfully disabled item")
                         }.addOnFailureListener {
                             displayMessage(requireContext(), "Error disabling item")
@@ -150,7 +147,7 @@ class DetailsItemFragment : Fragment() {
                 true
             }
             R.id.menu_delete -> {
-                itemsVM.deleteItem(args.item)
+                itemsVM.deleteItem(requireContext(), args.item)
                 true
             }
             R.id.menu_edit -> {

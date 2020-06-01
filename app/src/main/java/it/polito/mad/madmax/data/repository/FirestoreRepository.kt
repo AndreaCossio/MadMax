@@ -10,6 +10,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import it.polito.mad.madmax.data.model.Item
+import it.polito.mad.madmax.data.model.ItemFilter
 import it.polito.mad.madmax.data.model.User
 
 class FirestoreRepository {
@@ -17,9 +18,6 @@ class FirestoreRepository {
     private val db = Firebase.firestore
     private val storage = Firebase.storage
 
-    //
-    // USER
-    //
     fun getUser(userId: String): DocumentReference {
         return db.document("users/$userId")
     }
@@ -41,19 +39,37 @@ class FirestoreRepository {
         }
     }
 
-    //
-    // ITEM
-    //
     fun getItem(itemId: String): DocumentReference {
         return db.document("items/$itemId")
     }
 
-    fun getItems(personal: Boolean, userId: String = ""): Query {
-        return if (personal) {
+    fun getItems(personal: Boolean, userId: String = "", itemFilter: ItemFilter? = null, interested: Boolean = false, bought: Boolean = false): Query {
+        var itemRef: Query = if (personal) {
             db.collection("users/$userId/items")
         } else {
             db.collection("items")
         }
+        itemFilter?.also {
+            itemFilter.minPrice?.also {
+                itemRef = itemRef.whereGreaterThan("price", it)
+            }
+            itemFilter.maxPrice?.also {
+                itemRef = itemRef.whereLessThan("price", it)
+            }
+            if (itemFilter.mainCategory != "") {
+                itemRef = itemRef.whereEqualTo("categoryMain", itemFilter.mainCategory)
+            }
+            if (itemFilter.subCategory != "") {
+                itemRef = itemRef.whereEqualTo("categorySub", itemFilter.subCategory)
+            }
+        }
+        if (interested) {
+            itemRef = itemRef.whereArrayContains("interestedUsers", userId)
+        }
+        if (bought) {
+            itemRef = itemRef.whereEqualTo("boughtBy", userId)
+        }
+        return itemRef
     }
 
     fun getNewItemId(): String {
@@ -123,7 +139,7 @@ class FirestoreRepository {
         }
     }
 
-    fun buyItem(item: Item, userId: String): Task<Transaction> {
+    fun sellItem(item: Item, userId: String): Task<Transaction> {
         return db.runTransaction { transaction ->
             transaction.update(db.document("items/${item.itemId}"), "status", "Bought")
             transaction.update(db.document("users/${item.userId}/items/${item.itemId}"), "status", "Bought")
