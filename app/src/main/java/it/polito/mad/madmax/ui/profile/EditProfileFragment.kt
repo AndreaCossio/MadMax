@@ -60,7 +60,7 @@ class EditProfileFragment : Fragment() {
             openPhotoDialog(requireContext(), requireActivity(), { a: String -> openDialog = a}, {captureImage()}, {getImageFromGallery()}, {removeImage()})
         }
 
-        profile_edit_location_change.setOnClickListener {
+        profile_edit_location_map.setOnClickListener {
             val filterDialog = MapsFragment().apply {
                 setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
             }

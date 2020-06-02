@@ -52,7 +52,7 @@ class ItemAdapter(
             itemV.item_price.text = itemV.context.getString(R.string.item_price_set, item.price.toFloat())
 
             // Category
-            itemV.item_category.setCardBackgroundColor(itemV.resources.getColor(getColorIdCategory(item.categoryMain)))
+ //           itemV.item_category.setCardBackgroundColor(itemV.resources.getColor(getColorIdCategory(item.categoryMain)))
             itemV.item_category.post {
                 itemV.item_category.apply {
                     if (radius == 0F) {

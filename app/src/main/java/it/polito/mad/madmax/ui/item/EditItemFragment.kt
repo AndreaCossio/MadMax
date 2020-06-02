@@ -10,8 +10,10 @@ import android.widget.AdapterView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.appbar.MaterialToolbar
@@ -22,7 +24,9 @@ import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.Item
 import it.polito.mad.madmax.data.viewmodel.ItemViewModel
+import it.polito.mad.madmax.ui.MapsFragment
 import kotlinx.android.synthetic.main.fragment_edit_item.*
+import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -77,6 +81,20 @@ class EditItemFragment : Fragment(), AdapterView.OnItemClickListener {
 
         item_edit_change_photo.setOnClickListener {
             openPhotoDialog(requireContext(), requireActivity(), { a: String -> openDialog = a}, {captureImage()}, {getImageFromGallery()}, {removeImage()})
+        }
+
+        item_edit_location_map.setOnClickListener {
+            val filterDialog = MapsFragment().apply {
+                setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
+            }
+            filterDialog.show(requireFragmentManager(), OnSaleListFragment.TAG)
+        }
+
+        setFragmentResultListener("MAP_ADDRESS") { key, bundle ->
+            // We use a String here, but any type that can be put in a Bundle is supported
+            val result = bundle.getString("address")
+            profile_edit_location.setText(result)
+            // Do something with the result...
         }
 
         item_edit_expiry.setOnClickListener { showDatePicker() }
