@@ -20,7 +20,7 @@ import it.polito.mad.madmax.R
 import kotlinx.android.synthetic.main.fragment_maps.*
 import java.util.*
 
-class MapsFragment : DialogFragment(),OnMapReadyCallback {
+class MapsFragment : DialogFragment(), OnMapReadyCallback {
 
     private lateinit var googleMap:GoogleMap
     private lateinit var markerOptions: MarkerOptions

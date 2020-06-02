@@ -63,31 +63,31 @@ class ItemViewModel: ViewModel() {
     }
 
     fun enableItem(context: Context, item: Item, userId: String): Task<Transaction> {
-        return repo.enableItem(item.itemId, userId).also {
+        return repo.enableItem(item.itemId, userId).addOnSuccessListener {
             try {
                 sendNotification(context, createNotification(item.itemId, context.getString(R.string.app_name), "The item you were interested in, is available again: ${item.title}"))
             } catch (e: JSONException) {
-                Log.e("TAG", "onCreate: " + e.message)
+                Log.e(TAG, "Failed to send notification.", e)
             }
         }
     }
 
     fun disableItem(context: Context, item: Item, userId: String): Task<Transaction> {
-        return repo.disableItem(item.itemId, userId).also {
+        return repo.disableItem(item.itemId, userId).addOnSuccessListener {
             try {
                 sendNotification(context, createNotification(item.itemId, context.getString(R.string.app_name), "The item you were interested in, is no longer available: ${item.title}"))
             } catch (e: JSONException) {
-                Log.e("TAG", "onCreate: " + e.message)
+                Log.e(TAG, "Failed to send notification.", e)
             }
         }
     }
 
     fun deleteItem(context: Context, item: Item): Task<Transaction> {
-        return repo.deleteItem(item).also {
+        return repo.deleteItem(item).addOnSuccessListener {
             try {
                 sendNotification(context, createNotification(item.itemId, context.getString(R.string.app_name), "The item you were interested in, is no longer available: ${item.title}"))
             } catch (e: JSONException) {
-                Log.e("TAG", "onCreate: " + e.message)
+                Log.e(TAG, "Failed to send notification.", e)
             }
         }
     }
@@ -130,22 +130,22 @@ class ItemViewModel: ViewModel() {
     }
 
     fun notifyInterest(context: Context, item: Item, userId: String): Task<Transaction> {
-        return repo.notifyInterest(item, userId).also {
+        return repo.notifyInterest(item, userId).addOnSuccessListener {
+            FirebaseMessaging.getInstance().subscribeToTopic("/topics/${item.itemId}")
             try {
                 sendNotification(context, createNotification(item.userId, context.getString(R.string.app_name), "Someone is interested in your article: ${item.title}"))
             } catch (e: JSONException) {
-                Log.e("TAG", "onCreate: " + e.message)
+                Log.e(TAG, "Failed to send notification.", e)
             }
-            FirebaseMessaging.getInstance().subscribeToTopic("/topics/${item.itemId}")
         }
     }
 
     fun removeInterest(context: Context, item: Item, userId: String): Task<Transaction> {
-        return repo.removeInterest(item, userId).also {
+        return repo.removeInterest(item, userId).addOnSuccessListener {
             try {
                 sendNotification(context, createNotification(item.userId, context.getString(R.string.app_name),"Someone is no more interested in your article: ${item.title}"))
             } catch (e: JSONException) {
-                Log.e("TAG", "onCreate: " + e.message)
+                Log.e(TAG, "Failed to send notification.", e)
             }
             FirebaseMessaging.getInstance().unsubscribeFromTopic("/topics/${item.itemId}")
         }
@@ -153,11 +153,11 @@ class ItemViewModel: ViewModel() {
 
     // TODO notify the right users with the right messages
     fun sellItem(context: Context, item: Item, userId: String): Task<Transaction> {
-        return repo.sellItem(item, userId).also {
+        return repo.sellItem(item, userId).addOnSuccessListener {
             try {
                 sendNotification(context, createNotification(item.itemId, context.getString(R.string.app_name), "The item \"${item.title}\" has been sold to"))
             } catch (e: JSONException) {
-                Log.e("TAG", "onCreate: " + e.message)
+                Log.e(TAG, "Failed to send notification.", e)
             }
         }
     }

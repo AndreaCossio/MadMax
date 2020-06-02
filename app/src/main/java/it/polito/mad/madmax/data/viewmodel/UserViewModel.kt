@@ -65,12 +65,11 @@ class UserViewModel : ViewModel() {
                 Log.e(TAG, "Failed to update user", e)
             }
         } else {
-            repo.writeUserPhoto(currentUser.value!!.userId, Uri.parse(newUser.photo))
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        newUser.apply { photo = task.result.toString() }
-                    }
-                }.continueWithTask {
+            repo.writeUserPhoto(currentUser.value!!.userId, Uri.parse(newUser.photo)).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    newUser.apply { photo = task.result.toString() }
+                }
+            }.continueWithTask {
                 repo.writeUser(currentUser.value!!.userId, newUser).addOnFailureListener { e ->
                     Log.e(TAG, "Failed to update user", e)
                 }

@@ -134,7 +134,6 @@ class MainActivity : AppCompatActivity() {
             displayMessage(this, "Welcome back ${it.displayName}")
         } ?: run {
             // Intent dialog for logging in with google
-            // TODO better dialog? More explanation to the user for the need of logging in?
             val googleSignInClient = GoogleSignIn.getClient(
                 this, GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken(getString(R.string.default_web_client_id))

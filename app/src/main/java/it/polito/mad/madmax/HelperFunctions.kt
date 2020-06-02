@@ -29,8 +29,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
-// Helper function to display a toast
-// TODO better message system?
 fun displayMessage(context: Context, message: String) {
     Toast.makeText(context, message, Toast.LENGTH_LONG).show()
 }

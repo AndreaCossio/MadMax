@@ -117,10 +117,6 @@ class FirestoreRepository {
         }
     }
 
-    fun checkIfInterested(itemId: String, userId: String): DocumentReference {
-        return db.document("items/$itemId")
-    }
-
     fun getInterestedUsersList(itemId: String): DocumentReference {
         return db.document("items/$itemId")
     }
