@@ -1,32 +1,46 @@
 package it.polito.mad.madmax.ui
 
+import android.Manifest
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Geocoder
+import android.location.Location
 import android.os.Bundle
+import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.setFragmentResult
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolygonOptions
+import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.tasks.Task
+import com.google.firebase.database.collection.LLRBNode
 import it.polito.mad.madmax.R
-import kotlinx.android.synthetic.main.fragment_maps.*
 import java.util.*
 
 class MapsFragment : DialogFragment(),OnMapReadyCallback {
 
+    private val LOCATION_REQUEST_CODE = 10001;
     private lateinit var googleMap:GoogleMap
-    private lateinit var markerOptions: MarkerOptions
-    //private var location: Location? = null
     private var location = LatLng(45.0708043,7.674188)
-    //TODO get real location
+
+    private var location2 = LatLng(42.0708043,8.674188)
+    private lateinit var myLocation: MutableLiveData<LatLng>
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
@@ -34,12 +48,14 @@ class MapsFragment : DialogFragment(),OnMapReadyCallback {
         super.onCreate(savedInstanceState)
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        myLocation = MutableLiveData()
 
-        if (arguments?.containsKey("locationArg") == true){
+        /*if (arguments?.containsKey("locationArg") == true){
             val locationString = requireArguments().getString("locationArg")
             val address = Geocoder(requireContext(), Locale.getDefault()).getFromLocationName(locationString,1)[0]
             location  = LatLng(address.latitude,address.longitude)
-        }
+        }*/
+
     }
 
 
@@ -51,32 +67,56 @@ class MapsFragment : DialogFragment(),OnMapReadyCallback {
         val layout = inflater.inflate(R.layout.fragment_maps, container, false)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map_view) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        /*dialog?.window?.apply {
-            setLayout(getFragmentSpaceSize(requireContext()).x, getFragmentSpaceSize(requireContext()).y)
-            setBackgroundDrawableResource(android.R.color.transparent)
-            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-        }*/
+
         return layout
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         confirm_location_btn.setOnClickListener{
             setFragmentResult("MAP_ADDRESS", bundleOf("address" to getAddressFromLocation()))
             dismiss()
         }
     }
-
+*/
     private fun getAddressFromLocation(): String{
         val geocoder= Geocoder(requireContext(), Locale.getDefault())
-        val address =  geocoder.getFromLocation(location.latitude, location.longitude,1)[0].getAddressLine(0)
-        return address
+        try {
+            val address =  geocoder.getFromLocation(location.latitude, location.longitude,1)[0].getAddressLine(0)
+            return address
+        }catch (e:Exception){
+            Toast.makeText(requireContext(),e.message,Toast.LENGTH_LONG).show()
+            return "Unavailable"
+        }
+
+
     }
 
+    private fun drawRoute(){
+        val route =  PolylineOptions().add(location,location2)
+            .color(Color.GREEN)
+            .width(10F)
+            .geodesic(true)
+
+        googleMap.addPolyline(route)
+    }
+
+    @SuppressLint("MissingPermission")
     override fun onMapReady(p0: GoogleMap?) {
         googleMap = p0!!
+
         googleMap.uiSettings.apply {
             this.setAllGesturesEnabled(true)
+            isZoomControlsEnabled = true
+            isMyLocationButtonEnabled = true
+
+        }
+        if (myLocation.value!=null){
+            googleMap.isMyLocationEnabled = true
+        }else {
+            myLocation.observe(requireActivity(), androidx.lifecycle.Observer {
+                googleMap.isMyLocationEnabled = true
+            })
         }
         googleMap.setOnMapClickListener {
             clickOnMap(it)
@@ -100,121 +140,74 @@ class MapsFragment : DialogFragment(),OnMapReadyCallback {
         animateCamera()
     }
 
-
-    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        // register the permissions callback. This can be done as a class val, or a
-// lateinit var in onAttach() or onCreate()
-        val requestPermissions = registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
-        ) { result ->
-            // the result from RequestMultiplePermissions is a map linking each
-            // request permission to a boolean of whether it is GRANTED
-
-            // check if the permission is granted
-            if (result[ACCESS_COARSE_LOCATION]!!) {
-                // it was granted
-            } else {
-                // it was not granted
-
-            }
-        }
-        when {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                // You can use the API that requires the permission.
-                fusedLocationProviderClient.lastLocation.addOnSuccessListener {
-                    location = it
-                }
-            }
-            shouldShowRequestPermissionRationale(ACCESS_COARSE_LOCATION) ->{
-
-            }
-
-            else -> {
-                // We can request the permission by launching the ActivityResultLauncher
-                requestPermissions.launch(arrayOf(ACCESS_COARSE_LOCATION))
-                // The registered ActivityResultCallback gets the result of the request.
-            }
-        }
-    }
-
     override fun onStart() {
         super.onStart()
-
-        if (!checkPermissions()) {
-            requestPermissions()
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            getLastLocation();
         } else {
-            getLastLocation()
+            askLocationPermission();
         }
+
     }
 
+    private fun isLocationPermissionGranted(): Boolean{
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+    private fun askLocationPermission() {
+        if (!isLocationPermissionGranted()) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    requireActivity(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            ) {
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    LOCATION_REQUEST_CODE
+                )
+            } else {
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    LOCATION_REQUEST_CODE
+                )
+            }
+        }
+    }
     @SuppressLint("MissingPermission")
     private fun getLastLocation() {
-
-        fusedLocationProviderClient.lastLocation
-            .addOnCompleteListener {
-                if(it.isSuccessful && it.result != null){
-                    location = LatLng(it.result!!.latitude,it.result!!.longitude)
-                }else{
-                }
-            }
-    }
-
-    private fun checkPermissions(): Boolean {
-        val permissionState = ActivityCompat.checkSelfPermission(requireContext(),ACCESS_COARSE_LOCATION)
-        return permissionState == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun startLocationPermissionRequest() {
-        ActivityCompat.requestPermissions(requireActivity(),
-            arrayOf(ACCESS_COARSE_LOCATION),
-            REQUEST_PERMISSIONS_REQUEST_CODE)
-    }
-
-    private fun requestPermissions() {
-        val shouldProvideRationale = ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(),ACCESS_COARSE_LOCATION)
-
-        // Provide an additional rationale to the user. This would happen if the user denied the
-        // request previously, but didn't check the "Don't ask again" checkbox.
-        if (shouldProvideRationale) {
-
-
-            Toast.makeText(requireContext(),"Require permission",Toast.LENGTH_LONG).show()
-        } else {
-            Log.i(TAG, "Requesting permission")
-            startLocationPermissionRequest()
-        }
-    }
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
-                                            grantResults: IntArray) {
-        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
-            if (grantResults.size <= 0) {
-                // If user interaction was interrupted, the permission request is cancelled and you
-                // receive empty arrays.
-                Log.i(TAG, "User interaction was cancelled.")
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted.
-                getLastLocation()
+        val locationTask: Task<Location> =
+            fusedLocationProviderClient.lastLocation
+        locationTask.addOnSuccessListener { loc ->
+            if (loc != null) {
+                //We have a location
+                Log.d("XXX", "onSuccess: $loc")
+                myLocation.value = LatLng(loc.latitude,loc.longitude)
             } else {
-                displayMessage(requireContext(),"Unable to get location!")
+                Log.d("XXX", "onSuccess: Location was null...")
+            }
+        }
+        locationTask.addOnFailureListener { e -> Log.e("XXX", "onFailure: " + e.localizedMessage) }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted
+                getLastLocation();
+            } else {
+                //Permission not granted
             }
         }
     }
 
-    companion object {
-
-        private val TAG = "LocationProvider"
-
-        private val REQUEST_PERMISSIONS_REQUEST_CODE = 34
-    }
-*/
 
 }
