@@ -3,8 +3,11 @@ package it.polito.mad.madmax.ui.profile
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import androidx.core.os.bundleOf
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -14,7 +17,10 @@ import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.User
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
+import it.polito.mad.madmax.ui.MapsFragment
+import it.polito.mad.madmax.ui.item.OnSaleListFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 
 class ShowProfileFragment : Fragment() {
@@ -54,11 +60,30 @@ class ShowProfileFragment : Fragment() {
                 if (user.userId != "") {
                     requireActivity().main_toolbar.title = user.name.split(" ")[0] + "'s Profile"
                     updateFields(user)
+
+                    profile_show_location_map.setOnClickListener {
+                        val filterDialog = MapsFragment().apply {
+                            setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
+                            val locationArg = bundleOf("locationArg" to user.location)
+                            arguments = locationArg
+                        }
+                        filterDialog.show(requireFragmentManager(), OnSaleListFragment.TAG)
+                    }
+
                 }
             })
             userListener = userVM.listenOtherUser(userId)
         } ?: run {
             userVM.getCurrentUserData().observe(viewLifecycleOwner, Observer { updateFields(it) })
+        }
+
+
+
+        setFragmentResultListener("MAP_ADDRESS") { key, bundle ->
+            // We use a String here, but any type that can be put in a Bundle is supported
+            val result = bundle.getString("address")
+            profile_edit_location.setText(result)
+            // Do something with the result...
         }
     }
 

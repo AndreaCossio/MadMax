@@ -34,6 +34,12 @@ class MapsFragment : DialogFragment(),OnMapReadyCallback {
         super.onCreate(savedInstanceState)
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
+        if (arguments?.containsKey("locationArg") == true){
+            val locationString = requireArguments().getString("locationArg")
+            val address = Geocoder(requireContext(), Locale.getDefault()).getFromLocationName(locationString,1)[0]
+            location  = LatLng(address.latitude,address.longitude)
+        }
     }
 
 

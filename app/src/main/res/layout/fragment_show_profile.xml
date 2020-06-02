@@ -101,15 +101,38 @@
             android:drawablePadding="36dp"
             android:hint="@string/profile_email" />
 
-        <TextView
-            android:id="@+id/profile_location"
-            style="@style/TextAppearance.MaterialComponents.Body1"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:drawableStart="@drawable/ic_location"
-            android:drawablePadding="36dp"
-            android:hint="@string/profile_location" />
+            android:layout_marginTop="32dp">
+
+            <TextView
+                android:id="@+id/profile_location"
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_location"
+                android:drawablePadding="36dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/profile_show_location_map"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:hint="@string/profile_location" />
+
+            <Button
+                android:id="@+id/profile_show_location_map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/profile_location_button"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/profile_location"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
         <TextView
             android:id="@+id/profile_phone"
