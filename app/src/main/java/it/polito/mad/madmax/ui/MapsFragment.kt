@@ -1,14 +1,12 @@
 package it.polito.mad.madmax.ui
 
 import android.Manifest
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +15,6 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -26,20 +23,18 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolygonOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.tasks.Task
-import com.google.firebase.database.collection.LLRBNode
 import it.polito.mad.madmax.R
 import java.util.*
 
 class MapsFragment : DialogFragment(),OnMapReadyCallback {
 
+    private var isShowMode = true
     private val LOCATION_REQUEST_CODE = 10001;
     private lateinit var googleMap:GoogleMap
-    private var location = LatLng(45.0708043,7.674188)
+    private var chosenLocation = LatLng(45.0708043,7.674188)
 
-    private var location2 = LatLng(42.0708043,8.674188)
     private lateinit var myLocation: MutableLiveData<LatLng>
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -50,11 +45,16 @@ class MapsFragment : DialogFragment(),OnMapReadyCallback {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         myLocation = MutableLiveData()
 
-        /*if (arguments?.containsKey("locationArg") == true){
+        if (arguments?.containsKey("locationArg") == true){
             val locationString = requireArguments().getString("locationArg")
             val address = Geocoder(requireContext(), Locale.getDefault()).getFromLocationName(locationString,1)[0]
-            location  = LatLng(address.latitude,address.longitude)
-        }*/
+            chosenLocation  = LatLng(address.latitude,address.longitude)
+        }
+        arguments?.apply {
+            if (containsKey("editMode")){
+                isShowMode = false
+            }
+        }
 
     }
 
@@ -82,7 +82,7 @@ class MapsFragment : DialogFragment(),OnMapReadyCallback {
     private fun getAddressFromLocation(): String{
         val geocoder= Geocoder(requireContext(), Locale.getDefault())
         try {
-            val address =  geocoder.getFromLocation(location.latitude, location.longitude,1)[0].getAddressLine(0)
+            val address =  geocoder.getFromLocation(chosenLocation.latitude, chosenLocation.longitude,1)[0].getAddressLine(0)
             return address
         }catch (e:Exception){
             Toast.makeText(requireContext(),e.message,Toast.LENGTH_LONG).show()
@@ -93,10 +93,10 @@ class MapsFragment : DialogFragment(),OnMapReadyCallback {
     }
 
     private fun drawRoute(){
-        val route =  PolylineOptions().add(location,location2)
+        val route =  PolylineOptions().add(myLocation.value,chosenLocation)
             .color(Color.GREEN)
             .width(10F)
-            .geodesic(true)
+            .geodesic(false)
 
         googleMap.addPolyline(route)
     }
@@ -116,6 +116,7 @@ class MapsFragment : DialogFragment(),OnMapReadyCallback {
         }else {
             myLocation.observe(requireActivity(), androidx.lifecycle.Observer {
                 googleMap.isMyLocationEnabled = true
+                if (isShowMode) drawRoute()
             })
         }
         googleMap.setOnMapClickListener {
@@ -127,15 +128,15 @@ class MapsFragment : DialogFragment(),OnMapReadyCallback {
 
     private fun addMarker(){
         googleMap.clear()
-        googleMap.addMarker(MarkerOptions().position(location).title(getAddressFromLocation())).showInfoWindow()
+        googleMap.addMarker(MarkerOptions().position(chosenLocation).title(getAddressFromLocation())).showInfoWindow()
     }
     private fun animateCamera(){
-        val cameraUpdateFactory =CameraUpdateFactory.newLatLngZoom(location, 15.0F)
+        val cameraUpdateFactory =CameraUpdateFactory.newLatLngZoom(chosenLocation, 15.0F)
         googleMap.animateCamera(cameraUpdateFactory)
     }
 
     private fun clickOnMap(latLng: LatLng){
-        location = latLng
+        chosenLocation = latLng
         addMarker()
         animateCamera()
     }

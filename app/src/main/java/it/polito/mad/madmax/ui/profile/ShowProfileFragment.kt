@@ -1,5 +1,6 @@
 package it.polito.mad.madmax.ui.profile
 
+import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
@@ -11,6 +12,13 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.ListenerRegistration
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -22,12 +30,16 @@ import it.polito.mad.madmax.ui.item.OnSaleListFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
+import java.util.*
 
-class ShowProfileFragment : Fragment() {
+class ShowProfileFragment : Fragment(),OnMapReadyCallback {
 
     // User
     private val userVM: UserViewModel by activityViewModels()
     private lateinit var userListener: ListenerRegistration
+    private lateinit var googleMap:GoogleMap
+    private lateinit var position: LatLng
+    private lateinit var positionName:String
 
     // Destination arguments
     private val args: ShowProfileFragmentArgs by navArgs()
@@ -38,7 +50,10 @@ class ShowProfileFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_show_profile, container, false)
+        val layout =  inflater.inflate(R.layout.fragment_show_profile, container, false)
+        val mapFragment = childFragmentManager.findFragmentById(R.id.profile_map_view) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+        return layout
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -61,14 +76,19 @@ class ShowProfileFragment : Fragment() {
                     requireActivity().main_toolbar.title = user.name.split(" ")[0] + "'s Profile"
                     updateFields(user)
 
-                    profile_show_location_map.setOnClickListener {
-                        val filterDialog = MapsFragment().apply {
+
+                    positionName = user.location
+                    val address = Geocoder(requireContext(), Locale.getDefault()).getFromLocationName(user.location,1)[0]
+                    position  = LatLng(address.latitude,address.longitude)
+
+                    /*profile_show_location_map.setOnClickListener {
+                        val mapsDialog = MapsFragment().apply {
                             setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
                             val locationArg = bundleOf("locationArg" to user.location)
                             arguments = locationArg
                         }
-                        filterDialog.show(requireFragmentManager(), OnSaleListFragment.TAG)
-                    }
+                        mapsDialog.show(childFragmentManager,"")
+                    }*/
 
                 }
             })
@@ -79,7 +99,7 @@ class ShowProfileFragment : Fragment() {
 
 
 
-        setFragmentResultListener("MAP_ADDRESS") { key, bundle ->
+        setFragmentResultListener("MAP_ADDRESS") { _, bundle ->
             // We use a String here, but any type that can be put in a Bundle is supported
             val result = bundle.getString("address")
             profile_edit_location.setText(result)
@@ -126,7 +146,7 @@ class ShowProfileFragment : Fragment() {
         profile_name.text = user.name
         profile_nickname.text = user.nickname
         profile_email.text = user.email
-        profile_location.text = user.location
+        //profile_location.text = user.location
         profile_phone.text = user.phone
 
         // Hide some fields for privacy
@@ -164,5 +184,27 @@ class ShowProfileFragment : Fragment() {
     // Companion
     companion object {
         const val TAG = "MM_SHOW_PROFILE"
+    }
+
+    override fun onMapReady(p0: GoogleMap?) {
+
+        googleMap = p0!!
+        if(position!= null){
+            googleMap.apply {
+                addMarker(MarkerOptions().position(position))
+                animateCamera(CameraUpdateFactory.newLatLngZoom(position, 13.5F))
+                uiSettings.isZoomControlsEnabled = true
+                setOnMapClickListener {
+                    val mapsDialog = MapsFragment().apply {
+                        setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
+                        val locationArg = bundleOf("locationArg" to positionName)
+                        arguments = locationArg
+                    }
+                    mapsDialog.show(childFragmentManager,"")
+
+                }
+            }
+        }
+
     }
 }
