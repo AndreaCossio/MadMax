@@ -12,6 +12,13 @@
         android:label="@string/title_on_sale_item_fragment"
         tools:layout="@layout/fragment_item_list" />
 
+    <!-- Map -->
+    <fragment
+        android:id="@+id/map_fragment"
+        android:label="MapFragment"
+        android:name="it.polito.mad.madmax.ui.MapsFragment"
+        tools:layout="@layout/fragment_maps" />
+
     <!-- Item of interest -->
     <fragment
         android:id="@+id/nav_items_of_interest_fragment"
@@ -31,7 +38,11 @@
         android:id="@+id/nav_item_list_fragment"
         android:name="it.polito.mad.madmax.ui.item.ItemListFragment"
         android:label="@string/title_item_list_fragment"
-        tools:layout="@layout/fragment_item_list" />
+        tools:layout="@layout/fragment_item_list">
+        <action
+            android:id="@+id/action_open_map"
+            app:destination="@id/map_fragment" />
+    </fragment>
 
     <!-- Details item -->
     <fragment
@@ -102,6 +113,7 @@
             app:argType="it.polito.mad.madmax.data.model.Item" />
     </fragment>
 
+    <!-- Global actions -->
     <action
         android:id="@+id/action_global_show_profile"
         app:destination="@id/nav_show_profile_fragment" />

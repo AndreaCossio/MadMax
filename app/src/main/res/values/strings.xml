@@ -87,6 +87,7 @@
     <string name="profile_nickname">Nickname</string>
     <string name="profile_email">Email</string>
     <string name="profile_location">Location</string>
+    <string name="profile_location_button">Map</string>
     <string name="profile_phone">Phone</string>
 
     <!-- ITEM -->
