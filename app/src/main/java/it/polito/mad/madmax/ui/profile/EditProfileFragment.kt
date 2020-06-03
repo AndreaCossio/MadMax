@@ -4,23 +4,39 @@ import android.Manifest
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import androidx.core.os.bundleOf
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.*
+import it.polito.mad.madmax.data.model.PlaceInfo
 import it.polito.mad.madmax.data.model.User
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
 import it.polito.mad.madmax.ui.MapsFragment
 import it.polito.mad.madmax.ui.item.OnSaleListFragment
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
+import java.lang.reflect.Type
+import kotlin.collections.ArrayList
+
 
 class EditProfileFragment : Fragment() {
 
@@ -60,11 +76,54 @@ class EditProfileFragment : Fragment() {
             openPhotoDialog(requireContext(), requireActivity(), { a: String -> openDialog = a}, {captureImage()}, {getImageFromGallery()}, {removeImage()})
         }
 
-        profile_edit_location_change.setOnClickListener {
-            val filterDialog = MapsFragment().apply {
-                setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
+
+
+        val suggestions =
+            MutableLiveData<Array<String>>()
+
+
+        val editTextFilledExposedDropdown = profile_edit_location
+
+        suggestions.observe(requireActivity(), Observer {
+            val adapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_list_item_1,
+                suggestions.value!!
+            )
+            editTextFilledExposedDropdown.setAdapter(adapter)
+            if(editTextFilledExposedDropdown.isFocused){
+                editTextFilledExposedDropdown.showDropDown()
             }
-            filterDialog.show(requireFragmentManager(), OnSaleListFragment.TAG)
+
+            // TODO migliorare
+
+        })
+
+        editTextFilledExposedDropdown.addTextChangedListener {
+            if(it?.length!! >3){
+                val baseUrl = "https://photon.komoot.de/api/?q="
+
+                val jsonObjectRequest = JsonObjectRequest(
+                    Request.Method.GET, "${baseUrl}${it}&limit=5", null,
+                    Response.Listener { response ->
+                        val listType: Type =
+                            object : TypeToken<ArrayList<PlaceInfo?>?>() {}.type
+
+                        val myArray:ArrayList<PlaceInfo> = Gson().fromJson(response["features"].toString(),listType)
+
+                        val cities = myArray.map { pi -> "${pi.properties.name} ${pi.properties.state} ${pi.properties.country}"}.toTypedArray()
+
+                        suggestions.value = cities
+
+                    },
+                    Response.ErrorListener { error ->
+                        Log.d("XXX",error.message)
+                    }
+                )
+
+                Volley.newRequestQueue(requireContext()).add(jsonObjectRequest)
+            }
+
         }
 
         setFragmentResultListener("MAP_ADDRESS") { key, bundle ->
@@ -73,9 +132,17 @@ class EditProfileFragment : Fragment() {
             profile_edit_location.setText(result)
             // Do something with the result...
         }
-
         // Display user data
         updateFields()
+
+        profile_edit_location_map.setOnClickListener {
+            val locationText = profile_edit_location.text.toString()
+            val filterDialog = MapsFragment().apply {
+                setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
+                arguments = bundleOf("editMode" to true, "locationArg" to locationText)
+            }
+            filterDialog.show(requireFragmentManager(), OnSaleListFragment.TAG)
+        }
     }
 
     override fun onDestroyView() {

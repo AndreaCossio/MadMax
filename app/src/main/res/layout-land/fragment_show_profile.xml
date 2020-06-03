@@ -106,16 +106,6 @@
                 android:hint="@string/profile_email" />
 
             <TextView
-                android:id="@+id/profile_location"
-                style="@style/TextAppearance.MaterialComponents.Body1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:drawableStart="@drawable/ic_location"
-                android:drawablePadding="36dp"
-                android:hint="@string/profile_location" />
-
-            <TextView
                 android:id="@+id/profile_phone"
                 style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="match_parent"
@@ -124,6 +114,13 @@
                 android:drawableStart="@drawable/ic_phone"
                 android:drawablePadding="36dp"
                 android:hint="@string/profile_phone" />
+
+            <fragment
+                android:id="@+id/profile_map_view"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="300dp" />
+
 
         </LinearLayout>
 
