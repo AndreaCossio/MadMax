@@ -38,7 +38,7 @@ class ShowProfileFragment : Fragment(),OnMapReadyCallback {
     private val userVM: UserViewModel by activityViewModels()
     private lateinit var userListener: ListenerRegistration
     private lateinit var googleMap:GoogleMap
-    private lateinit var position: LatLng
+    private var position: LatLng? = null
     private lateinit var positionName:String
 
     // Destination arguments
@@ -76,10 +76,7 @@ class ShowProfileFragment : Fragment(),OnMapReadyCallback {
                     requireActivity().main_toolbar.title = user.name.split(" ")[0] + "'s Profile"
                     updateFields(user)
 
-
-                    positionName = user.location
-                    val address = Geocoder(requireContext(), Locale.getDefault()).getFromLocationName(user.location,1)[0]
-                    position  = LatLng(address.latitude,address.longitude)
+                    getUserLocation(user.location)
 
                     /*profile_show_location_map.setOnClickListener {
                         val mapsDialog = MapsFragment().apply {
@@ -94,7 +91,10 @@ class ShowProfileFragment : Fragment(),OnMapReadyCallback {
             })
             userListener = userVM.listenOtherUser(userId)
         } ?: run {
-            userVM.getCurrentUserData().observe(viewLifecycleOwner, Observer { updateFields(it) })
+            userVM.getCurrentUserData().observe(viewLifecycleOwner, Observer {
+                updateFields(it)
+                getUserLocation(it.location)
+            })
         }
 
 
@@ -103,8 +103,13 @@ class ShowProfileFragment : Fragment(),OnMapReadyCallback {
             // We use a String here, but any type that can be put in a Bundle is supported
             val result = bundle.getString("address")
             profile_edit_location.setText(result)
-            // Do something with the result...
         }
+    }
+
+    private fun getUserLocation(uLocation:String){
+        positionName = uLocation
+        val address = Geocoder(requireContext(), Locale.getDefault()).getFromLocationName(uLocation,1)[0]
+        position  = LatLng(address.latitude,address.longitude)
     }
 
     override fun onDestroyView() {
@@ -189,9 +194,9 @@ class ShowProfileFragment : Fragment(),OnMapReadyCallback {
     override fun onMapReady(p0: GoogleMap?) {
 
         googleMap = p0!!
-        if(position!= null){
+        if(position != null){
             googleMap.apply {
-                addMarker(MarkerOptions().position(position))
+                addMarker(MarkerOptions().position(position!!))
                 animateCamera(CameraUpdateFactory.newLatLngZoom(position, 13.5F))
                 uiSettings.isZoomControlsEnabled = true
                 setOnMapClickListener {

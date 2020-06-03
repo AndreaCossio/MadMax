@@ -14,7 +14,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -26,6 +28,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.tasks.Task
 import it.polito.mad.madmax.R
+import kotlinx.android.synthetic.main.fragment_maps.*
 import java.util.*
 
 class MapsFragment : DialogFragment(),OnMapReadyCallback {
@@ -71,14 +74,16 @@ class MapsFragment : DialogFragment(),OnMapReadyCallback {
         return layout
     }
 
-    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        confirm_location_btn.setOnClickListener{
-            setFragmentResult("MAP_ADDRESS", bundleOf("address" to getAddressFromLocation()))
-            dismiss()
+        if(!isShowMode){
+            confirm_location_btn.setOnClickListener{
+                setFragmentResult("MAP_ADDRESS", bundleOf("address" to getAddressFromLocation()))
+                dismiss()
+            }
         }
+
     }
-*/
     private fun getAddressFromLocation(): String{
         val geocoder= Geocoder(requireContext(), Locale.getDefault())
         try {

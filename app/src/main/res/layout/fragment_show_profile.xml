@@ -101,15 +101,6 @@
             android:drawablePadding="36dp"
             android:hint="@string/profile_email" />
 
-        <fragment
-            android:layout_marginTop="32dp"
-            android:id="@+id/profile_map_view"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="200dp" />
-
-
-
         <TextView
             android:id="@+id/profile_phone"
             style="@style/TextAppearance.MaterialComponents.Body1"
@@ -119,6 +110,15 @@
             android:drawableStart="@drawable/ic_phone"
             android:drawablePadding="36dp"
             android:hint="@string/profile_phone" />
+
+        <fragment
+            android:layout_marginTop="32dp"
+            android:id="@+id/profile_map_view"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="200dp" />
+
+
 
     </LinearLayout>
 
