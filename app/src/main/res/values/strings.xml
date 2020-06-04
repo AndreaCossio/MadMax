@@ -51,6 +51,7 @@
     <string name="message_error_intent">Request cancelled or something went wrong</string>
     <string name="message_error_gallery_app">Sorry, could not find any gallery app</string>
     <string name="message_error_cat">Cannot find this category</string>
+    <string name="message_error_invalid_location">Sorry, this location is not valid</string>
 
     <!-- DIALOGS -->
     <string name="photo_dialog_ok">OK</string>
@@ -58,6 +59,7 @@
     <string name="photo_dialog_cancel">Cancel</string>
     <string name="photo_dialog_sure_title">Unsaved changes</string>
     <string name="photo_dialog_sure_text">It looks like there are unsaved changes that will be discarded if you proceed.\n\nContinue anyway?</string>
+    <string name="map_dialog_confirm">Confirm</string>
     <string name="dialog_filter_title">Item filter</string>
     <string name="dialog_filter_description">Select how you want to filter the items</string>
     <string name="dialog_filter_clear">Filters</string>

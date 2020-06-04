@@ -13,7 +13,7 @@ import it.polito.mad.madmax.data.viewmodel.FilterViewModel
 import it.polito.mad.madmax.getFragmentSpaceSize
 import it.polito.mad.madmax.getMainCategoryAdapter
 import it.polito.mad.madmax.getSubCategoryAdapter
-import kotlinx.android.synthetic.main.filter_layout.*
+import kotlinx.android.synthetic.main.item_filter_dialog.*
 
 class ItemFilterDialog : DialogFragment(), AdapterView.OnItemClickListener {
 
@@ -34,7 +34,7 @@ class ItemFilterDialog : DialogFragment(), AdapterView.OnItemClickListener {
             setBackgroundDrawableResource(android.R.color.transparent)
             setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         }
-        return inflater.inflate(R.layout.filter_layout, container, false)
+        return inflater.inflate(R.layout.item_filter_dialog, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

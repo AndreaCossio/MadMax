@@ -1,6 +1,5 @@
 package it.polito.mad.madmax.ui.profile
 
-import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
@@ -15,7 +14,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.ListenerRegistration
 import com.squareup.picasso.Callback
@@ -23,10 +21,9 @@ import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.User
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
-import it.polito.mad.madmax.ui.MapsFragment
+import it.polito.mad.madmax.ui.MapDialog
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
-import java.util.*
 
 class ShowProfileFragment : Fragment(), OnMapReadyCallback {
 
@@ -64,8 +61,7 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
         // Card radius
         profile_card.addOnLayoutChangeListener(cardRadiusConstrain)
 
-        // Listen user data
-        args.user?.also { userId ->
+        args.userId?.also { userId ->
             // Other's profile
             (requireActivity() as MainActivity).removeTopLevelProfile()
             userVM.getOtherUserData().observe(viewLifecycleOwner, Observer { user ->
@@ -74,6 +70,7 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
                     updateFields(user)
                 }
             })
+            // Listen user data
             userListener = userVM.listenOtherUser(userId)
         } ?: run {
             // My profile
@@ -85,7 +82,7 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        args.user?.also {
+        args.userId?.also {
             // Stop listening to other user data
             userListener.remove()
             // Restore top level destination
@@ -97,13 +94,13 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
 
     override fun onDestroy() {
         super.onDestroy()
-        args.user?.also { userVM.clearOtherUserData() }
+        args.userId?.also { userVM.clearOtherUserData() }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         // Show the possibility to edit profile
-        args.user ?: inflater.inflate(R.menu.menu_edit, menu)
+        args.userId ?: inflater.inflate(R.menu.menu_edit, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -118,8 +115,10 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(p0: GoogleMap?) {
-        gMap = p0
-        args.user?.also {
+        gMap = p0?.apply {
+            uiSettings.isZoomControlsEnabled = true
+        }
+        args.userId?.also {
             userVM.getOtherUserData().value?.location?.also {
                 updateMarker(it)
             } ?: gMap?.clear()
@@ -137,7 +136,7 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
         profile_email.text = user.email
 
         // Hide some fields for privacy
-        args.user?.also {
+        args.userId?.also {
             profile_phone.visibility = View.GONE
         } ?: run {
             profile_phone.text = user.phone
@@ -173,23 +172,21 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    // TODO scroll with two fingers?
     private fun updateMarker(location: String) {
         if (location != "") {
-            val address = Geocoder(requireContext(), Locale.getDefault()).getFromLocationName(location, 1)[0]
-            val position = LatLng(address.latitude, address.longitude)
             gMap?.apply {
                 clear()
-                addMarker(MarkerOptions().position(position))
-                animateCamera(CameraUpdateFactory.newLatLngZoom(position, 13.5F))
-                uiSettings.isZoomControlsEnabled = true
-                args.user?.also {
+                getLocationFromAddress(requireContext(), location)?.also { loc ->
+                    addMarker(MarkerOptions().position(loc))
+                    animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15F))
+                }
+                args.userId?.also {
                     setOnMapClickListener {
-                        val mapsDialog = MapsFragment().apply {
+                        MapDialog().apply {
                             setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
-                            val locationArg = bundleOf("locationArg" to location)
-                            arguments = locationArg
-                        }
-                        mapsDialog.show(childFragmentManager, "")
+                            arguments = bundleOf("location" to location, "editMode" to false)
+                        }.show(childFragmentManager, TAG)
                     }
                 }
             }

@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.Point
 import android.graphics.drawable.Drawable
+import android.location.Geocoder
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -21,6 +22,7 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.Guideline
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.android.synthetic.main.activity_main.*
@@ -125,8 +127,8 @@ fun getMainCategoryAdapter(context: Context): ArrayAdapter<String> {
 
 // Return an array adapter for the main categories
 fun getSubCategoryAdapter(context: Context, mainCat: String): ArrayAdapter<String> {
-    return ArrayAdapter(context, R.layout.support_simple_spinner_dropdown_item, getSubcategories(context, mainCat)).apply {
-        setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+    return ArrayAdapter(context, com.google.android.material.R.layout.support_simple_spinner_dropdown_item, getSubcategories(context, mainCat)).apply {
+        setDropDownViewResource(com.google.android.material.R.layout.support_simple_spinner_dropdown_item)
     }
 }
 
@@ -250,5 +252,21 @@ fun getColorIdCategory(category: String): Int {
         "Games & Videogames" -> R.color.cat_6
         "Automotive" -> R.color.cat_7
         else -> -1
+    }
+}
+
+fun getAddressFromLocation(context: Context, location: LatLng): String {
+    return Geocoder(context, Locale.getDefault()).getFromLocation(location.latitude, location.longitude, 1)[0].getAddressLine(0)
+}
+
+fun getLocationFromAddress(context: Context, address: String): LatLng? {
+    return Geocoder(context, Locale.getDefault()).getFromLocationName(address, 1).let { list ->
+        if (list.size > 0)
+            list[0].let {
+                LatLng(it.latitude, it.longitude)
+            }
+        else {
+            null
+        }
     }
 }

@@ -23,7 +23,7 @@ import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.Item
 import it.polito.mad.madmax.data.viewmodel.ItemViewModel
-import it.polito.mad.madmax.ui.MapsFragment
+import it.polito.mad.madmax.ui.MapDialog
 import kotlinx.android.synthetic.main.fragment_edit_item.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -82,7 +82,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemClickListener {
         }
 
         item_edit_location_map.setOnClickListener {
-            val filterDialog = MapsFragment().apply {
+            val filterDialog = MapDialog().apply {
                 setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
             }
             filterDialog.show(requireFragmentManager(), OnSaleListFragment.TAG)

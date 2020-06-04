@@ -4,6 +4,8 @@ import android.Manifest
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.ArrayAdapter
@@ -11,13 +13,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.android.volley.Request
 import com.android.volley.Response
@@ -31,12 +30,9 @@ import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.PlaceInfo
 import it.polito.mad.madmax.data.model.User
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
-import it.polito.mad.madmax.ui.MapsFragment
-import it.polito.mad.madmax.ui.item.OnSaleListFragment
+import it.polito.mad.madmax.ui.MapDialog
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
-import java.lang.reflect.Type
-import kotlin.collections.ArrayList
-
+import java.util.*
 
 class EditProfileFragment : Fragment() {
 
@@ -76,78 +72,31 @@ class EditProfileFragment : Fragment() {
             openPhotoDialog(requireContext(), requireActivity(), { a: String -> openDialog = a}, {captureImage()}, {getImageFromGallery()}, {removeImage()})
         }
 
+        // Address text listener
+        profile_edit_location.addTextChangedListener(locationListener)
 
-
-        val suggestions =
-            MutableLiveData<Array<String>>()
-
-
-        val editTextFilledExposedDropdown = profile_edit_location
-
-        suggestions.observe(requireActivity(), Observer {
-            val adapter = ArrayAdapter(
-                requireContext(),
-                android.R.layout.simple_list_item_1,
-                suggestions.value!!
-            )
-            editTextFilledExposedDropdown.setAdapter(adapter)
-            if(editTextFilledExposedDropdown.isFocused){
-                editTextFilledExposedDropdown.showDropDown()
-            }
-
-            // TODO migliorare
-
-        })
-
-        editTextFilledExposedDropdown.addTextChangedListener {
-            if(it?.length!! >3){
-                val baseUrl = "https://photon.komoot.de/api/?q="
-
-                val jsonObjectRequest = JsonObjectRequest(
-                    Request.Method.GET, "${baseUrl}${it}&limit=5", null,
-                    Response.Listener { response ->
-                        val listType: Type =
-                            object : TypeToken<ArrayList<PlaceInfo?>?>() {}.type
-
-                        val myArray:ArrayList<PlaceInfo> = Gson().fromJson(response["features"].toString(),listType)
-
-                        val cities = myArray.map { pi -> "${pi.properties.name} ${pi.properties.state} ${pi.properties.country}"}.toTypedArray()
-
-                        suggestions.value = cities
-
-                    },
-                    Response.ErrorListener { error ->
-                        Log.d("XXX",error.message)
-                    }
-                )
-
-                Volley.newRequestQueue(requireContext()).add(jsonObjectRequest)
-            }
-
+        // Map listener
+        profile_edit_location_button.setOnClickListener {
+            MapDialog().apply {
+                setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
+                arguments = bundleOf("location" to this@EditProfileFragment.profile_edit_location.text.toString(), "editMode" to true)
+            }.show(requireFragmentManager(), TAG)
         }
 
-        setFragmentResultListener("MAP_ADDRESS") { key, bundle ->
-            // We use a String here, but any type that can be put in a Bundle is supported
-            val result = bundle.getString("address")
-            profile_edit_location.setText(result)
-            // Do something with the result...
+        // Dialog listener
+        setFragmentResultListener("MAP_DIALOG_REQUEST") { _, bundle ->
+            profile_edit_location.setText(bundle.getString("address"))
         }
+
         // Display user data
         updateFields()
-
-        profile_edit_location_map.setOnClickListener {
-            val locationText = profile_edit_location.text.toString()
-            val filterDialog = MapsFragment().apply {
-                setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
-                arguments = bundleOf("editMode" to true, "locationArg" to locationText)
-            }
-            filterDialog.show(requireFragmentManager(), OnSaleListFragment.TAG)
-        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Detach listener
+        // Detach listeners
+        profile_edit_location_button.setOnClickListener(null)
+        profile_edit_location.removeTextChangedListener(locationListener)
         profile_edit_change_photo.setOnClickListener(null)
         profile_edit_card.removeOnLayoutChangeListener(cardRadiusConstrain)
     }
@@ -229,6 +178,7 @@ class EditProfileFragment : Fragment() {
         }
     }
 
+    // TODO improve location validation (error message icon not shown)
     private fun validateFields(): Boolean {
         // Load modified user data
         updateUser()
@@ -242,6 +192,19 @@ class EditProfileFragment : Fragment() {
                 if (field.text.toString() == "") {
                     valid = false
                     field.error = getString(R.string.message_error_field_required)
+                }
+            }
+        }
+        if (valid) {
+            if (profile_edit_location.text.toString() == "") {
+                valid = false
+                profile_edit_location.error = getString(R.string.message_error_field_required)
+                profile_edit_location.requestFocus()
+            } else {
+                getLocationFromAddress(requireContext(), profile_edit_location.text.toString()) ?: run {
+                    valid = false
+                    profile_edit_location.error = getString(R.string.message_error_invalid_location)
+                    profile_edit_location.requestFocus()
                 }
             }
         }
@@ -337,8 +300,52 @@ class EditProfileFragment : Fragment() {
         }
     }
 
+    private val locationListener = object : TextWatcher {
+
+        private lateinit var timer: Timer
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            if (this::timer.isInitialized) {
+                timer.cancel()
+            }
+        }
+
+        override fun afterTextChanged(s: Editable?) {
+            profile_edit_location.dismissDropDown()
+            timer = Timer()
+            timer.schedule(object : TimerTask() {
+                override fun run() {
+                    context?.also { context ->
+                        if (s?.length!! > 3) {
+                            val jsonObjectRequest = JsonObjectRequest(
+                                Request.Method.GET,
+                                "https://photon.komoot.de/api/?q=${s}&limit=5".replace(" ", "%20"),
+                                null,
+                                Response.Listener { response ->
+                                    val cities = (Gson().fromJson(response["features"].toString(), object : TypeToken<ArrayList<PlaceInfo?>?>() {}.type) as ArrayList<PlaceInfo>).map { pi ->
+                                        "${pi.properties.name} ${pi.properties.state} ${pi.properties.country}"
+                                    }.toTypedArray()
+                                    profile_edit_location.setAdapter(ArrayAdapter(context, com.google.android.material.R.layout.support_simple_spinner_dropdown_item, cities))
+                                    if (profile_edit_location.isFocused) {
+                                        profile_edit_location.showDropDown()
+                                    }
+                                },
+                                Response.ErrorListener { error ->
+                                    Log.d(TAG, error.toString())
+                                }
+                            )
+                            Volley.newRequestQueue(context).add(jsonObjectRequest)
+                        }
+                    }
+                }
+            }, 500)
+        }
+    }
+
     // Companion
     companion object {
-        const val TAG = "MM_EDIT_PROFILE"
+        private const val TAG = "MM_EDIT_PROFILE"
     }
 }

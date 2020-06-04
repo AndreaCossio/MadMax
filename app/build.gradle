@@ -41,7 +41,6 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta6'
-    implementation 'androidx.exifinterface:exifinterface:1.3.0-alpha01'
 
     // Needed for view models
     implementation 'androidx.activity:activity-ktx:1.2.0-alpha05'
@@ -60,8 +59,10 @@ dependencies {
     // Recycler view for item list
     implementation "androidx.recyclerview:recyclerview:1.2.0-alpha03"
 
-    // Google play services auth
+    // Google play services
     implementation 'com.google.android.gms:play-services-auth:18.0.0'
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
 
     // Material library
     implementation 'com.google.android.material:material:1.2.0-beta01'
@@ -80,6 +81,4 @@ dependencies {
 
     // Volley
     implementation 'com.android.volley:volley:1.1.1'
-    implementation 'com.google.android.gms:play-services-maps:17.0.0'
-    implementation 'com.google.android.gms:play-services-location:17.0.0'
 }

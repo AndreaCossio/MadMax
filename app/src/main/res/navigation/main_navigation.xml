@@ -15,9 +15,9 @@
     <!-- Map -->
     <fragment
         android:id="@+id/map_fragment"
+        android:name="it.polito.mad.madmax.ui.MapDialog"
         android:label="MapFragment"
-        android:name="it.polito.mad.madmax.ui.MapsFragment"
-        tools:layout="@layout/fragment_maps" />
+        tools:layout="@layout/map_dialog" />
 
     <!-- Item of interest -->
     <fragment
@@ -83,7 +83,7 @@
             android:id="@+id/action_edit_profile"
             app:destination="@id/nav_edit_profile_fragment" />
         <argument
-            android:name="user"
+            android:name="userId"
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
