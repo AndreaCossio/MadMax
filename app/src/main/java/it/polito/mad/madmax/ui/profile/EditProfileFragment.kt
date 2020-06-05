@@ -325,7 +325,7 @@ class EditProfileFragment : Fragment() {
                                 null,
                                 Response.Listener { response ->
                                     val cities = (Gson().fromJson(response["features"].toString(), object : TypeToken<ArrayList<PlaceInfo?>?>() {}.type) as ArrayList<PlaceInfo>).map { pi ->
-                                        "${pi.properties.name} ${pi.properties.state} ${pi.properties.country}"
+                                        "${pi.properties.name} ${pi.properties.city} ${pi.properties.state} ${pi.properties.country}"
                                     }.toTypedArray()
                                     profile_edit_location.setAdapter(ArrayAdapter(context, com.google.android.material.R.layout.support_simple_spinner_dropdown_item, cities))
                                     if (profile_edit_location.isFocused) {

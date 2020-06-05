@@ -179,6 +179,8 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
                 clear()
                 getLocationFromAddress(requireContext(), location)?.also { loc ->
                     addMarker(MarkerOptions().position(loc))
+                    // TODO show info window with address?
+                    //addMarker(MarkerOptions().position(loc).title(location)).showInfoWindow()
                     animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15F))
                 }
                 args.userId?.also {

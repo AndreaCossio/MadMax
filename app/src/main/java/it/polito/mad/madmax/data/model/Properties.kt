@@ -10,6 +10,7 @@ data class Properties (
 	@SerializedName("country") val country : String,
 	@SerializedName("osm_key") val osm_osm_key : String,
 	@SerializedName("osm_value") val osm_value : String,
+	@SerializedName("city") val city: String?,
 	@SerializedName("name") val name : String,
 	@SerializedName("state") val state : String
 )
