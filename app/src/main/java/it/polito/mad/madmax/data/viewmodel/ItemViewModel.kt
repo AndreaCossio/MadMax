@@ -311,4 +311,8 @@ class ItemViewModel: ViewModel() {
             })
         }
     }
+
+    fun rateUser(item: Item, rating: Float): Task<Transaction> {
+        return repo.rateUser(item, rating)
+    }
 }
