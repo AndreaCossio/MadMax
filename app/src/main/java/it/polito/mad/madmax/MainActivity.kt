@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         // If the user has no id it means that we just created the VM and we need to login
-        if (userVM.getCurrentUserData().value?.userId == "" && !loggingIn) {
+        if (userVM.getCurrentUserId() == "" && !loggingIn) {
             loggingIn = true
             login()
         }

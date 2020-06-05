@@ -14,6 +14,7 @@
     <!-- NAVIGATION -->
     <string name="title_show_profile_fragment">My Profile</string>
     <string name="title_edit_profile_fragment">Edit profile</string>
+    <string name="title_users_list_fragment">Interested users</string>
     <string name="title_details_item_fragment">Item</string>
     <string name="title_edit_item_fragment">Edit item</string>
     <string name="title_create_item_fragment">Create item</string>
@@ -34,7 +35,7 @@
 
     <!-- BUTTONS -->
     <string name="button_edit_item">Edit</string>
-    <string name="button_buy_item">Buy</string>
+    <string name="button_sell_item">Sell</string>
 
     <!-- MESSAGES -->
     <!-- Normal -->

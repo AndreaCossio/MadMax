@@ -4,11 +4,13 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.R
 import it.polito.mad.madmax.data.model.Item
@@ -63,16 +65,25 @@ class ItemAdapter(
             itemV.item_category_text.text = item.categoryMain
 
             // Image
-            if (item.photo != "") {
-                Picasso.get().load(Uri.parse(item.photo)).into(itemV.item_photo)
-            } else {
-                itemV.item_photo.setImageDrawable(itemV.context.getDrawable(R.drawable.ic_camera))
+            itemV.item_photo.post {
+                Picasso.get().load(Uri.parse(item.photo)).into(itemV.item_photo, object : Callback {
+                    override fun onSuccess() {
+                        itemV.item_photo.scaleType = ImageView.ScaleType.CENTER_CROP
+                    }
+
+                    override fun onError(e: Exception?) {
+                        itemV.item_photo.apply {
+                            setImageDrawable(itemV.context.getDrawable(R.drawable.ic_camera))
+                            scaleType = ImageView.ScaleType.FIT_CENTER
+                        }
+                    }
+                })
             }
 
             // Interested people
             itemV.item_hot.text = item.interestedUsers.size.toString()
 
-            // Status
+            // TODO Status info (mainly for the owner)
             /*if (item.status == "Disabled") {
                 itemV.item_card.setCardBackgroundColor(ContextCompat.getColor(itemV.context, R.color.colorGrey))
             }

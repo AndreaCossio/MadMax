@@ -3,7 +3,6 @@ package it.polito.mad.madmax.data.model
 import com.google.gson.annotations.SerializedName
 
 data class Properties (
-
 	@SerializedName("osm_id") val osm_id : Long,
 	@SerializedName("osm_type") val osm_type : String,
 	@SerializedName("extent") val extent : List<Double>,

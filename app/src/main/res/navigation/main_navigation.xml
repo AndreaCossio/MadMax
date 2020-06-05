@@ -106,7 +106,7 @@
     <fragment
         android:id="@+id/nav_users_list_fragment"
         android:name="it.polito.mad.madmax.ui.profile.UsersListFragment"
-        android:label="Users List"
+        android:label="@string/title_users_list_fragment"
         tools:layout="@layout/fragment_users_list">
         <argument
             android:name="item"

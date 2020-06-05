@@ -34,6 +34,7 @@ class ItemListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         itemAdapter = ItemAdapter(actionDetails, actionEdit)
+        itemsVM.clearItems()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -63,7 +64,7 @@ class ItemListFragment : Fragment() {
         }
 
         // Observe the list of items
-        itemsVM.getItemList().observe(viewLifecycleOwner, Observer {
+        itemsVM.getItemsData().observe(viewLifecycleOwner, Observer {
             itemAdapter.setItems(it)
             hideProgress(requireActivity())
             if (it.size == 0) {

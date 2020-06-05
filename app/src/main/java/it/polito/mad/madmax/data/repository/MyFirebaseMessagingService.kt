@@ -16,7 +16,6 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import it.polito.mad.madmax.MainActivity
 import it.polito.mad.madmax.R
-import it.polito.mad.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.displayMessage
 import org.json.JSONObject
 import java.util.*
@@ -76,11 +75,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 context.getString(R.string.fcm_api_url),
                 notification,
                 Response.Listener { response ->
-                    Log.d(ItemViewModel.TAG, "onResponse: $response")
+                    Log.d(TAG, "onResponse: $response")
                 },
                 Response.ErrorListener {
                     displayMessage(context, "Error request ${it.message.toString()}")
-                    Log.d(ItemViewModel.TAG, "onErrorResponse: Didn't work")
+                    Log.d(TAG, "onErrorResponse: Didn't work")
                 }
             ) {
                 override fun getHeaders(): Map<String, String> {

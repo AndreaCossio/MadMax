@@ -40,6 +40,7 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        args.userId?.also { userVM.clearOtherUserData() }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -90,11 +91,6 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
         }
         // Detach layout listener
         profile_card.removeOnLayoutChangeListener(cardRadiusConstrain)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        args.userId?.also { userVM.clearOtherUserData() }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -179,8 +175,6 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
                 clear()
                 getLocationFromAddress(requireContext(), location)?.also { loc ->
                     addMarker(MarkerOptions().position(loc))
-                    // TODO show info window with address?
-                    //addMarker(MarkerOptions().position(loc).title(location)).showInfoWindow()
                     animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15F))
                 }
                 args.userId?.also {
@@ -199,6 +193,6 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
 
     // Companion
     companion object {
-        const val TAG = "MM_SHOW_PROFILE"
+        private const val TAG = "MM_SHOW_PROFILE"
     }
 }

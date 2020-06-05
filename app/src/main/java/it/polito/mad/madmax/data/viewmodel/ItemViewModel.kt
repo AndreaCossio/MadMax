@@ -12,6 +12,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import it.polito.mad.madmax.R
 import it.polito.mad.madmax.data.model.Item
 import it.polito.mad.madmax.data.model.ItemFilter
+import it.polito.mad.madmax.data.model.User
 import it.polito.mad.madmax.data.repository.FirestoreRepository
 import it.polito.mad.madmax.data.repository.MyFirebaseMessagingService.Companion.createNotification
 import it.polito.mad.madmax.data.repository.MyFirebaseMessagingService.Companion.sendNotification
@@ -32,12 +33,20 @@ class ItemViewModel: ViewModel() {
         MutableLiveData<ArrayList<Item>>()
     }
 
-    fun getItemList():  MutableLiveData<ArrayList<Item>> {
+    fun getItemData(): MutableLiveData<Item> {
+        return item
+    }
+
+    fun getItemsData():  MutableLiveData<ArrayList<Item>> {
         return items
     }
 
-    fun getSingleItem(): MutableLiveData<Item> {
-        return item
+    fun clearItem() {
+        item.value = Item()
+    }
+
+    fun clearItems() {
+        items.value?.clear()
     }
 
     fun getNewItemId(): String {
@@ -151,11 +160,10 @@ class ItemViewModel: ViewModel() {
         }
     }
 
-    // TODO notify the right users with the right messages
-    fun sellItem(context: Context, item: Item, userId: String): Task<Transaction> {
-        return repo.sellItem(item, userId).addOnSuccessListener {
+    fun sellItem(context: Context, item: Item, user: User): Task<Transaction> {
+        return repo.sellItem(item, user.userId).addOnSuccessListener {
             try {
-                sendNotification(context, createNotification(item.itemId, context.getString(R.string.app_name), "The item \"${item.title}\" has been sold to"))
+                sendNotification(context, createNotification(item.itemId, context.getString(R.string.app_name), "The item \"${item.title}\" has been sold to ${user.name}"))
             } catch (e: JSONException) {
                 Log.e(TAG, "Failed to send notification.", e)
             }
@@ -163,6 +171,6 @@ class ItemViewModel: ViewModel() {
     }
 
     companion object {
-        const val TAG = "MM_ITEM_VM"
+        private const val TAG = "MM_ITEM_VM"
     }
 }

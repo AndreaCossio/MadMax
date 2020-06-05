@@ -29,6 +29,7 @@ class ItemsOfInterestFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         itemAdapter = ItemAdapter(actionDetails, actionInterest)
+        itemsVM.clearItems()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -49,7 +50,7 @@ class ItemsOfInterestFragment : Fragment() {
         item_list_empty_tv.text = getString(R.string.message_empty_list_favourite)
 
         // Observe the list of items and update the recycler view accordingly
-        itemsVM.getItemList().observe(viewLifecycleOwner, Observer {
+        itemsVM.getItemsData().observe(viewLifecycleOwner, Observer {
             itemAdapter.setItems(it)
             hideProgress(requireActivity())
             if (it.size == 0) {

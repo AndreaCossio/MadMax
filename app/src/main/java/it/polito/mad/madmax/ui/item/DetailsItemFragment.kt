@@ -35,6 +35,8 @@ class DetailsItemFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         status = args.item.status
+        itemsVM.clearItem()
+        userVM.clearOtherUserData()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -52,9 +54,9 @@ class DetailsItemFragment : Fragment() {
         // Card radius
         item_details_card.addOnLayoutChangeListener(cardRadiusConstrain)
 
-        itemsVM.getSingleItem().observe(viewLifecycleOwner, Observer { item ->
+        itemsVM.getItemData().observe(viewLifecycleOwner, Observer { item ->
             // If the item became unavailable go back
-            if (item == null || (item.userId != userVM.getCurrentUserId() && (item.status == "Disabled" || item.status == "Bought"))) {
+            if (item == null || (item.userId != userVM.getCurrentUserId() && (item.status == "Disabled" || (item.status == "Bought" && item.boughtBy != userVM.getCurrentUserId())))) {
                 showProgress(requireActivity())
                 displayMessage(requireContext(), "This item is no longer available")
                 findNavController().navigateUp()
@@ -100,11 +102,6 @@ class DetailsItemFragment : Fragment() {
         if (this::userListener.isInitialized)
             userListener.remove()
         item_details_card.removeOnLayoutChangeListener(cardRadiusConstrain)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        userVM.clearOtherUserData()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -189,7 +186,7 @@ class DetailsItemFragment : Fragment() {
 
         // Owner / Buyer / Interested users
         if (item.status == "Bought") {
-            item_details_extra.text = "Bought by: $name"
+            item_details_extra.text = "Sold to: $name"
             item_details_extra.setOnClickListener {
                 showProgress(requireActivity())
                 findNavController().navigate(MainNavigationDirections.actionGlobalShowProfile(item.boughtBy))
