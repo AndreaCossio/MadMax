@@ -24,7 +24,7 @@ import it.polito.mad.madmax.data.model.Item
 import it.polito.mad.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
 import it.polito.mad.madmax.ui.MapDialog
-import it.polito.mad.madmax.ui.profile.ShowProfileFragment
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_details_item.*
 
 class DetailsItemFragment : Fragment(),OnMapReadyCallback {
@@ -54,7 +54,7 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_details_item, container, false).also {
-            (childFragmentManager.findFragmentById(R.id.item_map_view) as SupportMapFragment).getMapAsync(this)
+            (childFragmentManager.findFragmentById(R.id.item_location) as SupportMapFragment).getMapAsync(this)
         }
     }
 
@@ -110,25 +110,24 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
         // Listen and observe item
         itemListener = itemsVM.listenItem(args.item.itemId)
 
-
-        /**
-         * Allow scrolling inside map
-         * */
-        item_transparent_image.setOnTouchListener(View.OnTouchListener { view, motionEvent ->
-            when (motionEvent.action){
+        // Prevent scrolling interfering
+        item_transparent_image.setOnTouchListener { _, motionEvent ->
+            when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    item_main_scroll_view.requestDisallowInterceptTouchEvent(true);
-                    // Disable touch on transparent view
-                    false;
+                    item_nested_scroll?.also {
+                        it.requestDisallowInterceptTouchEvent(true)
+                    } ?: requireActivity().main_scroll_view.requestDisallowInterceptTouchEvent(true)
+                    false
                 }
                 MotionEvent.ACTION_UP -> {
-                    //view.performClick()
-                    item_main_scroll_view.requestDisallowInterceptTouchEvent(false);
+                    item_nested_scroll?.also {
+                        it.requestDisallowInterceptTouchEvent(true)
+                    } ?: requireActivity().main_scroll_view.requestDisallowInterceptTouchEvent(false)
                     true
                 }
                 else -> true
             }
-        })
+        }
     }
 
     override fun onDestroyView() {

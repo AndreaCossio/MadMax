@@ -87,6 +87,7 @@
     <string name="content_filter">Filter</string>
     <string name="content_search">Search</string>
     <string name="content_hot">Hot</string>
+    <string name="content_transparent">Transparent layer</string>
 
     <!-- PROFILE -->
     <string name="profile_general_info">Profile Information</string>
@@ -121,7 +122,6 @@
     <string name="fcm_api_url">https://fcm.googleapis.com/fcm/send</string>
     <string name="fcm_server_key">AAAAY4qEYoE:APA91bE8SyfjBdnCMjkHqT63CLcuZw_0OY-51XlUCy5kgTw4e5-GRDwyYKsLGVGeCP_DG6DIwDzcPSXefAkZrO6-r4dOZxLroVFYkrbbgiT35gf4MIfaemo4w-1RzcnFacpI2cw9_j6i</string>
     <string name="fcm_content_type">application/json</string>
-    <string name="map_transparent">map_transparent</string>
 
     <!-- Categories -->
     <string-array name="item_categories_main">

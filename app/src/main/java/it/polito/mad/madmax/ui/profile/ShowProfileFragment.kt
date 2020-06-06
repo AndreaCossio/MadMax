@@ -24,7 +24,6 @@ import it.polito.mad.madmax.data.model.User
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
 import it.polito.mad.madmax.ui.MapDialog
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_details_item.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 
 class ShowProfileFragment : Fragment(), OnMapReadyCallback {
@@ -47,7 +46,7 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_show_profile, container, false).also {
-            (childFragmentManager.findFragmentById(R.id.profile_map_view) as SupportMapFragment).getMapAsync(this)
+            (childFragmentManager.findFragmentById(R.id.profile_location) as SupportMapFragment).getMapAsync(this)
         }
     }
 
@@ -83,25 +82,24 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
             })
         }
 
-        /**
-         * Allow scrolling inside map
-         * */
-
-        profile_transparent_image.setOnTouchListener(View.OnTouchListener { _, motionEvent ->
-            when (motionEvent.action){
+        // Prevent scrolling interfering
+        profile_transparent_image.setOnTouchListener { _, motionEvent ->
+            when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    profile_main_scroll_view.requestDisallowInterceptTouchEvent(true);
-                    // Disable touch on transparent view
-                    false;
+                    profile_nested_scroll?.also {
+                        it.requestDisallowInterceptTouchEvent(true)
+                    } ?: requireActivity().main_scroll_view.requestDisallowInterceptTouchEvent(true)
+                    false
                 }
                 MotionEvent.ACTION_UP -> {
-                    //view.performClick()
-                    profile_main_scroll_view.requestDisallowInterceptTouchEvent(false);
+                    profile_nested_scroll?.also {
+                        it.requestDisallowInterceptTouchEvent(true)
+                    } ?: requireActivity().main_scroll_view.requestDisallowInterceptTouchEvent(false)
                     true
                 }
                 else -> true
             }
-        })
+        }
     }
 
     override fun onDestroyView() {
@@ -191,7 +189,6 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    // TODO scroll with two fingers?
     private fun updateMarker(location: String) {
         if (location != "") {
             gMap?.apply {
