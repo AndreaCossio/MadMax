@@ -143,28 +143,20 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
 
         // Profile photo
         profile_photo.post {
-            if (user.photo != "") {
-                Picasso.get().load(Uri.parse(user.photo)).into(profile_photo, object : Callback {
-                    override fun onSuccess() {
-                        profile_photo.translationY = 0F
-                        hideProgress(requireActivity())
-                    }
-
-                    override fun onError(e: Exception?) {
-                        profile_photo.apply {
-                            translationY = measuredHeight / 6F
-                            setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
-                        }
-                        hideProgress(requireActivity())
-                    }
-                })
-            } else {
-                profile_photo.apply {
-                    translationY = measuredHeight / 6F
-                    setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
+            Picasso.get().load(Uri.parse(user.photo)).into(profile_photo, object : Callback {
+                override fun onSuccess() {
+                    profile_photo.translationY = 0F
+                    hideProgress(requireActivity())
                 }
-                hideProgress(requireActivity())
-            }
+
+                override fun onError(e: Exception?) {
+                    profile_photo.apply {
+                        translationY = measuredHeight / 6F
+                        setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
+                    }
+                    hideProgress(requireActivity())
+                }
+            })
         }
     }
 

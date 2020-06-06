@@ -23,6 +23,22 @@
           }
         },
         {
+          "client_id": "427525694081-tcovo36q0ki3gu0npknbkvpn5b5jr3n6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.polito.mad.madmax",
+            "certificate_hash": "9da98dcf67e94f5b4f924fb56ac0fdfdb5e0540c"
+          }
+        },
+        {
+          "client_id": "427525694081-6dofm0mce7h6dho1hl793vvviqird8sa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.polito.mad.madmax",
+            "certificate_hash": "ba344b9ca044b696216282da80e6cf658a9a2a92"
+          }
+        },
+        {
           "client_id": "427525694081-cd4pe8vc417i7gheliso9844s3vt2774.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

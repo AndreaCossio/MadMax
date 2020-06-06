@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -14,6 +16,7 @@ import it.polito.mad.madmax.data.model.Item
 import it.polito.mad.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
 import it.polito.mad.madmax.ui.AutoFitGridLayoutManager
+import it.polito.mad.madmax.ui.profile.UserRateDialog
 import kotlinx.android.synthetic.main.fragment_item_list.*
 
 class BoughtItemsListFragment : Fragment() {
@@ -28,7 +31,8 @@ class BoughtItemsListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        itemAdapter = ItemAdapter(actionDetails, showAction = false)
+        // TODO check adapter
+        itemAdapter = ItemAdapter(actionDetails, actionRate)
         itemsVM.clearItems()
     }
 
@@ -75,8 +79,15 @@ class BoughtItemsListFragment : Fragment() {
         findNavController().navigate(MainNavigationDirections.actionGlobalDetailsItem(item))
     }
 
+    private var actionRate = { item: Item ->
+        UserRateDialog().apply {
+            arguments = bundleOf("userId" to item.userId)
+            setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
+        }.show(requireFragmentManager(), TAG)
+    }
+
     // Companion
     companion object {
-        const val TAG = "MM_BOUGHT"
+        private const val TAG = "MM_BOUGHT"
     }
 }

@@ -70,6 +70,10 @@
     <string name="dialog_change_take">Take picture</string>
     <string name="dialog_change_gallery">Choose from gallery</string>
     <string name="dialog_change_remove">Remove photo</string>
+    <string name="dialog_rate_title">User rating</string>
+    <string name="dialog_rate_description">You can give a rating to the user that sold this item to you</string>
+    <string name="dialog_rate_comment">Comment</string>
+    <string name="dialog_rate_button">Rate</string>
 
     <!-- CONTENT DESCRIPTIONS -->
     <string name="content_settings">Settings</string>
@@ -105,7 +109,6 @@
     <string name="item_owner">Item Owner</string>
     <string name="item_expiry_change">Change</string>
     <string name="item_price_set">%.2f €</string>
-
     <string name="dot">&#8226;</string>
 
     <!-- FIREBASE CLOUD MESSAGING-->

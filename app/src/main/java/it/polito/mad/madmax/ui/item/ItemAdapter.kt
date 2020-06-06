@@ -91,10 +91,13 @@ class ItemAdapter(
                 itemV.item_card.setCardBackgroundColor(ContextCompat.getColor(itemV.context, R.color.colorSecondaryLight))
             }*/
 
+            // TODO hide action to prevent double rating
             // Action
             if (showAction) {
                 if (item.userId != Firebase.auth.currentUser?.uid) {
-                    if (item.interestedUsers.contains(Firebase.auth.currentUser?.uid)) {
+                    if (item.boughtBy == Firebase.auth.currentUser?.uid) {
+                        (itemV.item_action as MaterialButton).icon = itemV.context.getDrawable(R.drawable.ic_star)
+                    } else if (item.interestedUsers.contains(Firebase.auth.currentUser?.uid)) {
                         (itemV.item_action as MaterialButton).icon = itemV.context.getDrawable(R.drawable.ic_favourite)
                     } else {
                         (itemV.item_action as MaterialButton).icon = itemV.context.getDrawable(R.drawable.ic_favourite_out)

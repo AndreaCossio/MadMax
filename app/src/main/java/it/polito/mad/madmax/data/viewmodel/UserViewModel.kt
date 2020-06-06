@@ -1,5 +1,6 @@
 package it.polito.mad.madmax.data.viewmodel
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
@@ -9,9 +10,14 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Transaction
+import it.polito.mad.madmax.R
 import it.polito.mad.madmax.data.model.Item
 import it.polito.mad.madmax.data.model.User
 import it.polito.mad.madmax.data.repository.FirestoreRepository
+import it.polito.mad.madmax.data.repository.MyFirebaseMessagingService.Companion.createNotification
+import it.polito.mad.madmax.data.repository.MyFirebaseMessagingService.Companion.sendNotification
+import org.json.JSONException
 
 class UserViewModel : ViewModel() {
 
@@ -73,6 +79,17 @@ class UserViewModel : ViewModel() {
                 repo.writeUser(currentUser.value!!.userId, newUser).addOnFailureListener { e ->
                     Log.e(TAG, "Failed to update user", e)
                 }
+            }
+        }
+    }
+
+    fun rateUser(context: Context, userId: String, rating: Float): Task<Transaction> {
+        return repo.rateUser(userId, rating).addOnSuccessListener {
+            // TODO better notification
+            try {
+                sendNotification(context, createNotification(userId, context.getString(R.string.app_name), "You have received a new rating."))
+            } catch (e: JSONException) {
+                Log.e(TAG, "Failed to send notification.", e)
             }
         }
     }

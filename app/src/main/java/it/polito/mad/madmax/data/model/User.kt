@@ -10,5 +10,6 @@ data class User (
     var email: String = "",
     var location: String = "",
     var phone: String = "",
-    var photo: String = ""
+    var photo: String = "",
+    var ratings: MutableList<Float> = mutableListOf<Float>()
 ) : Serializable

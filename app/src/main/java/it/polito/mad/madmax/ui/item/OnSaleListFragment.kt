@@ -123,10 +123,9 @@ class OnSaleListFragment : Fragment() {
     }
 
     private fun openFilterDialog() {
-        val filterDialog = ItemFilterDialog().apply {
+        ItemFilterDialog().apply {
             setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
-        }
-        filterDialog.show(requireFragmentManager(), TAG)
+        }.show(requireFragmentManager(), TAG)
     }
 
     private var actionDetails = { item: Item ->
