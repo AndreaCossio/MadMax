@@ -1,5 +1,6 @@
 package it.polito.mad.madmax.ui.profile
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
@@ -23,6 +24,7 @@ import it.polito.mad.madmax.data.model.User
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
 import it.polito.mad.madmax.ui.MapDialog
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_details_item.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
 
 class ShowProfileFragment : Fragment(), OnMapReadyCallback {
@@ -49,6 +51,7 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         showProgress(requireActivity())
@@ -79,6 +82,26 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
                 updateFields(it)
             })
         }
+
+        /**
+         * Allow scrolling inside map
+         * */
+
+        profile_transparent_image.setOnTouchListener(View.OnTouchListener { _, motionEvent ->
+            when (motionEvent.action){
+                MotionEvent.ACTION_DOWN -> {
+                    profile_main_scroll_view.requestDisallowInterceptTouchEvent(true);
+                    // Disable touch on transparent view
+                    false;
+                }
+                MotionEvent.ACTION_UP -> {
+                    //view.performClick()
+                    profile_main_scroll_view.requestDisallowInterceptTouchEvent(false);
+                    true
+                }
+                else -> true
+            }
+        })
     }
 
     override fun onDestroyView() {

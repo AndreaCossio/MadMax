@@ -1,13 +1,21 @@
 package it.polito.mad.madmax.ui.item
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import androidx.core.os.bundleOf
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.ListenerRegistration
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -15,15 +23,20 @@ import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.Item
 import it.polito.mad.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
+import it.polito.mad.madmax.ui.MapDialog
+import it.polito.mad.madmax.ui.profile.ShowProfileFragment
 import kotlinx.android.synthetic.main.fragment_details_item.*
 
-class DetailsItemFragment : Fragment() {
+class DetailsItemFragment : Fragment(),OnMapReadyCallback {
 
     // Models
     private val userVM: UserViewModel by activityViewModels()
     private val itemsVM: ItemViewModel by activityViewModels()
     private lateinit var userListener: ListenerRegistration
     private lateinit var itemListener: ListenerRegistration
+
+    // Google map
+    private var gMap: GoogleMap? = null
 
     // Destination arguments
     private val args: DetailsItemFragmentArgs by navArgs()
@@ -40,9 +53,12 @@ class DetailsItemFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_details_item, container, false)
+        return inflater.inflate(R.layout.fragment_details_item, container, false).also {
+            (childFragmentManager.findFragmentById(R.id.item_map_view) as SupportMapFragment).getMapAsync(this)
+        }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         showProgress(requireActivity())
@@ -93,6 +109,26 @@ class DetailsItemFragment : Fragment() {
 
         // Listen and observe item
         itemListener = itemsVM.listenItem(args.item.itemId)
+
+
+        /**
+         * Allow scrolling inside map
+         * */
+        item_transparent_image.setOnTouchListener(View.OnTouchListener { view, motionEvent ->
+            when (motionEvent.action){
+                MotionEvent.ACTION_DOWN -> {
+                    item_main_scroll_view.requestDisallowInterceptTouchEvent(true);
+                    // Disable touch on transparent view
+                    false;
+                }
+                MotionEvent.ACTION_UP -> {
+                    //view.performClick()
+                    item_main_scroll_view.requestDisallowInterceptTouchEvent(false);
+                    true
+                }
+                else -> true
+            }
+        })
     }
 
     override fun onDestroyView() {
@@ -162,8 +198,9 @@ class DetailsItemFragment : Fragment() {
         item_details_category_main.text = item.categoryMain
         item_details_category_sub.text = item.categorySub
         item_details_price.text = getString(R.string.item_price_set, item.price)
-        item_details_location.text = item.location
         item_details_expiry.text = item.expiry
+
+        updateMarker(item.location)
 
         // Photo
         item_details_photo.apply {
@@ -234,5 +271,37 @@ class DetailsItemFragment : Fragment() {
     // Companion
     companion object {
         const val TAG = "MM_DETAILS_ITEM"
+    }
+
+    override fun onMapReady(p0: GoogleMap?) {
+        gMap = p0?.apply {
+            uiSettings.isZoomControlsEnabled = true
+        }
+        args.item.location.also {
+            updateMarker(it)
+        }
+    }
+
+
+     private fun updateMarker(location: String) {
+        if (location != "") {
+            gMap?.apply {
+                clear()
+                getLocationFromAddress(requireContext(), location)?.also { loc ->
+                    addMarker(MarkerOptions().position(loc))
+                    animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15F))
+                }
+                args.item.also {
+                    setOnMapClickListener {
+                        MapDialog().apply {
+                            setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
+                            arguments = bundleOf("location" to location, "editMode" to false)
+                        }.show(childFragmentManager, TAG)
+                    }
+                }
+            }
+        } else {
+            gMap?.clear()
+        }
     }
 }

@@ -4,27 +4,42 @@ import android.Manifest
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.Item
+import it.polito.mad.madmax.data.model.PlaceInfo
 import it.polito.mad.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.ui.MapDialog
+import it.polito.mad.madmax.ui.profile.EditProfileFragment
 import kotlinx.android.synthetic.main.fragment_edit_item.*
+import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -81,19 +96,21 @@ class EditItemFragment : Fragment(), AdapterView.OnItemClickListener {
             openPhotoDialog(requireContext(), requireActivity(), { a: String -> openDialog = a}, {captureImage()}, {getImageFromGallery()}, {removeImage()})
         }
 
-        item_edit_location_map.setOnClickListener {
-            val filterDialog = MapDialog().apply {
+        // Map listener
+        item_edit_location_button.setOnClickListener {
+            MapDialog().apply {
                 setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
-            }
-            filterDialog.show(requireFragmentManager(), OnSaleListFragment.TAG)
+                arguments = bundleOf("location" to this@EditItemFragment.item_edit_location.text.toString(), "editMode" to true)
+            }.show(requireFragmentManager(), TAG)
         }
 
-        /*setFragmentResultListener("MAP_ADDRESS") { key, bundle ->
-            // We use a String here, but any type that can be put in a Bundle is supported
-            val result = bundle.getString("address")
-            profile_edit_location.setText(result)
-            // Do something with the result...
-        }*/
+        // Dialog listener
+        setFragmentResultListener("MAP_DIALOG_REQUEST") { _, bundle ->
+            item_edit_location.setText(bundle.getString("address"))
+        }
+
+        // Address text listener
+        item_edit_location.addTextChangedListener(locationListener)
 
 
         item_edit_expiry.setOnClickListener { showDatePicker() }
@@ -156,6 +173,54 @@ class EditItemFragment : Fragment(), AdapterView.OnItemClickListener {
                         }, {captureImage()}, {getImageFromGallery()}, {removeImage()})
                 }
             }
+        }
+    }
+
+
+    /**
+     * AUTOCOMPLETE LISTENER
+     * */
+    private val locationListener = object : TextWatcher {
+
+        private lateinit var timer: Timer
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            if (this::timer.isInitialized) {
+                timer.cancel()
+            }
+        }
+
+        override fun afterTextChanged(s: Editable?) {
+            item_edit_location.dismissDropDown()
+            timer = Timer()
+            timer.schedule(object : TimerTask() {
+                override fun run() {
+                    context?.also { context ->
+                        if (s?.length!! > 3) {
+                            val jsonObjectRequest = JsonObjectRequest(
+                                Request.Method.GET,
+                                "https://photon.komoot.de/api/?q=${s}&limit=5".replace(" ", "%20"),
+                                null,
+                                Response.Listener { response ->
+                                    val cities = (Gson().fromJson(response["features"].toString(), object : TypeToken<ArrayList<PlaceInfo?>?>() {}.type) as ArrayList<PlaceInfo>).map { pi ->
+                                        "${pi.properties.name} ${pi.properties.city} ${pi.properties.state} ${pi.properties.country}"
+                                    }.toTypedArray()
+                                    item_edit_location.setAdapter(ArrayAdapter(context, com.google.android.material.R.layout.support_simple_spinner_dropdown_item, cities))
+                                    if (item_edit_location.isFocused) {
+                                        item_edit_location.showDropDown()
+                                    }
+                                },
+                                Response.ErrorListener { error ->
+                                    Log.d("EditProfileFragment.TAG", error.toString())
+                                }
+                            )
+                            Volley.newRequestQueue(context).add(jsonObjectRequest)
+                        }
+                    }
+                }
+            }, 500)
         }
     }
 
