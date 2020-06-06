@@ -39,9 +39,11 @@ class FirestoreRepository {
         }
     }
 
-    fun rateUser(userId: String, rating: Float): Task<Transaction> {
+    fun rateUser(userId: String, rating: String): Task<Transaction> {
         return db.runTransaction { transaction ->
             transaction.update(db.document("users/$userId"), "ratings", FieldValue.arrayUnion(rating))
+            transaction.update(db.document("items/${rating.split("+/")[0]}"), "rating", rating)
+            transaction.update(db.document("users/$userId/items/${rating.split("+/")[0]}"), "rating", rating)
         }
     }
 

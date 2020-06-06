@@ -31,7 +31,6 @@ class BoughtItemsListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // TODO check adapter
         itemAdapter = ItemAdapter(actionDetails, actionRate)
         itemsVM.clearItems()
     }
@@ -81,7 +80,7 @@ class BoughtItemsListFragment : Fragment() {
 
     private var actionRate = { item: Item ->
         UserRateDialog().apply {
-            arguments = bundleOf("userId" to item.userId)
+            arguments = bundleOf("userId" to item.userId, "itemId" to item.itemId)
             setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
         }.show(requireFragmentManager(), TAG)
     }

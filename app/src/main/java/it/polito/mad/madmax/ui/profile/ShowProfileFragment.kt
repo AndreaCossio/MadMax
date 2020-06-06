@@ -141,6 +141,14 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
         // Location
         updateMarker(user.location)
 
+        // Rating
+        if (user.ratings.size > 0) {
+            profile_rating_card.visibility = View.VISIBLE
+            profile_rating.rating = user.ratings.map { a -> a.split("+/")[1].toDouble() }.average().toFloat()
+        } else {
+            profile_rating_card.visibility = View.GONE
+        }
+
         // Profile photo
         profile_photo.post {
             Picasso.get().load(Uri.parse(user.photo)).into(profile_photo, object : Callback {

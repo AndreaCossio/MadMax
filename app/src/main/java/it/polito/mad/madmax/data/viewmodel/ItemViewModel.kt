@@ -114,6 +114,8 @@ class ItemViewModel: ViewModel() {
     }
 
     fun listenItems(personal: Boolean = false, userId: String = "", itemFilter: ItemFilter? = null, interested: Boolean = false, bought: Boolean = false): ListenerRegistration {
+        // Personal -> get the items directly from current user's items
+        //
         return repo.getItems(personal, userId, itemFilter, interested, bought).addSnapshotListener { snapshots, e ->
             e?.also {
                 Log.w(TAG, "Listen failed: ${it.message}")
@@ -122,14 +124,15 @@ class ItemViewModel: ViewModel() {
 
             val newItems = ArrayList<Item>()
             for (doc in snapshots!!) {
+                // Exclude current user's items from the list (this filter is always applied except for "My Items" view)
                 if (itemFilter == null || itemFilter.userId == "" || itemFilter.userId != doc["userId"]) {
+                    // Filter for text locally (this filter can be applied only in "On Sale Items")
                     if (itemFilter == null || itemFilter.text == "" || doc["title"].toString().contains(itemFilter.text) || doc["description"].toString().contains(itemFilter.text)) {
-                        if (bought || interested || personal || SimpleDateFormat("dd MMM yyyy", Locale.UK).parse(doc["expiry"].toString())!! > Date()) {
-                            if (bought || interested || personal || doc["status"].toString() == "Enabled") {
-                                newItems.add(doc.toObject(Item::class.java).apply {
-                                    itemId = doc.id
-                                })
-                            }
+                        // Exclude expired items in "On Sale Items" and "Items of Interest" and show only enabled items in those views
+                        if (personal || bought || (SimpleDateFormat("dd MMM yyyy", Locale.UK).parse(doc["expiry"].toString())!! > Date() && doc["status"].toString() == "Enabled")) {
+                            newItems.add(doc.toObject(Item::class.java).apply {
+                                itemId = doc.id
+                            })
                         }
                     }
                 }

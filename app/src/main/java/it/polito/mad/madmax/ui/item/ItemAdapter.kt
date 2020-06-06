@@ -17,11 +17,7 @@ import it.polito.mad.madmax.data.model.Item
 import it.polito.mad.madmax.getColorIdCategory
 import kotlinx.android.synthetic.main.item_card.view.*
 
-class ItemAdapter(
-    private val cardClickListener: (Item) -> Any,
-    private val actionListener: (Item) -> Any = {},
-    private val showAction: Boolean = true
-) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
+class ItemAdapter(private val cardClickListener: (Item) -> Any, private val actionListener: (Item) -> Any = {}) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     private var items: ArrayList<Item> = ArrayList()
 
@@ -30,7 +26,7 @@ class ItemAdapter(
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.bind(items[position], cardClickListener, actionListener, showAction)
+        holder.bind(items[position], cardClickListener, actionListener)
     }
 
     override fun getItemCount() = items.size
@@ -43,7 +39,7 @@ class ItemAdapter(
 
     class ItemViewHolder(private val itemV: View) : RecyclerView.ViewHolder(itemV) {
 
-        fun bind(item: Item, cardClickListener: (Item) -> Any, action: (Item) -> Any, showAction: Boolean) {
+        fun bind(item: Item, cardClickListener: (Item) -> Any, action: (Item) -> Any) {
             // Title
             itemV.item_title.text = item.title
 
@@ -83,30 +79,39 @@ class ItemAdapter(
             // Interested people
             itemV.item_hot.text = item.interestedUsers.size.toString()
 
-            // TODO Status info (mainly for the owner)
-            /*if (item.status == "Disabled") {
-                itemV.item_card.setCardBackgroundColor(ContextCompat.getColor(itemV.context, R.color.colorGrey))
-            }
-            if (item.status == "Bought") {
-                itemV.item_card.setCardBackgroundColor(ContextCompat.getColor(itemV.context, R.color.colorSecondaryLight))
-            }*/
-
-            // TODO hide action to prevent double rating
-            // Action
-            if (showAction) {
-                if (item.userId != Firebase.auth.currentUser?.uid) {
-                    if (item.boughtBy == Firebase.auth.currentUser?.uid) {
-                        (itemV.item_action as MaterialButton).icon = itemV.context.getDrawable(R.drawable.ic_star)
-                    } else if (item.interestedUsers.contains(Firebase.auth.currentUser?.uid)) {
-                        (itemV.item_action as MaterialButton).icon = itemV.context.getDrawable(R.drawable.ic_favourite)
-                    } else {
-                        (itemV.item_action as MaterialButton).icon = itemV.context.getDrawable(R.drawable.ic_favourite_out)
+            // Variable fields / action
+            when (item.userId) {
+                // Mine
+                Firebase.auth.currentUser?.uid -> {
+                    // TODO Status info (mainly for the owner) (comment?)
+                    when (item.status) {
+                        "Bought" -> {
+                            itemV.item_action.visibility = View.INVISIBLE
+                        }
                     }
                 }
-                itemV.item_action.setOnClickListener { action(item) }
-            } else {
-                itemV.item_action.visibility = View.INVISIBLE
+                // Other's
+                else -> {
+                    when (item.status) {
+                        "Enabled" -> {
+                            if (item.interestedUsers.contains(Firebase.auth.currentUser?.uid)) {
+                                (itemV.item_action as MaterialButton).icon = itemV.context.getDrawable(R.drawable.ic_favourite)
+                            } else {
+                                (itemV.item_action as MaterialButton).icon = itemV.context.getDrawable(R.drawable.ic_favourite_out)
+                            }
+                        }
+                        "Bought" -> {
+                            (itemV.item_action as MaterialButton).icon = itemV.context.getDrawable(R.drawable.ic_star)
+                            if (item.rating == "") {
+                                itemV.item_action.visibility = View.VISIBLE
+                            } else {
+                                itemV.item_action.visibility = View.INVISIBLE
+                            }
+                        }
+                    }
+                }
             }
+            itemV.item_action.setOnClickListener { action(item) }
             itemV.item_card.setOnClickListener { cardClickListener(item) }
         }
     }

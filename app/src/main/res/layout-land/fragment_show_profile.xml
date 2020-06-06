@@ -46,6 +46,32 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/profile_rating_card"
+            android:layout_width="144dp"
+            android:layout_height="36dp"
+            android:foregroundGravity="bottom"
+            android:translationY="18dp"
+            app:cardCornerRadius="18dp"
+            app:layout_constraintBottom_toBottomOf="@id/profile_card"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <RatingBar
+                android:id="@+id/profile_rating"
+                style="@style/Widget.AppCompat.RatingBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:isIndicator="true"
+                android:numStars="5"
+                android:rating="3.5"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
+                android:stepSize=".5" />
+
+        </com.google.android.material.card.MaterialCardView>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.Guideline

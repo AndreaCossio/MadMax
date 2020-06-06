@@ -62,7 +62,11 @@ class UserRateDialog : DialogFragment() {
         })
         userListener = userVM.listenOtherUser(requireArguments().getString("userId")!!)
         dialog_rate_button.setOnClickListener {
-            userVM.rateUser(requireContext(), userVM.getOtherUserData().value!!.userId, dialog_rate_rating_bar.rating).addOnSuccessListener {
+            userVM.rateUser(
+                requireContext(),
+                userVM.getOtherUserData().value!!.userId,
+                "${requireArguments().getString("itemId")!!}+/${dialog_rate_rating_bar.rating}+/${dialog_rate_comment.text}"
+            ).addOnSuccessListener {
                 displayMessage(requireContext(), "Successfully rated")
                 dismiss()
             }.addOnFailureListener {

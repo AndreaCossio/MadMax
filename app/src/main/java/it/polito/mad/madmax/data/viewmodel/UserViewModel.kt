@@ -83,7 +83,7 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    fun rateUser(context: Context, userId: String, rating: Float): Task<Transaction> {
+    fun rateUser(context: Context, userId: String, rating: String): Task<Transaction> {
         return repo.rateUser(userId, rating).addOnSuccessListener {
             // TODO better notification
             try {
