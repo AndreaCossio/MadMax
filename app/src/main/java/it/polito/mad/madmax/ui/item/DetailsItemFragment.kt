@@ -1,5 +1,6 @@
 package it.polito.mad.madmax.ui.item
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
@@ -57,6 +58,7 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         showProgress(requireActivity())
@@ -107,6 +109,26 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
 
         // Listen and observe item
         itemListener = itemsVM.listenItem(args.item.itemId)
+
+
+        /**
+         * Allow scrolling inside map
+         * */
+        item_transparent_image.setOnTouchListener(View.OnTouchListener { view, motionEvent ->
+            when (motionEvent.action){
+                MotionEvent.ACTION_DOWN -> {
+                    item_main_scroll_view.requestDisallowInterceptTouchEvent(true);
+                    // Disable touch on transparent view
+                    false;
+                }
+                MotionEvent.ACTION_UP -> {
+                    //view.performClick()
+                    item_main_scroll_view.requestDisallowInterceptTouchEvent(false);
+                    true
+                }
+                else -> true
+            }
+        })
     }
 
     override fun onDestroyView() {

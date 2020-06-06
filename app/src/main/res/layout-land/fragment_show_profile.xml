@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/profile_main_scroll_view"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -115,12 +117,26 @@
                 android:drawablePadding="36dp"
                 android:hint="@string/profile_phone" />
 
-            <fragment
-                android:id="@+id/profile_map_view"
-                android:name="com.google.android.gms.maps.SupportMapFragment"
+            <RelativeLayout
+                android:id="@+id/map_layout"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="32dp" />
+                android:layout_height="200dp">
+
+                <fragment
+                    android:id="@+id/profile_map_view"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="32dp" />
+
+                <ImageView
+                    android:id="@+id/profile_transparent_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/map_transparent"
+                    android:alpha="0.0"/>
+
+            </RelativeLayout>
 
         </LinearLayout>
 
