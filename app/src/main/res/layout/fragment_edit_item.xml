@@ -156,22 +156,24 @@
                 android:layout_marginEnd="6dp"
                 android:hint="@string/item_location"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/item_edit_location_map"
+                app:layout_constraintEnd_toStartOf="@+id/item_edit_location_button"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:startIconDrawable="@drawable/ic_location"
                 app:startIconTint="@color/colorPrimary">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <AutoCompleteTextView
                     android:id="@+id/item_edit_location"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPostalAddress" />
+                    android:inputType="textPostalAddress"
+                    android:maxLines="1"
+                    tools:ignore="LabelFor" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
-                android:id="@+id/item_edit_location_map"
+                android:id="@+id/item_edit_location_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/profile_location_button"

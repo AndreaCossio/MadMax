@@ -128,15 +128,12 @@
             android:hint="@string/item_category_main"
             android:paddingStart="60dp" />
 
-        <TextView
-            android:id="@+id/item_details_location"
-            style="@style/TextAppearance.MaterialComponents.Body1"
+        <fragment
+            android:id="@+id/item_map_view"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:drawableStart="@drawable/ic_location"
-            android:drawablePadding="36dp"
-            android:hint="@string/item_location" />
+            android:layout_height="200dp"
+            android:layout_marginTop="32dp" />
 
         <TextView
             android:id="@+id/item_details_expiry"
@@ -156,6 +153,7 @@
             android:layout_marginTop="32dp"
             android:drawableStart="@drawable/ic_profile_primary"
             android:drawablePadding="36dp" />
+
 
     </LinearLayout>
 
