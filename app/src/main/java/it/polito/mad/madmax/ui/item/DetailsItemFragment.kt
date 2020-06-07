@@ -117,7 +117,9 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
                                 }
                                 // Observe owner
                                 userVM.getOtherUserData().observe(viewLifecycleOwner, Observer { user ->
-                                    updateFields(item, user.name)
+                                    if (user.userId != "") {
+                                        updateFields(item, user.name)
+                                    }
                                 })
                                 userListener = userVM.listenOtherUser(item.userId)
                             }
