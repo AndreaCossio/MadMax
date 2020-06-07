@@ -51,6 +51,7 @@
     <string name="message_error_field_required">Sorry, this field is required</string>
     <string name="message_error_field_invalid_email">Sorry, this email is not valid</string>
     <string name="message_error_field_invalid_location">Sorry, this location is not valid</string>
+    <string name="message_error_field_date_future">Sorry, the expiration date must be future</string>
     <string name="message_error_intent">Request cancelled or something went wrong</string>
     <string name="message_error_gallery_app">Sorry, could not find any gallery app</string>
     <string name="message_error_cat">Cannot find this category</string>

@@ -149,8 +149,8 @@
             android:layout_marginTop="16dp">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/item_edit_location_layout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:id="@+id/item_edit_location_til"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="6dp"
@@ -176,11 +176,12 @@
                 android:id="@+id/item_edit_location_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
                 android:text="@string/profile_location_button"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/item_edit_location_til"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/item_edit_location_layout"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toEndOf="@+id/item_edit_location_til"
+                app:layout_constraintTop_toTopOf="@id/item_edit_location_til" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -207,7 +208,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="@string/item_category_main">
+            android:hint="@string/item_category_main"
+            app:startIconDrawable="@drawable/ic_bookmark"
+            app:startIconTint="@color/colorPrimary">
 
             <AutoCompleteTextView
                 android:id="@+id/item_edit_main_cat"
@@ -223,7 +226,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="@string/item_category_sub">
+            android:hint="@string/item_category_sub"
+            app:startIconDrawable="@drawable/ic_bookmark"
+            app:startIconTint="@color/colorPrimary">
 
             <AutoCompleteTextView
                 android:id="@+id/item_edit_sub_cat"

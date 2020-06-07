@@ -37,9 +37,7 @@ import it.polito.mad.madmax.data.model.Item
 import it.polito.mad.madmax.data.model.PlaceInfo
 import it.polito.mad.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.ui.MapDialog
-import it.polito.mad.madmax.ui.profile.EditProfileFragment
 import kotlinx.android.synthetic.main.fragment_edit_item.*
-import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -92,9 +90,13 @@ class EditItemFragment : Fragment(), AdapterView.OnItemClickListener {
         }
         item_edit_main_cat.onItemClickListener = this
 
+        // Attach change photo listener
         item_edit_change_photo.setOnClickListener {
             openPhotoDialog(requireContext(), requireActivity(), { a: String -> openDialog = a}, {captureImage()}, {getImageFromGallery()}, {removeImage()})
         }
+
+        // Address text listener
+        item_edit_location.addTextChangedListener(locationListener)
 
         // Map listener
         item_edit_location_button.setOnClickListener {
@@ -109,10 +111,6 @@ class EditItemFragment : Fragment(), AdapterView.OnItemClickListener {
             item_edit_location.setText(bundle.getString("address"))
         }
 
-        // Address text listener
-        item_edit_location.addTextChangedListener(locationListener)
-
-
         item_edit_expiry.setOnClickListener { showDatePicker() }
 
         // Display item data
@@ -123,6 +121,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemClickListener {
         super.onDestroyView()
         // Detach listener
         item_edit_change_photo.setOnClickListener(null)
+        item_edit_location.removeTextChangedListener(locationListener)
         item_edit_expiry.setOnClickListener(null)
         item_edit_card.removeOnLayoutChangeListener(cardRadiusConstrain)
     }
@@ -176,54 +175,6 @@ class EditItemFragment : Fragment(), AdapterView.OnItemClickListener {
         }
     }
 
-
-    /**
-     * AUTOCOMPLETE LISTENER
-     * */
-    private val locationListener = object : TextWatcher {
-
-        private lateinit var timer: Timer
-
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            if (this::timer.isInitialized) {
-                timer.cancel()
-            }
-        }
-
-        override fun afterTextChanged(s: Editable?) {
-            item_edit_location.dismissDropDown()
-            timer = Timer()
-            timer.schedule(object : TimerTask() {
-                override fun run() {
-                    context?.also { context ->
-                        if (s?.length!! > 3) {
-                            val jsonObjectRequest = JsonObjectRequest(
-                                Request.Method.GET,
-                                "https://photon.komoot.de/api/?q=${s}&limit=5".replace(" ", "%20"),
-                                null,
-                                Response.Listener { response ->
-                                    val cities = (Gson().fromJson(response["features"].toString(), object : TypeToken<ArrayList<PlaceInfo?>?>() {}.type) as ArrayList<PlaceInfo>).map { pi ->
-                                        "${pi.properties.name} ${pi.properties.city} ${pi.properties.state} ${pi.properties.country}"
-                                    }.toTypedArray()
-                                    item_edit_location.setAdapter(ArrayAdapter(context, com.google.android.material.R.layout.support_simple_spinner_dropdown_item, cities))
-                                    if (item_edit_location.isFocused) {
-                                        item_edit_location.showDropDown()
-                                    }
-                                },
-                                Response.ErrorListener { error ->
-                                    Log.d("EditProfileFragment.TAG", error.toString())
-                                }
-                            )
-                            Volley.newRequestQueue(context).add(jsonObjectRequest)
-                        }
-                    }
-                }
-            }, 500)
-        }
-    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_save, menu)
@@ -266,20 +217,28 @@ class EditItemFragment : Fragment(), AdapterView.OnItemClickListener {
         updateItem()
 
         var valid = true
-        for (field in setOf(item_edit_title, item_edit_price, item_edit_main_cat)) {
+        for (field in setOf(item_edit_title, item_edit_price, item_edit_main_cat, item_edit_expiry, item_edit_location)) {
             if (field.text.toString() == "") {
                 valid = false
                 field.error = getString(R.string.message_error_field_required)
+                field.requestFocus()
+            } else {
+                when(field) {
+                    item_edit_expiry -> {
+                        if (SimpleDateFormat("dd MMM yyy", Locale.UK).parse(item_edit_expiry.text.toString())!! < Date()) {
+                            item_edit_expiry.error = getString(R.string.message_error_field_date_future)
+                            valid = false
+                        }
+                    }
+                    item_edit_location -> {
+                        if (getLocationFromAddress(requireContext(), field.text.toString()) == null) {
+                            valid = false
+                            field.error = getString(R.string.message_error_field_invalid_location)
+                            field.requestFocus()
+                        }
+                    }
+                }
             }
-        }
-        if (item_edit_expiry.text.toString() != "") {
-            if (SimpleDateFormat("dd MMM yyy", Locale.UK).parse(item_edit_expiry.text.toString())!! < Date()) {
-                item_edit_expiry.error = "Date must be future"
-                valid = false
-            }
-        } else {
-            item_edit_expiry.error = getString(R.string.message_error_field_required)
-            valid = false
         }
         return valid
     }
@@ -288,11 +247,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemClickListener {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {
             if (it) {
                 createImageFile(requireContext()).also { file ->
-                    val photoUri = FileProvider.getUriForFile(
-                        requireContext(),
-                        getString(R.string.file_provider),
-                        file
-                    )
+                    val photoUri = FileProvider.getUriForFile(requireContext(), getString(R.string.file_provider), file)
                     tempItem.apply { photo = photoUri.toString() }
                     registerForActivityResult(ActivityResultContracts.TakePicture()) { taken ->
                         if (taken) {
@@ -377,7 +332,7 @@ class EditItemFragment : Fragment(), AdapterView.OnItemClickListener {
         item_edit_sub_cat.setText(tempItem.categorySub, false)
 
         // Update photo
-        if (tempItem.photo != "") {
+        item_edit_photo.post {
             Picasso.get().load(Uri.parse(tempItem.photo)).into(item_edit_photo, object : Callback {
                 override fun onSuccess() {
                     hideProgress(requireActivity())
@@ -388,14 +343,55 @@ class EditItemFragment : Fragment(), AdapterView.OnItemClickListener {
                     hideProgress(requireActivity())
                 }
             })
-        } else {
-            item_edit_photo.setImageDrawable(requireContext().getDrawable(R.drawable.ic_camera))
-            hideProgress(requireActivity())
+        }
+    }
+
+    private val locationListener = object : TextWatcher {
+
+        private lateinit var timer: Timer
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            if (this::timer.isInitialized) {
+                timer.cancel()
+            }
+        }
+
+        override fun afterTextChanged(s: Editable?) {
+            item_edit_location.dismissDropDown()
+            timer = Timer()
+            timer.schedule(object : TimerTask() {
+                override fun run() {
+                    context?.also { context ->
+                        if (s?.length!! > 3) {
+                            val jsonObjectRequest = JsonObjectRequest(
+                                Request.Method.GET,
+                                "https://photon.komoot.de/api/?q=${s}&limit=5".replace(" ", "%20"),
+                                null,
+                                Response.Listener { response ->
+                                    val cities = (Gson().fromJson(response["features"].toString(), object : TypeToken<ArrayList<PlaceInfo?>?>() {}.type) as ArrayList<PlaceInfo>).map { pi ->
+                                        "${pi.properties.name} ${pi.properties.city} ${pi.properties.state} ${pi.properties.country}"
+                                    }.toTypedArray()
+                                    item_edit_location.setAdapter(ArrayAdapter(context, com.google.android.material.R.layout.support_simple_spinner_dropdown_item, cities))
+                                    if (item_edit_location.isFocused) {
+                                        item_edit_location.showDropDown()
+                                    }
+                                },
+                                Response.ErrorListener { error ->
+                                    Log.d("EditProfileFragment.TAG", error.toString())
+                                }
+                            )
+                            Volley.newRequestQueue(context).add(jsonObjectRequest)
+                        }
+                    }
+                }
+            }, 500)
         }
     }
 
     // Companion
     companion object {
-        const val TAG = "MM_EDIT_ITEM"
+        private const val TAG = "MM_EDIT_ITEM"
     }
 }

@@ -1,6 +1,7 @@
 package it.polito.mad.madmax.ui.item
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,12 +10,16 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.messaging.FirebaseMessaging
 import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.Item
+import it.polito.mad.madmax.data.repository.MyFirebaseMessagingService.Companion.createNotification
+import it.polito.mad.madmax.data.repository.MyFirebaseMessagingService.Companion.sendNotification
 import it.polito.mad.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
 import it.polito.mad.madmax.ui.AutoFitGridLayoutManager
 import kotlinx.android.synthetic.main.fragment_item_list.*
+import org.json.JSONException
 
 class ItemsOfInterestFragment : Fragment() {
 
@@ -77,17 +82,25 @@ class ItemsOfInterestFragment : Fragment() {
 
     private var actionInterest = { item: Item ->
         if (!item.interestedUsers.contains(userVM.getCurrentUserId())) {
-            itemsVM.notifyInterest(requireContext(), item, userVM.getCurrentUserId()).addOnSuccessListener {
+            itemsVM.notifyInterest(item, userVM.getCurrentUserId()).addOnSuccessListener {
+                FirebaseMessaging.getInstance().subscribeToTopic("/topics/${item.itemId}")
+                try {
+                    sendNotification(requireContext(), createNotification(item.userId, requireContext().getString(R.string.app_name), "Someone is interested in your article: ${item.title}"))
+                } catch (e: JSONException) {
+                    Log.e(TAG, "Failed to send notification.", e)
+                }
                 displayMessage(requireContext(), "Successfully showed interest")
-            }.addOnFailureListener {
-                displayMessage(requireContext(), "Failed to show interest")
-            }
+            }.addOnFailureListener { displayMessage(requireContext(), "Failed to show interest") }
         } else {
-            itemsVM.removeInterest(requireContext(), item, userVM.getCurrentUserId()).addOnSuccessListener {
+            itemsVM.removeInterest(item, userVM.getCurrentUserId()).addOnSuccessListener {
+                try {
+                    sendNotification(requireContext(), createNotification(item.userId, requireContext().getString(R.string.app_name),"Someone is no more interested in your article: ${item.title}"))
+                } catch (e: JSONException) {
+                    Log.e(TAG, "Failed to send notification.", e)
+                }
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("/topics/${item.itemId}")
                 displayMessage(requireContext(), "Successfully removed interest")
-            }.addOnFailureListener {
-                displayMessage(requireContext(), "Failed to remove interest")
-            }
+            }.addOnFailureListener { displayMessage(requireContext(), "Failed to remove interest") }
         }
     }
 

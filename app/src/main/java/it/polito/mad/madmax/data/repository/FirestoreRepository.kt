@@ -104,10 +104,10 @@ class FirestoreRepository {
         }
     }
 
-    fun deleteItem(item: Item): Task<Transaction> {
+    fun deleteItem(itemId: String, userId: String): Task<Transaction> {
         return db.runTransaction { transaction ->
-            transaction.delete(db.document("items/${item.itemId}"))
-            transaction.delete(db.document("users/${item.userId}/items/${item.itemId}"))
+            transaction.delete(db.document("items/$itemId"))
+            transaction.delete(db.document("users/$userId/items/$itemId"))
         }
     }
 

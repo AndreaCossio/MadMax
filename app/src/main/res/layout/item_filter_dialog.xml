@@ -45,7 +45,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:hint="@string/dialog_filter_min_price"
-                    app:endIconMode="clear_text">
+                    app:endIconMode="clear_text"
+                    app:startIconDrawable="@drawable/ic_price"
+                    app:startIconTint="@color/colorPrimary">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/filter_dialog_min_price"
@@ -61,7 +63,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:hint="@string/dialog_filter_max_price"
-                    app:endIconMode="clear_text">
+                    app:endIconMode="clear_text"
+                    app:startIconDrawable="@drawable/ic_price"
+                    app:startIconTint="@color/colorPrimary">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/filter_dialog_max_price"
@@ -76,7 +80,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:hint="@string/item_category_main">
+                    android:hint="@string/item_category_main"
+                    app:startIconDrawable="@drawable/ic_bookmark"
+                    app:startIconTint="@color/colorPrimary">
 
                     <AutoCompleteTextView
                         android:id="@+id/filter_dialog_main_cat"
@@ -92,7 +98,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:hint="@string/item_category_sub">
+                    android:hint="@string/item_category_sub"
+                    app:startIconDrawable="@drawable/ic_bookmark"
+                    app:startIconTint="@color/colorPrimary">
 
                     <AutoCompleteTextView
                         android:id="@+id/filter_dialog_sub_cat"

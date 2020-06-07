@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Transaction
-import com.google.firebase.messaging.FirebaseMessaging
 import it.polito.mad.madmax.R
 import it.polito.mad.madmax.data.model.Item
 import it.polito.mad.madmax.data.model.ItemFilter
@@ -53,54 +52,6 @@ class ItemViewModel: ViewModel() {
         return repo.getNewItemId()
     }
 
-    fun updateItem(newItem: Item, photoChanged: Boolean): Task<Void> {
-        return if (newItem.photo == "" || !photoChanged) {
-            repo.writeItem(newItem.itemId, newItem).addOnFailureListener { e ->
-                Log.e(TAG, "Failed to update item", e)
-            }
-        } else {
-            repo.writeItemPhoto(newItem.itemId, Uri.parse(newItem.photo)).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    newItem.apply { photo = task.result.toString() }
-                }
-            }.continueWithTask {
-                repo.writeItem(newItem.itemId, newItem).addOnFailureListener { e ->
-                    Log.e(TAG, "Failed to update item", e)
-                }
-            }
-        }
-    }
-
-    fun enableItem(context: Context, item: Item, userId: String): Task<Transaction> {
-        return repo.enableItem(item.itemId, userId).addOnSuccessListener {
-            try {
-                sendNotification(context, createNotification(item.itemId, context.getString(R.string.app_name), "The item you were interested in, is available again: ${item.title}"))
-            } catch (e: JSONException) {
-                Log.e(TAG, "Failed to send notification.", e)
-            }
-        }
-    }
-
-    fun disableItem(context: Context, item: Item, userId: String): Task<Transaction> {
-        return repo.disableItem(item.itemId, userId).addOnSuccessListener {
-            try {
-                sendNotification(context, createNotification(item.itemId, context.getString(R.string.app_name), "The item you were interested in, is no longer available: ${item.title}"))
-            } catch (e: JSONException) {
-                Log.e(TAG, "Failed to send notification.", e)
-            }
-        }
-    }
-
-    fun deleteItem(context: Context, item: Item): Task<Transaction> {
-        return repo.deleteItem(item).addOnSuccessListener {
-            try {
-                sendNotification(context, createNotification(item.itemId, context.getString(R.string.app_name), "The item you were interested in, is no longer available: ${item.title}"))
-            } catch (e: JSONException) {
-                Log.e(TAG, "Failed to send notification.", e)
-            }
-        }
-    }
-
     fun listenItem(itemId: String): ListenerRegistration {
         return repo.getItem(itemId).addSnapshotListener { value, e ->
             e?.also {
@@ -141,25 +92,53 @@ class ItemViewModel: ViewModel() {
         }
     }
 
-    fun notifyInterest(context: Context, item: Item, userId: String): Task<Transaction> {
-        return repo.notifyInterest(item, userId).addOnSuccessListener {
-            FirebaseMessaging.getInstance().subscribeToTopic("/topics/${item.itemId}")
-            try {
-                sendNotification(context, createNotification(item.userId, context.getString(R.string.app_name), "Someone is interested in your article: ${item.title}"))
-            } catch (e: JSONException) {
-                Log.e(TAG, "Failed to send notification.", e)
+    fun updateItem(newItem: Item, photoChanged: Boolean): Task<Void> {
+        return if (newItem.photo == "" || !photoChanged) {
+            repo.writeItem(newItem.itemId, newItem).addOnFailureListener { e ->
+                Log.e(TAG, "Failed to update item", e)
+            }
+        } else {
+            repo.writeItemPhoto(newItem.itemId, Uri.parse(newItem.photo)).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    newItem.apply { photo = task.result.toString() }
+                } else {
+                    Log.e(TAG, "Failed to upload photo", task.exception)
+                }
+            }.continueWithTask {
+                repo.writeItem(newItem.itemId, newItem).addOnFailureListener { e ->
+                    Log.e(TAG, "Failed to update item", e)
+                }
             }
         }
     }
 
-    fun removeInterest(context: Context, item: Item, userId: String): Task<Transaction> {
-        return repo.removeInterest(item, userId).addOnSuccessListener {
-            try {
-                sendNotification(context, createNotification(item.userId, context.getString(R.string.app_name),"Someone is no more interested in your article: ${item.title}"))
-            } catch (e: JSONException) {
-                Log.e(TAG, "Failed to send notification.", e)
-            }
-            FirebaseMessaging.getInstance().unsubscribeFromTopic("/topics/${item.itemId}")
+    fun enableItem(itemId: String, userId: String): Task<Transaction> {
+        return repo.enableItem(itemId, userId).addOnFailureListener {
+            Log.e(TAG, "Failed to enable item.", it)
+        }
+    }
+
+    fun disableItem(itemId: String, userId: String): Task<Transaction> {
+        return repo.disableItem(itemId, userId).addOnFailureListener {
+            Log.e(TAG, "Failed to disable item.", it)
+        }
+    }
+
+    fun deleteItem(itemId: String, userId: String): Task<Transaction> {
+        return repo.deleteItem(itemId, userId).addOnFailureListener {
+            Log.e(TAG, "Failed to delete item.", it)
+        }
+    }
+
+    fun notifyInterest(item: Item, userId: String): Task<Transaction> {
+        return repo.notifyInterest(item, userId).addOnFailureListener {
+            Log.e(TAG, "Failed to show interest.", it)
+        }
+    }
+
+    fun removeInterest(item: Item, userId: String): Task<Transaction> {
+        return repo.removeInterest(item, userId).addOnFailureListener {
+            Log.e(TAG, "Failed to remove interest.", it)
         }
     }
 

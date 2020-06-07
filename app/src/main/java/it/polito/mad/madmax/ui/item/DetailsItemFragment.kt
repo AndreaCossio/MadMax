@@ -3,6 +3,7 @@ package it.polito.mad.madmax.ui.item
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
@@ -20,15 +21,19 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.messaging.FirebaseMessaging
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import it.polito.mad.madmax.*
 import it.polito.mad.madmax.data.model.Item
+import it.polito.mad.madmax.data.repository.MyFirebaseMessagingService.Companion.createNotification
+import it.polito.mad.madmax.data.repository.MyFirebaseMessagingService.Companion.sendNotification
 import it.polito.mad.madmax.data.viewmodel.ItemViewModel
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
 import it.polito.mad.madmax.ui.MapDialog
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_details_item.*
+import org.json.JSONException
 
 class DetailsItemFragment : Fragment(),OnMapReadyCallback {
 
@@ -185,7 +190,11 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
             when (status) {
                 "Enabled" -> menu.findItem(R.id.menu_disable).title = "Disable"
                 "Disabled" -> menu.findItem(R.id.menu_disable).title = "Enable"
-                "Bought" -> menu.findItem(R.id.menu_disable).isVisible = false
+                "Bought" -> {
+                    menu.findItem(R.id.menu_edit).isVisible = false
+                    menu.findItem(R.id.menu_delete).isVisible = false
+                    menu.findItem(R.id.menu_disable).isVisible = false
+                }
             }
         }
     }
@@ -194,25 +203,13 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
         return when (item.itemId) {
             R.id.menu_disable -> {
                 when (item.title) {
-                    "Enable" -> {
-                        itemsVM.enableItem(requireContext(), args.item, userVM.getCurrentUserId()).addOnSuccessListener {
-                            displayMessage(requireContext(), "Successfully enabled item")
-                        }.addOnFailureListener {
-                            displayMessage(requireContext(), "Error enabling item")
-                        }
-                    }
-                    "Disable" -> {
-                        itemsVM.disableItem(requireContext(), args.item, userVM.getCurrentUserData().value!!.userId).addOnSuccessListener {
-                            displayMessage(requireContext(), "Successfully disabled item")
-                        }.addOnFailureListener {
-                            displayMessage(requireContext(), "Error disabling item")
-                        }
-                    }
+                    "Enable" -> enableItem(args.item)
+                    "Disable" -> disableItem(args.item)
                 }
                 true
             }
             R.id.menu_delete -> {
-                itemsVM.deleteItem(requireContext(), args.item)
+                deleteItem(args.item)
                 true
             }
             R.id.menu_edit -> {
@@ -243,22 +240,17 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
         updateMarker(item.location)
 
         // Photo
-        item_details_photo.apply {
-            if (item.photo != "") {
-                Picasso.get().load(Uri.parse(item.photo)).into(item_details_photo, object: Callback {
-                    override fun onSuccess() {
-                        hideProgress(requireActivity())
-                    }
+        item_details_photo.post {
+            Picasso.get().load(Uri.parse(item.photo)).into(item_details_photo, object: Callback {
+                override fun onSuccess() {
+                    hideProgress(requireActivity())
+                }
 
-                    override fun onError(e: Exception?) {
-                        item_details_photo.setImageDrawable(requireContext().getDrawable(R.drawable.ic_camera))
-                        hideProgress(requireActivity())
-                    }
-                })
-            } else {
-                item_details_photo.setImageDrawable(requireContext().getDrawable(R.drawable.ic_camera))
-                hideProgress(requireActivity())
-            }
+                override fun onError(e: Exception?) {
+                    item_details_photo.setImageDrawable(requireContext().getDrawable(R.drawable.ic_camera))
+                    hideProgress(requireActivity())
+                }
+            })
         }
 
         // Owner / Buyer / Interested users
@@ -304,27 +296,11 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
         // FAB
         if (item.userId != userVM.getCurrentUserId() && item.status != "Bought") {
             if (!item.interestedUsers.contains(userVM.getCurrentUserId())) {
-                showFab(requireActivity(), View.OnClickListener { showInterest() }, requireContext().getDrawable(R.drawable.ic_favourite_out))
+                showFab(requireActivity(), View.OnClickListener { showInterest(item) }, requireContext().getDrawable(R.drawable.ic_favourite_out))
             } else {
-                showFab(requireActivity(), View.OnClickListener { removeInterest() }, requireContext().getDrawable(R.drawable.ic_favourite))
+                showFab(requireActivity(), View.OnClickListener { removeInterest(item) }, requireContext().getDrawable(R.drawable.ic_favourite))
             }
             requireActivity().main_scroll_view.viewTreeObserver.addOnScrollChangedListener(scrollListener)
-        }
-    }
-
-    private fun showInterest() {
-        itemsVM.notifyInterest(requireContext(), args.item, userVM.getCurrentUserId()).addOnSuccessListener {
-            displayMessage(requireContext(), "Successfully showed interest")
-        }.addOnFailureListener {
-            displayMessage(requireContext(), "Failed to show interest")
-        }
-    }
-
-    private fun removeInterest() {
-        itemsVM.removeInterest(requireContext(), args.item, userVM.getCurrentUserId()).addOnSuccessListener {
-            displayMessage(requireContext(), "Successfully removed interest")
-        }.addOnFailureListener {
-            displayMessage(requireContext(), "Failed to remove interest")
         }
     }
 
@@ -377,6 +353,63 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
             }
             start = requireActivity().main_scroll_view.scrollY
         }
+    }
+
+    private fun enableItem(item: Item) {
+        itemsVM.enableItem(item.itemId, userVM.getCurrentUserId()).addOnSuccessListener {
+            try {
+                sendNotification(requireContext(), createNotification(item.itemId, requireContext().getString(R.string.app_name), "The item you were interested in, is available again: ${item.title}"))
+            } catch (e: JSONException) {
+                Log.e(TAG, "Failed to send notification.", e)
+            }
+            displayMessage(requireContext(), "Successfully enabled item")
+        }.addOnFailureListener { displayMessage(requireContext(), "Error enabling item") }
+    }
+
+    private fun disableItem(item: Item) {
+        itemsVM.disableItem(item.itemId, userVM.getCurrentUserId()).addOnSuccessListener {
+            try {
+                sendNotification(requireContext(), createNotification(item.itemId, requireContext().getString(R.string.app_name), "The item you were interested in, is no longer available: ${item.title}"))
+            } catch (e: JSONException) {
+                Log.e(TAG, "Failed to send notification.", e)
+            }
+            displayMessage(requireContext(), "Successfully disabled item")
+        }.addOnFailureListener { displayMessage(requireContext(), "Error disabling item") }
+    }
+
+    private fun deleteItem(item: Item) {
+        itemsVM.deleteItem(item.itemId, userVM.getCurrentUserId()).addOnSuccessListener {
+            try {
+                sendNotification(requireContext(), createNotification(item.itemId, requireContext().getString(R.string.app_name), "The item you were interested in, is no longer available: ${item.title}"))
+            } catch (e: JSONException) {
+                Log.e(TAG, "Failed to send notification.", e)
+            }
+            displayMessage(requireContext(), "Successfully deleted item")
+        }.addOnFailureListener { displayMessage(requireContext(), "Error deleting item") }
+    }
+
+    private fun showInterest(item: Item) {
+        itemsVM.notifyInterest(item, userVM.getCurrentUserId()).addOnSuccessListener {
+            FirebaseMessaging.getInstance().subscribeToTopic("/topics/${item.itemId}")
+            try {
+                sendNotification(requireContext(), createNotification(item.userId, requireContext().getString(R.string.app_name), "Someone is interested in your article: ${item.title}"))
+            } catch (e: JSONException) {
+                Log.e(TAG, "Failed to send notification.", e)
+            }
+            displayMessage(requireContext(), "Successfully showed interest")
+        }.addOnFailureListener { displayMessage(requireContext(), "Failed to show interest") }
+    }
+
+    private fun removeInterest(item: Item) {
+        itemsVM.removeInterest(item, userVM.getCurrentUserId()).addOnSuccessListener {
+            try {
+                sendNotification(requireContext(), createNotification(item.userId, requireContext().getString(R.string.app_name),"Someone is no more interested in your article: ${item.title}"))
+            } catch (e: JSONException) {
+                Log.e(TAG, "Failed to send notification.", e)
+            }
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("/topics/${item.itemId}")
+            displayMessage(requireContext(), "Successfully removed interest")
+        }.addOnFailureListener { displayMessage(requireContext(), "Failed to remove interest") }
     }
 
     // Companion
