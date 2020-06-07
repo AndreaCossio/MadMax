@@ -48,7 +48,7 @@ class UsersListFragment : Fragment() {
         // Init recyclerview
         users_list_rv.apply {
             setHasFixedSize(false)
-            layoutManager = AutoFitGridLayoutManager(requireContext(), 600.toPx())
+            layoutManager = AutoFitGridLayoutManager(requireContext(), 300.toPx())
             adapter = usersAdapter
         }
 

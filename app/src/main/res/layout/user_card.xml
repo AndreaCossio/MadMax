@@ -3,27 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/user_card"
     android:layout_width="match_parent"
-    android:layout_height="96dp"
+    android:layout_height="wrap_content"
     android:layout_marginStart="16dp"
     android:layout_marginTop="16dp"
     android:layout_marginEnd="16dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="16dp">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/user_photo_container"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
+            android:layout_height="72dp"
             app:cardCornerRadius="36dp"
             app:cardPreventCornerOverlap="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toStartOf="@+id/user_card_name"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -50,21 +47,22 @@
             style="@style/TextAppearance.MaterialComponents.Headline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:hint="@string/profile_name"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/user_sell"
             app:layout_constraintStart_toEndOf="@+id/user_photo_container"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <Button
             android:id="@+id/user_sell"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
+            android:layout_marginTop="16dp"
             android:text="@string/button_sell_item"
+            app:layout_constraintStart_toEndOf="@id/user_photo_container"
+            app:layout_constraintTop_toBottomOf="@id/user_card_name"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
