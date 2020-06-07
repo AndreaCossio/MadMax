@@ -63,6 +63,18 @@ class MapDialog : DialogFragment(), OnMapReadyCallback {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(getString(R.string.map_dialog_state), location)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        savedInstanceState?.getString(getString(R.string.map_dialog_state), location)?.also {
+            location = it
+        }
+    }
+
     @SuppressLint("MissingPermission")
     override fun onMapReady(p0: GoogleMap?) {
         p0?.apply {

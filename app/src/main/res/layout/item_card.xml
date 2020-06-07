@@ -147,6 +147,38 @@
                 app:layout_constraintTop_toBottomOf="@id/item_category"
                 app:strokeWidth="0dp" />
 
+            <LinearLayout
+                android:id="@+id/item_rating_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/item_action"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/item_action">
+
+                <TextView
+                    android:id="@+id/item_comment"
+                    style="@style/TextAppearance.MaterialComponents.Body2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="160dp"
+                    android:maxLines="1"
+                    android:text="@string/item_comment"
+                    android:textStyle="italic" />
+
+                <RatingBar
+                    android:id="@+id/item_rating"
+                    style="@style/Widget.AppCompat.RatingBar.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:isIndicator="true"
+                    android:numStars="5" />
+
+            </LinearLayout>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

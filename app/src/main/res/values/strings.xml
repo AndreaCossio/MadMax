@@ -10,6 +10,7 @@
     <string name="edit_profile_dialog_state">edit_profile_dialog_state</string>
     <string name="edit_item_state">edit_item_state</string>
     <string name="edit_item_dialog_state">edit_item_dialog_state</string>
+    <string name="map_dialog_state">map_dialog_state</string>
 
     <!-- NAVIGATION -->
     <string name="title_show_profile_fragment">My Profile</string>
@@ -49,10 +50,10 @@
     <!-- Error -->
     <string name="message_error_field_required">Sorry, this field is required</string>
     <string name="message_error_field_invalid_email">Sorry, this email is not valid</string>
+    <string name="message_error_field_invalid_location">Sorry, this location is not valid</string>
     <string name="message_error_intent">Request cancelled or something went wrong</string>
     <string name="message_error_gallery_app">Sorry, could not find any gallery app</string>
     <string name="message_error_cat">Cannot find this category</string>
-    <string name="message_error_invalid_location">Sorry, this location is not valid</string>
 
     <!-- DIALOGS -->
     <string name="photo_dialog_ok">OK</string>
@@ -72,7 +73,6 @@
     <string name="dialog_change_remove">Remove photo</string>
     <string name="dialog_rate_title">User rating</string>
     <string name="dialog_rate_description">You can give a rating to the user that sold this item to you</string>
-    <string name="dialog_rate_comment">Comment</string>
     <string name="dialog_rate_button">Rate</string>
 
     <!-- CONTENT DESCRIPTIONS -->
@@ -102,6 +102,7 @@
     <string name="item_title">Title</string>
     <string name="item_general_info">General Information</string>
     <string name="item_description">Description</string>
+    <string name="item_comment">Not reviewed yet</string>
     <string name="item_category_main">Category</string>
     <string name="item_category_sub">Sub Category</string>
     <string name="item_price">Price</string>

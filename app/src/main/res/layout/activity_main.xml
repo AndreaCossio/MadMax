@@ -83,7 +83,8 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
             android:visibility="gone"
-            app:srcCompat="@drawable/ic_add" />
+            app:srcCompat="@drawable/ic_add"
+            app:tint="@color/iconOnPrimary" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

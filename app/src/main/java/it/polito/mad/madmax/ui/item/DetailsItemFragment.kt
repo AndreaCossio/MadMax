@@ -269,7 +269,7 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
 
     // Companion
     companion object {
-        const val TAG = "MM_DETAILS_ITEM"
+        private const val TAG = "MM_DETAILS_ITEM"
     }
 
     override fun onMapReady(p0: GoogleMap?) {

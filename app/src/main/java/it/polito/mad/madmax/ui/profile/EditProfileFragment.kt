@@ -178,33 +178,31 @@ class EditProfileFragment : Fragment() {
         }
     }
 
-    // TODO improve location validation (error message icon not shown)
     private fun validateFields(): Boolean {
         // Load modified user data
         updateUser()
 
         var valid = true
-        for (field in setOf(profile_edit_email, profile_edit_name)) {
-            if (field == profile_edit_email && !isEmailValid(field.text.toString())) {
+        for (field in setOf(profile_edit_email, profile_edit_name, profile_edit_location)) {
+            if (field.text.toString() == "") {
                 valid = false
-                field.error = getString(R.string.message_error_field_invalid_email)
+                field.error = getString(R.string.message_error_field_required)
+                field.requestFocus()
             } else {
-                if (field.text.toString() == "") {
-                    valid = false
-                    field.error = getString(R.string.message_error_field_required)
-                }
-            }
-        }
-        if (valid) {
-            if (profile_edit_location.text.toString() == "") {
-                valid = false
-                profile_edit_location.error = getString(R.string.message_error_field_required)
-                profile_edit_location.requestFocus()
-            } else {
-                getLocationFromAddress(requireContext(), profile_edit_location.text.toString()) ?: run {
-                    valid = false
-                    profile_edit_location.error = getString(R.string.message_error_invalid_location)
-                    profile_edit_location.requestFocus()
+                when (field) {
+                    profile_edit_email -> {
+                        if (!isEmailValid(field.text.toString())) {
+                            valid = false
+                            field.error = getString(R.string.message_error_field_invalid_email)
+                        }
+                    }
+                    profile_edit_location -> {
+                        if (getLocationFromAddress(requireContext(), field.text.toString()) == null) {
+                            valid = false
+                            field.error = getString(R.string.message_error_field_invalid_location)
+                            field.requestFocus()
+                        }
+                    }
                 }
             }
         }
@@ -275,28 +273,20 @@ class EditProfileFragment : Fragment() {
 
         // Update photo
         profile_edit_photo.post {
-            if (tempUser.photo != "") {
-                Picasso.get().load(Uri.parse(tempUser.photo)).into(profile_edit_photo, object : Callback {
-                    override fun onSuccess() {
-                        profile_edit_photo.translationY = 0F
-                        hideProgress(requireActivity())
-                    }
-
-                    override fun onError(e: Exception?) {
-                        profile_edit_photo.apply {
-                            translationY = measuredHeight / 6F
-                            setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
-                        }
-                        hideProgress(requireActivity())
-                    }
-                })
-            } else {
-                profile_edit_photo.apply {
-                    translationY = measuredHeight / 6F
-                    setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
+            Picasso.get().load(Uri.parse(tempUser.photo)).into(profile_edit_photo, object : Callback {
+                override fun onSuccess() {
+                    profile_edit_photo.translationY = 0F
+                    hideProgress(requireActivity())
                 }
-                hideProgress(requireActivity())
-            }
+
+                override fun onError(e: Exception?) {
+                    profile_edit_photo.apply {
+                        translationY = measuredHeight / 6F
+                        setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
+                    }
+                    hideProgress(requireActivity())
+                }
+            })
         }
     }
 

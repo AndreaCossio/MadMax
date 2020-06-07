@@ -85,7 +85,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:hint="@string/dialog_rate_comment"
+                    android:hint="@string/item_comment"
                     app:endIconMode="clear_text">
 
                     <com.google.android.material.textfield.TextInputEditText
