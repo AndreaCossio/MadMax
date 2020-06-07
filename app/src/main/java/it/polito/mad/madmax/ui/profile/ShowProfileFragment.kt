@@ -3,6 +3,7 @@ package it.polito.mad.madmax.ui.profile
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
@@ -25,6 +26,7 @@ import it.polito.mad.madmax.data.viewmodel.UserViewModel
 import it.polito.mad.madmax.ui.MapDialog
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_show_profile.*
+import java.io.IOException
 
 class ShowProfileFragment : Fragment(), OnMapReadyCallback {
 
@@ -193,9 +195,14 @@ class ShowProfileFragment : Fragment(), OnMapReadyCallback {
         if (location != "") {
             gMap?.apply {
                 clear()
-                getLocationFromAddress(requireContext(), location)?.also { loc ->
-                    addMarker(MarkerOptions().position(loc))
-                    animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15F))
+                try {
+                    getLocationFromAddress(requireContext(), location)?.also { loc ->
+                        addMarker(MarkerOptions().position(loc))
+                        animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15F))
+                    }
+                } catch (e: IOException) {
+                    Log.d(TAG, "Couldn't retrieve location")
+                    displayMessage(requireContext(), "Cannot access geocoder service")
                 }
                 args.userId?.also {
                     setOnMapClickListener {

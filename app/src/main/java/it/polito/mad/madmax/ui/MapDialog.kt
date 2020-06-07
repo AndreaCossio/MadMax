@@ -21,9 +21,11 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import it.polito.mad.madmax.R
+import it.polito.mad.madmax.displayMessage
 import it.polito.mad.madmax.getAddressFromLocation
 import it.polito.mad.madmax.getLocationFromAddress
 import kotlinx.android.synthetic.main.map_dialog.*
+import java.io.IOException
 
 class MapDialog : DialogFragment(), OnMapReadyCallback {
 
@@ -91,13 +93,18 @@ class MapDialog : DialogFragment(), OnMapReadyCallback {
                         map.isMyLocationEnabled = true
                         //map.isMyLocationButtonEnabled = true
                         if (!isEditMode) {
-                            getLocationFromAddress(requireContext(), location)?.also { loc ->
-                                map.addPolyline(PolylineOptions().apply {
-                                    add(LatLng(myLoc.latitude, myLoc.longitude), loc)
-                                    color(Color.GREEN)
-                                    width(10F)
-                                    geodesic(false)
-                                })
+                            try {
+                                getLocationFromAddress(requireContext(), location)?.also { loc ->
+                                    map.addPolyline(PolylineOptions().apply {
+                                        add(LatLng(myLoc.latitude, myLoc.longitude), loc)
+                                        color(Color.GREEN)
+                                        width(10F)
+                                        geodesic(false)
+                                    })
+                                }
+                            } catch (e: IOException) {
+                                Log.d(TAG, "Couldn't retrieve location")
+                                displayMessage(requireContext(), "Cannot access geocoder service")
                             }
                         }
                     }.addOnFailureListener { e ->
@@ -112,9 +119,17 @@ class MapDialog : DialogFragment(), OnMapReadyCallback {
             if (location != "") {
                 map.apply {
                     clear()
-                    getLocationFromAddress(requireContext(), location)?.also { loc ->
-                        addMarker(MarkerOptions().position(loc).title(location)).showInfoWindow()
-                        animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15F))
+                    try {
+                        getLocationFromAddress(requireContext(), location)?.also { loc ->
+                            addMarker(MarkerOptions().position(loc).title(location)).showInfoWindow()
+                            animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15F))
+                        }
+                    } catch (e: IOException) {
+                        Log.d(TAG, "Couldn't retrieve location")
+                        displayMessage(
+                            requireContext(),
+                            "Cannot access geocoder service"
+                        )
                     }
                 }
             } else {
@@ -123,11 +138,16 @@ class MapDialog : DialogFragment(), OnMapReadyCallback {
 
             // On click, change current selected location
             map.setOnMapClickListener { newLoc ->
-                location = getAddressFromLocation(requireContext(), newLoc)
-                map.apply {
-                    clear()
-                    addMarker(MarkerOptions().position(newLoc).title(location)).showInfoWindow()
-                    animateCamera(CameraUpdateFactory.newLatLngZoom(newLoc, 15F))
+                try {
+                    location = getAddressFromLocation(requireContext(), newLoc)
+                    map.apply {
+                        clear()
+                        addMarker(MarkerOptions().position(newLoc).title(location)).showInfoWindow()
+                        animateCamera(CameraUpdateFactory.newLatLngZoom(newLoc, 15F))
+                    }
+                } catch (e: IOException) {
+                    Log.d(TAG, "Couldn't retrieve address")
+                    displayMessage(requireContext(), "Cannot access geocoder service")
                 }
             }
         }

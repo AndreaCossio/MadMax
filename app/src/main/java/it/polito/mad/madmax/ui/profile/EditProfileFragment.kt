@@ -32,6 +32,7 @@ import it.polito.mad.madmax.data.model.User
 import it.polito.mad.madmax.data.viewmodel.UserViewModel
 import it.polito.mad.madmax.ui.MapDialog
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
+import java.io.IOException
 import java.util.*
 
 class EditProfileFragment : Fragment() {
@@ -197,10 +198,15 @@ class EditProfileFragment : Fragment() {
                         }
                     }
                     profile_edit_location -> {
-                        if (getLocationFromAddress(requireContext(), field.text.toString()) == null) {
-                            valid = false
-                            field.error = getString(R.string.message_error_field_invalid_location)
-                            field.requestFocus()
+                        try {
+                            if (getLocationFromAddress(requireContext(), field.text.toString()) == null) {
+                                valid = false
+                                field.error = getString(R.string.message_error_field_invalid_location)
+                                field.requestFocus()
+                            }
+                        } catch (e: IOException) {
+                            Log.d(TAG, "Couldn't retrieve location")
+                            displayMessage(requireContext(), "Cannot access geocoder service")
                         }
                     }
                 }

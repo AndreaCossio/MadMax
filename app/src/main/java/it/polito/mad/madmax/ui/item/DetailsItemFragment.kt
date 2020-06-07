@@ -34,6 +34,7 @@ import it.polito.mad.madmax.ui.MapDialog
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_details_item.*
 import org.json.JSONException
+import java.io.IOException
 
 class DetailsItemFragment : Fragment(),OnMapReadyCallback {
 
@@ -310,9 +311,14 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
         if (location != "") {
             gMap?.apply {
                 clear()
-                getLocationFromAddress(requireContext(), location)?.also { loc ->
-                    addMarker(MarkerOptions().position(loc))
-                    animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15F))
+                try {
+                    getLocationFromAddress(requireContext(), location)?.also { loc ->
+                        addMarker(MarkerOptions().position(loc))
+                        animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15F))
+                    }
+                } catch (e: IOException) {
+                    Log.d(TAG, "Couldn't retrieve location")
+                    displayMessage(requireContext(), "Cannot access geocoder service")
                 }
                 if (args.item.userId != userVM.getCurrentUserId()) {
                     setOnMapClickListener {
