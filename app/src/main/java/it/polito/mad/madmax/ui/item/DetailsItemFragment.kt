@@ -98,7 +98,9 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
                             }
                             // Observe buyer
                             userVM.getOtherUserData().observe(viewLifecycleOwner, Observer { user ->
-                                updateFields(item, user.name)
+                                if (user.userId != "") {
+                                    updateFields(item, user.name)
+                                }
                             })
                             userListener = userVM.listenOtherUser(item.boughtBy)
                         } else {
@@ -261,7 +263,7 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
                     item_details_extra.text = "Sold to: $name"
                     item_details_extra.setOnClickListener {
                         showProgress(requireActivity())
-                        findNavController().navigate(MainNavigationDirections.actionGlobalShowProfile(item.boughtBy))
+                        findNavController().navigate(DetailsItemFragmentDirections.actionGlobalShowProfile(item.boughtBy))
                     }
                 } else {
                     item_details_extra.text = "See interested users"
@@ -280,14 +282,14 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
                         item_details_extra.text = "Sold to: $name"
                         item_details_extra.setOnClickListener {
                             showProgress(requireActivity())
-                            findNavController().navigate(MainNavigationDirections.actionGlobalShowProfile(item.boughtBy))
+                            findNavController().navigate(DetailsItemFragmentDirections.actionGlobalShowProfile(item.boughtBy))
                         }
                     }
                 } else {
                     item_details_extra.text = name
                     item_details_extra.setOnClickListener {
                         showProgress(requireActivity())
-                        findNavController().navigate(MainNavigationDirections.actionGlobalShowProfile(item.userId))
+                        findNavController().navigate(DetailsItemFragmentDirections.actionGlobalShowProfile(item.userId))
                     }
                 }
             }
