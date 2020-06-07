@@ -151,6 +151,6 @@ class OnSaleListFragment : Fragment() {
 
     // Companion
     companion object {
-        const val TAG = "MM_ON_SALE"
+        private const val TAG = "MM_ON_SALE"
     }
 }

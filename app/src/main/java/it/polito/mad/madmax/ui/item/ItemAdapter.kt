@@ -110,11 +110,16 @@ class ItemAdapter(private val cardClickListener: (Item) -> Any, private val acti
                             }
                         }
                         "Bought" -> {
-                            (itemV.item_action as MaterialButton).icon = itemV.context.getDrawable(R.drawable.ic_star)
                             if (item.rating == "") {
+                                (itemV.item_action as MaterialButton).icon = itemV.context.getDrawable(R.drawable.ic_star)
                                 itemV.item_action.visibility = View.VISIBLE
                             } else {
                                 itemV.item_action.visibility = View.INVISIBLE
+                                itemV.item_description.visibility = View.GONE
+                                itemV.item_rating_container.visibility = View.VISIBLE
+                                itemV.item_rating.visibility = View.VISIBLE
+                                itemV.item_rating.rating = item.rating.split("+/")[1].toFloat()
+                                itemV.item_comment.text = item.rating.split("+/")[2]
                             }
                         }
                     }

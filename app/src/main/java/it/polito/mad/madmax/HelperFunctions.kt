@@ -50,6 +50,9 @@ fun hideProgress(activity: Activity) {
 
 fun showFab(activity: Activity, clickListener: View.OnClickListener, drawable: Drawable?) {
     activity.main_fab.apply {
+        scaleX = 1F
+        scaleY = 1F
+        alpha = 1F
         setOnClickListener(clickListener)
         setImageDrawable(drawable)
         visibility = View.VISIBLE

@@ -93,6 +93,6 @@ class ItemsOfInterestFragment : Fragment() {
 
     // Companion
     companion object {
-        const val TAG = "MM_OF_INTEREST"
+        private const val TAG = "MM_OF_INTEREST"
     }
 }

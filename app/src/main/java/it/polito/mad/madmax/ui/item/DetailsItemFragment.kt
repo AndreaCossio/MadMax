@@ -5,9 +5,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
+import androidx.core.view.ViewPropertyAnimatorListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -41,8 +44,12 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
     // Destination arguments
     private val args: DetailsItemFragmentArgs by navArgs()
 
-    // Reference to menu
+    // Reference to old status
     private lateinit var status: String
+
+    // Var for scrolling
+    private var animatingOut: Boolean = false
+    private var start: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,40 +77,65 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
         // Card radius
         item_details_card.addOnLayoutChangeListener(cardRadiusConstrain)
 
-        itemsVM.getItemData().observe(viewLifecycleOwner, Observer { item ->
-            // If the item became unavailable go back
-            if (item == null || (item.userId != userVM.getCurrentUserId() && (item.status == "Disabled" || (item.status == "Bought" && item.boughtBy != userVM.getCurrentUserId())))) {
+        itemsVM.getItemData().observe(viewLifecycleOwner, Observer { it ->
+            it?.also { item ->
+                when (item.userId) {
+                    // Mine
+                    userVM.getCurrentUserId() -> {
+                        // Check if status changed to update menu actions
+                        if (item.status != status) {
+                            status = item.status
+                            requireActivity().invalidateOptionsMenu()
+                        }
+                        if (item.status == "Bought") {
+                            if (this::userListener.isInitialized) {
+                                userListener.remove()
+                            }
+                            // Observe buyer
+                            userVM.getOtherUserData().observe(viewLifecycleOwner, Observer { user ->
+                                updateFields(item, user.name)
+                            })
+                            userListener = userVM.listenOtherUser(item.boughtBy)
+                        } else {
+                            updateFields(item)
+                        }
+                    }
+                    // Other's
+                    else -> {
+                        when(item.status) {
+                            "Enabled" -> {
+                                if (this::userListener.isInitialized) {
+                                    userListener.remove()
+                                }
+                                // Observe owner
+                                userVM.getOtherUserData().observe(viewLifecycleOwner, Observer { user ->
+                                    updateFields(item, user.name)
+                                })
+                                userListener = userVM.listenOtherUser(item.userId)
+                            }
+                            "Disabled" -> {
+                                showProgress(requireActivity())
+                                displayMessage(requireContext(), "This item is no longer available")
+                                findNavController().navigateUp()
+                            }
+                            "Bought" -> {
+                                // Bought by someone else
+                                if (item.boughtBy != userVM.getCurrentUserId()) {
+                                    showProgress(requireActivity())
+                                    displayMessage(requireContext(), "This item is no longer available")
+                                    findNavController().navigateUp()
+                                }
+                                updateFields(item)
+                            }
+                        }
+
+                    }
+                }
+            } ?: run {
+                // Deleted item
                 showProgress(requireActivity())
                 displayMessage(requireContext(), "This item is no longer available")
                 findNavController().navigateUp()
-            }
-            if (item.itemId != "") {
-                if (item.userId == userVM.getCurrentUserId()) {
-                    if (item.status != status) {
-                        status = item.status
-                        requireActivity().invalidateOptionsMenu()
-                    }
-                    if (item.status == "Bought") {
-                        if (this::userListener.isInitialized) {
-                            userListener.remove()
-                        }
-                        // Observe buyer
-                        userVM.getOtherUserData().observe(viewLifecycleOwner, Observer { user ->
-                            updateFields(item, user.name)
-                        })
-                        userListener = userVM.listenOtherUser(item.boughtBy)
-                    }
-                } else {
-                    if (this::userListener.isInitialized) {
-                        userListener.remove()
-                    }
-                    // Observe owner
-                    userVM.getOtherUserData().observe(viewLifecycleOwner, Observer { user ->
-                        updateFields(item, user.name)
-                    })
-                    userListener = userVM.listenOtherUser(item.userId)
-                }
-                updateFields(item)
             }
         })
 
@@ -137,6 +169,7 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
         if (this::userListener.isInitialized)
             userListener.remove()
         item_details_card.removeOnLayoutChangeListener(cardRadiusConstrain)
+        requireActivity().main_scroll_view.viewTreeObserver.removeOnScrollChangedListener(scrollListener)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -190,6 +223,13 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
         }
     }
 
+    override fun onMapReady(p0: GoogleMap?) {
+        gMap = p0?.apply {
+            uiSettings.isZoomControlsEnabled = true
+        }
+        updateMarker(args.item.location)
+    }
+
     // Update views using the ViewModel of the item
     private fun updateFields(item: Item, name: String = "") {
         item_details_title.text = item.title
@@ -199,6 +239,7 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
         item_details_price.text = getString(R.string.item_price_set, item.price)
         item_details_expiry.text = item.expiry
 
+        // Location
         updateMarker(item.location)
 
         // Photo
@@ -221,33 +262,53 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
         }
 
         // Owner / Buyer / Interested users
-        if (item.status == "Bought") {
-            item_details_extra.text = "Sold to: $name"
-            item_details_extra.setOnClickListener {
-                showProgress(requireActivity())
-                findNavController().navigate(MainNavigationDirections.actionGlobalShowProfile(item.boughtBy))
+        when (item.userId) {
+            // Mine
+            userVM.getCurrentUserId() -> {
+                if (item.status == "Bought") {
+                    item_details_extra.text = "Sold to: $name"
+                    item_details_extra.setOnClickListener {
+                        showProgress(requireActivity())
+                        findNavController().navigate(MainNavigationDirections.actionGlobalShowProfile(item.boughtBy))
+                    }
+                } else {
+                    item_details_extra.text = "See interested users"
+                    item_details_extra.setOnClickListener {
+                        showProgress(requireActivity())
+                        findNavController().navigate(DetailsItemFragmentDirections.actionSeeInterestedUsers(item))
+                    }
+                }
             }
-        } else if (item.userId != userVM.getCurrentUserId()) {
-            item_details_extra.text = name
-            item_details_extra.setOnClickListener {
-                showProgress(requireActivity())
-                findNavController().navigate(MainNavigationDirections.actionGlobalShowProfile(item.userId))
-            }
-        } else {
-            item_details_extra.text = "See interested users"
-            item_details_extra.setOnClickListener {
-                showProgress(requireActivity())
-                findNavController().navigate(DetailsItemFragmentDirections.actionSeeInterestedUsers(item))
+            // Other's
+            else -> {
+                if (item.status == "Bought") {
+                    if (item.boughtBy == userVM.getCurrentUserId()) {
+                        item_details_extra.text = "Sold to you"
+                    } else {
+                        item_details_extra.text = "Sold to: $name"
+                        item_details_extra.setOnClickListener {
+                            showProgress(requireActivity())
+                            findNavController().navigate(MainNavigationDirections.actionGlobalShowProfile(item.boughtBy))
+                        }
+                    }
+                } else {
+                    item_details_extra.text = name
+                    item_details_extra.setOnClickListener {
+                        showProgress(requireActivity())
+                        findNavController().navigate(MainNavigationDirections.actionGlobalShowProfile(item.userId))
+                    }
+                }
             }
         }
 
         // FAB
-        if (item.userId != userVM.getCurrentUserId()) {
+        if (item.userId != userVM.getCurrentUserId() && item.status != "Bought") {
             if (!item.interestedUsers.contains(userVM.getCurrentUserId())) {
                 showFab(requireActivity(), View.OnClickListener { showInterest() }, requireContext().getDrawable(R.drawable.ic_favourite_out))
             } else {
                 showFab(requireActivity(), View.OnClickListener { removeInterest() }, requireContext().getDrawable(R.drawable.ic_favourite))
             }
+            requireActivity().main_scroll_view.viewTreeObserver.addOnScrollChangedListener(scrollListener)
         }
     }
 
@@ -267,22 +328,7 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
         }
     }
 
-    // Companion
-    companion object {
-        private const val TAG = "MM_DETAILS_ITEM"
-    }
-
-    override fun onMapReady(p0: GoogleMap?) {
-        gMap = p0?.apply {
-            uiSettings.isZoomControlsEnabled = true
-        }
-        args.item.location.also {
-            updateMarker(it)
-        }
-    }
-
-
-     private fun updateMarker(location: String) {
+    private fun updateMarker(location: String) {
         if (location != "") {
             gMap?.apply {
                 clear()
@@ -290,7 +336,7 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
                     addMarker(MarkerOptions().position(loc))
                     animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15F))
                 }
-                args.item.also {
+                if (args.item.userId != userVM.getCurrentUserId()) {
                     setOnMapClickListener {
                         MapDialog().apply {
                             setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_MadMax_Dialog)
@@ -302,5 +348,39 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
         } else {
             gMap?.clear()
         }
+    }
+
+    private val scrollListener = ViewTreeObserver.OnScrollChangedListener {
+        activity?.also {
+            if (start < requireActivity().main_scroll_view.scrollY && !animatingOut && requireActivity().main_fab.visibility == View.VISIBLE) {
+                ViewCompat.animate(requireActivity().main_fab).scaleX(0.0f).scaleY(0.0f).alpha(0.0f)
+                    .setInterpolator(FastOutSlowInInterpolator()).withLayer()
+                    .setListener(object : ViewPropertyAnimatorListener {
+                        override fun onAnimationStart(view: View?) {
+                            animatingOut = true
+                        }
+
+                        override fun onAnimationCancel(view: View?) {
+                            animatingOut = false
+                        }
+
+                        override fun onAnimationEnd(view: View) {
+                            animatingOut = false
+                            view.visibility = View.GONE
+                        }
+                    }).start()
+            } else if (start > requireActivity().main_scroll_view.scrollY && requireActivity().main_fab.visibility != View.VISIBLE) {
+                requireActivity().main_fab.visibility = View.VISIBLE
+                ViewCompat.animate(requireActivity().main_fab).scaleX(1.0f).scaleY(1.0f).alpha(1.0f)
+                    .setInterpolator(FastOutSlowInInterpolator()).withLayer().setListener(null)
+                    .start()
+            }
+            start = requireActivity().main_scroll_view.scrollY
+        }
+    }
+
+    // Companion
+    companion object {
+        private const val TAG = "MM_DETAILS_ITEM"
     }
 }
