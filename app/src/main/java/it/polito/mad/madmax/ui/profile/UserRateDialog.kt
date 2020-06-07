@@ -42,22 +42,24 @@ class UserRateDialog : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         userVM.getOtherUserData().observe(viewLifecycleOwner, Observer { user ->
-            dialog_rate_user_name.text = "${user.name}'s rating"
-            dialog_rate_user_photo?.post {
-                Picasso.get().load(Uri.parse(user.photo)).into(dialog_rate_user_photo, object : Callback {
-                    override fun onSuccess() {
-                        dialog_rate_user_photo?.translationY = 0F
-                        hideProgress(requireActivity())
-                    }
-
-                    override fun onError(e: Exception?) {
-                        dialog_rate_user_photo?.apply {
-                            translationY = measuredHeight / 6F
-                            setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
+            if (user.userId != "") {
+                dialog_rate_user_name.text = "${user.name}'s rating"
+                dialog_rate_user_photo?.post {
+                    Picasso.get().load(Uri.parse(user.photo)).into(dialog_rate_user_photo, object : Callback {
+                        override fun onSuccess() {
+                            dialog_rate_user_photo?.translationY = 0F
+                            hideProgress(requireActivity())
                         }
-                        hideProgress(requireActivity())
-                    }
-                })
+
+                        override fun onError(e: Exception?) {
+                            dialog_rate_user_photo?.apply {
+                                translationY = measuredHeight / 6F
+                                setImageDrawable(requireContext().getDrawable(R.drawable.ic_profile))
+                            }
+                            hideProgress(requireActivity())
+                        }
+                    })
+                }
             }
         })
         userListener = userVM.listenOtherUser(requireArguments().getString("userId")!!)

@@ -83,7 +83,6 @@ class ItemAdapter(private val cardClickListener: (Item) -> Any, private val acti
             when (item.userId) {
                 // Mine
                 Firebase.auth.currentUser?.uid -> {
-                    // TODO Status info (mainly for the owner) (comment?)
                     when (item.status) {
                         "Bought" -> {
                             itemV.item_action.visibility = View.INVISIBLE

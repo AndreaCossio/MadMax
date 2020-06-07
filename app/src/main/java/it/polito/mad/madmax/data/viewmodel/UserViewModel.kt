@@ -85,7 +85,6 @@ class UserViewModel : ViewModel() {
 
     fun rateUser(context: Context, userId: String, rating: String): Task<Transaction> {
         return repo.rateUser(userId, rating).addOnSuccessListener {
-            // TODO better notification
             try {
                 sendNotification(context, createNotification(userId, context.getString(R.string.app_name), "You have received a new rating."))
             } catch (e: JSONException) {

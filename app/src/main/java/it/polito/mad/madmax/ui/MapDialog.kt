@@ -39,7 +39,6 @@ class MapDialog : DialogFragment(), OnMapReadyCallback {
         isEditMode = requireArguments().getBoolean("editMode")
     }
 
-    // TODO strange padding on large devices
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.map_dialog, container, false).also {
             (childFragmentManager.findFragmentById(R.id.map_dialog_fragment_container) as SupportMapFragment).getMapAsync(this)

@@ -138,7 +138,6 @@ class DetailsItemFragment : Fragment(),OnMapReadyCallback {
                                 updateFields(item)
                             }
                         }
-
                     }
                 }
             } ?: run {
